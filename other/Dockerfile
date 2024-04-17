@@ -59,4 +59,5 @@ COPY --from=build /myapp/app/components/ui/icons /myapp/app/components/ui/icons
 
 ADD . .
 
+EXPOSE 8080
 CMD ["npm", "start"]
