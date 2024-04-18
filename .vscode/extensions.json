@@ -5,7 +5,6 @@
     "esbenp.prettier-vscode",
     "prisma.prisma",
     "qwtel.sqlite-viewer",
-    "yoavbls.pretty-ts-errors",
     "github.vscode-github-actions"
   ]
 }
