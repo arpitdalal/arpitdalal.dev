@@ -90,4 +90,9 @@ export const extendedTheme = {
 		/** 12px size / 16px high / bold */
 		button: ['0.75rem', { lineHeight: '1rem', fontWeight: '700' }],
 	},
+	animationDuration: {
+		active: '2000ms !important',
+		hover: '5000ms !important',
+		default: '10000ms !important',
+	},
 } satisfies Config['theme']

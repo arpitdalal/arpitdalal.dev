@@ -60,37 +60,6 @@ export function getDomainUrl(request: Request) {
 	return `${protocol}://${host}`
 }
 
-export function getReferrerRoute(request: Request) {
-	// spelling errors and whatever makes this annoyingly inconsistent
-	// in my own testing, `referer` returned the right value, but 🤷‍♂️
-	const referrer =
-		request.headers.get('referer') ??
-		request.headers.get('referrer') ??
-		request.referrer
-	const domain = getDomainUrl(request)
-	if (referrer?.startsWith(domain)) {
-		return referrer.slice(domain.length)
-	} else {
-		return '/'
-	}
-}
-
-/**
- * Merge multiple headers objects into one (uses set so headers are overridden)
- */
-export function mergeHeaders(
-	...headers: Array<ResponseInit['headers'] | null | undefined>
-) {
-	const merged = new Headers()
-	for (const header of headers) {
-		if (!header) continue
-		for (const [key, value] of new Headers(header).entries()) {
-			merged.set(key, value)
-		}
-	}
-	return merged
-}
-
 /**
  * Combine multiple header objects into one (uses append so headers are not overridden)
  */
@@ -107,18 +76,20 @@ export function combineHeaders(
 	return combined
 }
 
-/**
- * Combine multiple response init objects into one (uses combineHeaders)
- */
-export function combineResponseInits(
-	...responseInits: Array<ResponseInit | null | undefined>
-) {
-	let combined: ResponseInit = {}
-	for (const responseInit of responseInits) {
-		combined = {
-			...responseInit,
-			headers: combineHeaders(combined.headers, responseInit?.headers),
-		}
-	}
-	return combined
+function removeTrailingSlash(s: string) {
+	return s.endsWith('/') ? s.slice(0, -1) : s
+}
+
+function getOrigin(requestInfo?: { origin?: string; path: string }) {
+	return requestInfo?.origin ?? 'https://arpitdalal.dev'
+}
+
+export function getUrl(requestInfo?: { origin: string; path: string }) {
+	return removeTrailingSlash(
+		`${getOrigin(requestInfo)}${requestInfo?.path ?? ''}`,
+	)
+}
+
+export function capitalize(s: string) {
+	return s.charAt(0).toUpperCase() + s.slice(1)
 }

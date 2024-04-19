@@ -6,6 +6,7 @@ import {
 	type MetaFunction,
 } from '@remix-run/node'
 import {
+	Link,
 	Links,
 	Meta,
 	Outlet,
@@ -14,27 +15,36 @@ import {
 	useLoaderData,
 } from '@remix-run/react'
 import { withSentry } from '@sentry/remix'
+import { ClientOnly } from 'remix-utils/client-only'
 import { HoneypotProvider } from 'remix-utils/honeypot/react'
+import { Header, HeaderInBrowser } from '#app/components/header.tsx'
+import {
+	Logo,
+	LogoCircle,
+	LogoImage,
+	LogoSpinner,
+} from '#app/components/logo.tsx'
+import { getSocialMetas } from '#app/utils/seo.js'
+import { type Theme } from '#types/index.js'
 import { GeneralErrorBoundary } from './components/error-boundary.tsx'
 import { EpicProgress } from './components/progress-bar.tsx'
 import { useToast } from './components/toaster.tsx'
 import { href as iconsHref } from './components/ui/icon.tsx'
 import { EpicToaster } from './components/ui/sonner.tsx'
 import tailwindStyleSheetUrl from './styles/tailwind.css?url'
-import { ClientHintCheck, getHints, useHints } from './utils/client-hints.tsx'
+import { ClientHintCheck, getHints } from './utils/client-hints.tsx'
 import { getEnv } from './utils/env.server.ts'
 import { honeypot } from './utils/honeypot.server.ts'
-import { combineHeaders, getDomainUrl } from './utils/misc.tsx'
+import { capitalize, getDomainUrl, getUrl } from './utils/misc.tsx'
 import { useNonce } from './utils/nonce-provider.ts'
-import { useRequestInfo } from './utils/request-info.ts'
-import { type Theme, getTheme } from './utils/theme.server.ts'
-import { makeTimings } from './utils/timing.server.ts'
 import { getToast } from './utils/toast.server.ts'
 
 export const links: LinksFunction = () => {
 	return [
-		// Preload svg sprite as a resource to avoid render blocking
 		{ rel: 'preload', href: iconsHref, as: 'image' },
+		// { rel: "preload", href: fontStyleStyleSheetUrl, as: "style" },
+		{ rel: 'preload', href: tailwindStyleSheetUrl, as: 'style' },
+		{ rel: 'mask-icon', href: '/favicons/mask-icon.svg' },
 		{
 			rel: 'alternate icon',
 			type: 'image/png',
@@ -46,20 +56,26 @@ export const links: LinksFunction = () => {
 			href: '/site.webmanifest',
 			crossOrigin: 'use-credentials',
 		} as const, // necessary to make typescript happy
+		{ rel: 'icon', type: 'image/svg+xml', href: '/favicons/favicon.svg' },
+		// { rel: "stylesheet", href: fontStyleStyleSheetUrl },
 		{ rel: 'stylesheet', href: tailwindStyleSheetUrl },
 	].filter(Boolean)
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
+	const requestInfo = data?.requestInfo
 	return [
-		{ title: data ? 'Epic Notes' : 'Error | Epic Notes' },
-		{ name: 'description', content: `Your own captain's log` },
+		{ viewport: 'width=device-width,initial-scale=1,viewport-fit=cover' },
+		{
+			'theme-color': requestInfo?.hints.theme === 'dark' ? '#1F2028' : '#FFF',
+		},
+		...getSocialMetas({
+			url: getUrl(requestInfo),
+		}),
 	]
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	const timings = makeTimings('root loader')
-
 	const { toast, headers: toastHeaders } = await getToast(request)
 	const honeyProps = honeypot.getInputProps()
 
@@ -69,19 +85,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 				hints: getHints(request),
 				origin: getDomainUrl(request),
 				path: new URL(request.url).pathname,
-				userPrefs: {
-					theme: getTheme(request),
-				},
 			},
 			ENV: getEnv(),
 			toast,
 			honeyProps,
 		},
 		{
-			headers: combineHeaders(
-				{ 'Server-Timing': timings.toString() },
-				toastHeaders,
-			),
+			headers: toastHeaders ?? {},
 		},
 	)
 }
@@ -136,7 +146,7 @@ function Document({
 function App() {
 	const data = useLoaderData<typeof loader>()
 	const nonce = useNonce()
-	const theme = useTheme()
+	const theme = data.requestInfo.hints.theme
 	const allowIndexing = data.ENV.ALLOW_INDEXING !== 'false'
 	useToast(data.toast)
 
@@ -148,19 +158,13 @@ function App() {
 			env={data.ENV}
 		>
 			<div className="flex h-screen flex-col justify-between">
-				<header className="container py-6">
-					<nav className="flex flex-wrap items-center justify-between gap-4 sm:flex-nowrap md:gap-8">
-						<span>Arpit Dalal</span>
-					</nav>
-				</header>
-
-				<div className="flex-1">
+				<ClientOnly fallback={<Header />}>
+					{() => <HeaderInBrowser />}
+				</ClientOnly>
+				<main id="main" className="flex-1 pb-20 pt-28">
 					<Outlet />
-				</div>
-
-				<div className="container flex justify-between pb-5">
-					<span>Arpit Dalal</span>
-				</div>
+				</main>
+				<Footer />
 			</div>
 			<EpicToaster closeButton position="top-center" theme={theme} />
 			<EpicProgress />
@@ -179,27 +183,57 @@ function AppWithProviders() {
 
 export default withSentry(AppWithProviders)
 
-/**
- * @returns the user's theme preference, or the client hint theme if the user
- * has not set a preference.
- */
-export function useTheme() {
-	const hints = useHints()
-	const requestInfo = useRequestInfo()
-	return requestInfo.userPrefs.theme ?? hints.theme
+export const headerAndFooterCommonLinks = {
+	about: 'about',
+	contact: 'contact',
+}
+
+function Footer() {
+	return (
+		<footer className="border-t border-foreground/40">
+			<div className="container flex flex-wrap justify-between gap-10 py-5">
+				<Link to="/" className="group z-10 flex items-center gap-4">
+					<Logo>
+						<LogoCircle />
+						<LogoSpinner />
+						<LogoImage />
+					</Logo>
+					<span className="underlined text-h2">Arpit Dalal</span>
+				</Link>
+				<nav>
+					<p className="text-lg">
+						<strong>Pages</strong>
+					</p>
+					<ul className="mt-3 flex flex-col gap-1">
+						<li>
+							<Link className="underlined text-foreground/70" to="/">
+								Home
+							</Link>
+						</li>
+						<li>
+							<a
+								className="underlined text-foreground/70"
+								href="https://blog.arpitdalal.dev"
+							>
+								Blog
+							</a>
+						</li>
+						{Object.entries(headerAndFooterCommonLinks).map(([key, value]) => (
+							<li key={key}>
+								<Link to={value} className="underlined text-foreground/70">
+									{capitalize(key)}
+								</Link>
+							</li>
+						))}
+					</ul>
+				</nav>
+			</div>
+		</footer>
+	)
 }
 
 export function ErrorBoundary() {
-	// the nonce doesn't rely on the loader so we can access that
 	const nonce = useNonce()
-
-	// NOTE: you cannot use useLoaderData in an ErrorBoundary because the loader
-	// likely failed to run so we have to do the best we can.
-	// We could probably do better than this (it's possible the loader did run).
-	// This would require a change in Remix.
-
-	// Just make sure your root route never errors out and you'll always be able
-	// to give the user a better UX.
 
 	return (
 		<Document nonce={nonce}>

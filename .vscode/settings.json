@@ -17,6 +17,7 @@
     "*.db": "sqlite-viewer.view"
   },
   "conventionalCommits.scopes": [
-    "project"
+    "project",
+    "frontend"
   ]
 }
