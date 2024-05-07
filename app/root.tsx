@@ -17,15 +17,15 @@ import {
 import { withSentry } from '@sentry/remix'
 import { ClientOnly } from 'remix-utils/client-only'
 import { HoneypotProvider } from 'remix-utils/honeypot/react'
-import { Header, HeaderInBrowser } from '#app/components/header.tsx'
+import { Header, ClientHeader } from '#app/components/header.tsx'
 import {
 	Logo,
 	LogoCircle,
 	LogoImage,
 	LogoSpinner,
 } from '#app/components/logo.tsx'
-import { getSocialMetas } from '#app/utils/seo.js'
-import { type Theme } from '#types/index.js'
+import { getSocialMetas } from '#app/utils/seo.ts'
+import { type Theme } from '#types/index.ts'
 import { GeneralErrorBoundary } from './components/error-boundary.tsx'
 import { EpicProgress } from './components/progress-bar.tsx'
 import { useToast } from './components/toaster.tsx'
@@ -158,9 +158,7 @@ function App() {
 			env={data.ENV}
 		>
 			<div className="flex h-screen flex-col justify-between">
-				<ClientOnly fallback={<Header />}>
-					{() => <HeaderInBrowser />}
-				</ClientOnly>
+				<ClientOnly fallback={<Header />}>{() => <ClientHeader />}</ClientOnly>
 				<main id="main" className="flex-1 pb-20 pt-28">
 					<Outlet />
 				</main>

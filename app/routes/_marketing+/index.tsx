@@ -1,8 +1,8 @@
 import { type MetaFunction } from '@remix-run/node'
 import { Link } from '@remix-run/react'
-import ExternalLink from '#app/components/external-link.js'
-import { Button } from '#app/components/ui/button.js'
-import { Icon } from '#app/components/ui/icon.js'
+import ExternalLink from '#app/components/external-link.tsx'
+import { Button } from '#app/components/ui/button.tsx'
+import { Icon } from '#app/components/ui/icon.tsx'
 
 export const meta: MetaFunction = () => [{ title: 'Epic Notes' }]
 
