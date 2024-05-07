@@ -1,6 +1,7 @@
 import { type MetaFunction } from '@remix-run/node'
 import { Link } from '@remix-run/react'
 import ExternalLink from '#app/components/external-link.tsx'
+import { HeroHighlight } from '#app/components/hero-highlight.js'
 import { Button } from '#app/components/ui/button.tsx'
 import { Icon } from '#app/components/ui/icon.tsx'
 
@@ -9,29 +10,23 @@ export const meta: MetaFunction = () => [{ title: 'Epic Notes' }]
 export default function Index() {
 	return (
 		<>
-			<Background>
-				<div className="container flex flex-col items-center justify-between gap-6">
-					<h1 className="max-w-[15ch] text-center text-6xl sm:text-8xl">
+			<HeroHighlight>
+				<div className="flex flex-col items-center justify-between gap-6">
+					<h1 className="motion-safe:animate-reveal-up max-w-[15ch] text-center text-6xl sm:text-8xl">
 						<span className="block text-sm uppercase text-foreground/70">
 							Hello there, I'm
 						</span>
 						<span className="flex space-x-5 font-bold">
-							<span>
-								<span className="text-primary">A</span>
-								<span>rpit</span>
-							</span>
-							<span>
-								<span className="text-primary">D</span>
-								<span>alal</span>
-							</span>
+							<span className="first-letter:text-primary">Arpit</span>
+							<span className="first-letter:text-primary">Dalal</span>
 						</span>
 					</h1>
-					<p className="max-w-[60ch] text-center text-lg sm:text-xl">
+					<p className="motion-safe:animate-reveal-up delay-400 max-w-[60ch] text-center text-lg sm:text-xl">
 						I'm a software engineer and a full-stack developer living in the
 						Greater Toronto Area. I have a passion for building web applications
 						and have a strong background in front-end development.
 					</p>
-					<div className="flex gap-5">
+					<div className="motion-safe:animate-reveal-up flex gap-5 delay-700">
 						<Button variant="outline" asChild>
 							<Link to="contact">Contact me</Link>
 						</Button>
@@ -47,7 +42,7 @@ export default function Index() {
 							</Link>
 						</Button>
 					</div>
-					<div className="mt-2 flex gap-5">
+					<div className="motion-safe:animate-reveal-up mt-2 flex gap-5 delay-1000">
 						<Button
 							variant="outline"
 							size="icon"
@@ -90,331 +85,7 @@ export default function Index() {
 						</Button>
 					</div>
 				</div>
-			</Background>
-			<div className="container">
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe culpa
-					quis autem? Eius ratione hic ex officia eligendi inventore recusandae
-					nisi. Provident libero obcaecati nisi necessitatibus itaque quidem
-					assumenda molestiae!
-				</p>
-			</div>
+			</HeroHighlight>
 		</>
-	)
-}
-
-function Background({ children }: { children: React.ReactNode }) {
-	return (
-		<div className="relative flex w-full items-center justify-center py-20">
-			<div
-				aria-hidden
-				className="absolute inset-0 h-full bg-dot-black dark:bg-dot-white"
-				style={{
-					opacity: 0.3,
-				}}
-			></div>
-			{/* Radial gradient for the container to give a faded look */}
-			<div
-				aria-hidden
-				className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"
-			></div>
-			<div className="relative z-10">
-				<>{children}</>
-			</div>
-		</div>
 	)
 }

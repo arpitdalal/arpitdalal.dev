@@ -95,4 +95,13 @@ export const extendedTheme = {
 		hover: '5000ms !important',
 		default: '10000ms !important',
 	},
+	keyframes: {
+		'reveal-up': {
+			from: { transform: 'translateY(20px)', opacity: '0' },
+			to: { transform: 'translateY(0px)', opacity: '1' },
+		},
+	},
+	animation: {
+		'reveal-up': 'reveal-up 0.4s cubic-bezier(0.4,0.0,.2,1)',
+	},
 } satisfies Config['theme']

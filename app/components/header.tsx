@@ -153,7 +153,7 @@ export function Header({
 			}}
 		>
 			<motion.div
-				className="mx-auto bg-accent/60 py-4 backdrop-blur-md"
+				className="mx-auto bg-accent/60 py-4 shadow-lg backdrop-blur-md"
 				style={{
 					borderRadius: divBorderRadius,
 					maxWidth: divMaxWidth,
