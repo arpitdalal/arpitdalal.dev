@@ -48,12 +48,19 @@ export function LogoSpinner({ className }: { className?: string }) {
 
 export function LogoCircle({ className }: { className?: string }) {
 	return (
-		<svg
-			className={cn('absolute size-16 cursor-pointer', className)}
-			viewBox="0 0 56 56"
-		>
-			<circle cx="28" cy="28" r="28" className="fill-primary" />
-		</svg>
+		<>
+			<svg
+				className={cn('absolute size-16 cursor-pointer', className)}
+				viewBox="0 0 56 56"
+			>
+				<circle cx="28" cy="28" r="28" className="fill-primary" />
+			</svg>
+			<img
+				src="https://res.cloudinary.com/arpitdalal-dev/image/upload/w_120,h_120/v1714157047/arpitdalal-dev/shadow_v2njin.png"
+				alt="Shadow"
+				className="absolute size-16 cursor-pointer"
+			/>
+		</>
 	)
 }
 
