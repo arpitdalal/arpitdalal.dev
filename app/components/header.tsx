@@ -1,8 +1,8 @@
 import { useMeasure, useWindowSize } from '@reactuses/core'
-import { Link, NavLink } from '@remix-run/react'
+import { Link, NavLink, useLocation } from '@remix-run/react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
-import BlogLink from '#app/components/blog-link.tsx'
+import ExternalLink from '#app/components/external-link.js'
 import {
 	Logo,
 	LogoCircle,
@@ -39,6 +39,7 @@ export function Header({
 	spanWidth?: number
 	windowWidth?: number
 }) {
+	const location = useLocation()
 	const { reducedMotion } = useHints()
 	const isReducedMotion = reducedMotion === 'reduce'
 
@@ -99,6 +100,7 @@ export function Header({
 
 	return (
 		<motion.header
+			key={location.pathname}
 			className="fixed left-0 right-0 z-50 mx-auto w-full"
 			style={{
 				paddingInline: headerPaddingInline,
@@ -150,7 +152,9 @@ export function Header({
 					</Link>
 					<ul className="flex items-center gap-4 md:gap-8">
 						<li>
-							<BlogLink />
+							<ExternalLink href="https://blog.arpitdalal.dev">
+								Blog
+							</ExternalLink>
 						</li>
 						{Object.entries(headerAndFooterCommonLinks).map(([key, value]) => (
 							<li key={key}>

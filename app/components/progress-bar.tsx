@@ -2,7 +2,6 @@ import { useNavigation } from '@remix-run/react'
 import { useEffect, useRef, useState } from 'react'
 import { useSpinDelay } from 'spin-delay'
 import { cn } from '#app/utils/misc.tsx'
-import { Icon } from './ui/icon.tsx'
 
 function EpicProgress() {
 	const transition = useNavigation()
@@ -46,16 +45,6 @@ function EpicProgress() {
 					delayedPending && transition.state === 'loading' && 'w-8/12',
 				)}
 			/>
-			{delayedPending && (
-				<div className="absolute flex items-center justify-center">
-					<Icon
-						name="update"
-						size="md"
-						className="m-1 animate-spin text-foreground"
-						aria-hidden
-					/>
-				</div>
-			)}
 		</div>
 	)
 }
