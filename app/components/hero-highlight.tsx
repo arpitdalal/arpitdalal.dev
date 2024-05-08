@@ -29,17 +29,17 @@ export const HeroHighlight = ({
 	return (
 		<div
 			className={cn(
-				'group relative flex h-[40rem] w-full items-center justify-center',
+				'group relative flex w-full items-center justify-center py-20',
 				containerClassName,
 			)}
 			onMouseMove={handleMouseMove}
 		>
 			<div
-				className="bg-dot-thick-neutral-300 dark:bg-dot-thick-neutral-800 pointer-events-none absolute inset-0"
+				className="pointer-events-none absolute inset-0 bg-dot-thick-neutral-300 dark:bg-dot-thick-neutral-800"
 				aria-hidden
 			/>
 			<motion.div
-				className="bg-dot-thick-[#6d28d9] dark:bg-dot-thick-[#6d28d9] pointer-events-none absolute inset-0 opacity-0 transition duration-300 group-hover:opacity-100"
+				className="pointer-events-none absolute inset-0 opacity-0 transition duration-300 bg-dot-thick-[#6d28d9] group-hover:opacity-100 dark:bg-dot-thick-[#6d28d9]"
 				style={{
 					WebkitMaskImage: useMotionTemplate`
             radial-gradient(
@@ -56,10 +56,11 @@ export const HeroHighlight = ({
             )
           `,
 				}}
+				aria-hidden
 			/>
 			<div
-				aria-hidden
 				className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background [mask-image:linear-gradient(to_bottom,transparent_20%,#030712_180%)]"
+				aria-hidden
 			></div>
 			<div className={cn('relative z-20', className)}>
 				<>{children}</>

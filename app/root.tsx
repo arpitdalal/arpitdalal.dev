@@ -159,7 +159,7 @@ function App() {
 		>
 			<div className="flex h-screen flex-col justify-between">
 				<ClientOnly fallback={<Header />}>{() => <ClientHeader />}</ClientOnly>
-				<main id="main" className="flex-1 pb-20 pt-24">
+				<main id="main" className="flex-1 pb-20">
 					<Outlet />
 				</main>
 				<Footer />

@@ -10,9 +10,9 @@ export const meta: MetaFunction = () => [{ title: 'Epic Notes' }]
 export default function Index() {
 	return (
 		<>
-			<HeroHighlight>
+			<HeroHighlight className="pt-24">
 				<div className="flex flex-col items-center justify-between gap-6">
-					<h1 className="motion-safe:animate-reveal-up max-w-[15ch] text-center text-6xl sm:text-8xl">
+					<h1 className="max-w-[15ch] text-center text-6xl motion-safe:animate-reveal-up sm:text-8xl">
 						<span className="block text-sm uppercase text-foreground/70">
 							Hello there, I'm
 						</span>
@@ -21,12 +21,12 @@ export default function Index() {
 							<span className="first-letter:text-primary">Dalal</span>
 						</span>
 					</h1>
-					<p className="motion-safe:animate-reveal-up delay-400 max-w-[60ch] text-center text-lg sm:text-xl">
+					<p className="delay-400 max-w-[60ch] text-center text-lg motion-safe:animate-reveal-up sm:text-xl">
 						I'm a software engineer and a full-stack developer living in the
 						Greater Toronto Area. I have a passion for building web applications
 						and have a strong background in front-end development.
 					</p>
-					<div className="motion-safe:animate-reveal-up flex gap-5 delay-700">
+					<div className="flex gap-5 delay-700 motion-safe:animate-reveal-up">
 						<Button variant="outline" asChild>
 							<Link to="contact">Contact me</Link>
 						</Button>
@@ -42,7 +42,7 @@ export default function Index() {
 							</Link>
 						</Button>
 					</div>
-					<div className="motion-safe:animate-reveal-up mt-2 flex gap-5 delay-1000">
+					<div className="mt-2 flex gap-5 delay-1000 motion-safe:animate-reveal-up">
 						<Button
 							variant="outline"
 							size="icon"
