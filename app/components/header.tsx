@@ -170,7 +170,7 @@ export function Header({
 				>
 					<div className="flex items-center justify-between gap-4 md:gap-8">
 						<a
-							className="absolute -top-96 left-0 z-50 m-3 bg-primary p-3 opacity-0 transition-opacity duration-200 ease-in-out focus:top-0 focus:opacity-100"
+							className="absolute -top-96 left-0 z-50 m-3 bg-primary p-3 opacity-0 outline-none ring-ring ring-offset-2 ring-offset-background transition-all duration-200 ease-in-out focus-within:ring-2 focus:top-0 focus:opacity-100 focus-visible:ring-2"
 							// eslint-disable-next-line remix-react-routes/use-link-for-routes -- Needed because Link doesn't work here
 							href="#main"
 						>
@@ -178,7 +178,7 @@ export function Header({
 						</a>
 						<Link
 							to="/"
-							className="group z-10 flex items-center gap-4 overflow-clip"
+							className="group z-10 flex items-center gap-4 overflow-clip outline-none ring-ring ring-offset-2 ring-offset-background transition-colors focus-within:ring-2 focus-visible:ring-2"
 						>
 							<Logo className="z-10">
 								<LogoCircle />
@@ -186,7 +186,7 @@ export function Header({
 								<LogoImage />
 							</Logo>
 							<motion.span
-								className="underlined text-h2"
+								className="underlined xs:text-h2 text-h3"
 								style={{
 									opacity: textOpacity,
 									x: textX,
@@ -198,7 +198,10 @@ export function Header({
 						</Link>
 						<ul className="hidden items-center gap-4 md:flex md:gap-8">
 							<li>
-								<ExternalLink href="https://blog.arpitdalal.dev">
+								<ExternalLink
+									href="https://blog.arpitdalal.dev"
+									applyBaseClassName={false}
+								>
 									Blog
 								</ExternalLink>
 							</li>

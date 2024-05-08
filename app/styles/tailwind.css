@@ -51,6 +51,23 @@
   }
 }
 
+@layer base {
+  h1 {
+		@apply text-3xl font-bold lg:text-4xl;
+	}
+
+	h2 {
+		@apply text-2xl font-bold lg:text-3xl;
+	}
+
+	h3 {
+		@apply text-xl lg:text-2xl;
+	}
+
+	a {
+		@apply transition-colors;
+	}
+}
 
 @layer utilities {
 	.underlined {
@@ -60,7 +77,7 @@
 	}
 
   .active.underlined {
-    color: currentColor;
+    color: hsl(var(--primary));
   }
 
 	.underlined:focus {
@@ -84,7 +101,7 @@
 	.underlined:hover:after,
 	.underlined:focus:after,
 	.active.underlined:after {
-		background-color: currentColor;
+		background-color: hsl(var(--primary));
 		transform: scaleX(1);
 	}
 

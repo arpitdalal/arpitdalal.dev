@@ -17,6 +17,7 @@ import {
 import { withSentry } from '@sentry/remix'
 import { ClientOnly } from 'remix-utils/client-only'
 import { HoneypotProvider } from 'remix-utils/honeypot/react'
+import ExternalLink from '#app/components/external-link.js'
 import { Header, ClientHeader } from '#app/components/header.tsx'
 import {
 	Logo,
@@ -190,7 +191,10 @@ function Footer() {
 	return (
 		<footer className="border-t border-foreground/40">
 			<div className="container flex flex-wrap justify-between gap-10 py-5">
-				<Link to="/" className="group z-10 flex items-center gap-4">
+				<Link
+					to="/"
+					className="group z-10 flex items-center gap-4 outline-none ring-ring ring-offset-2 ring-offset-background transition-colors focus-within:ring-2 focus-visible:ring-2"
+				>
 					<Logo>
 						<LogoCircle />
 						<LogoSpinner />
@@ -209,12 +213,12 @@ function Footer() {
 							</Link>
 						</li>
 						<li>
-							<a
-								className="underlined text-foreground/70"
+							<ExternalLink
 								href="https://blog.arpitdalal.dev"
+								applyBaseClassName={false}
 							>
 								Blog
-							</a>
+							</ExternalLink>
 						</li>
 						{Object.entries(headerAndFooterCommonLinks).map(([key, value]) => (
 							<li key={key}>

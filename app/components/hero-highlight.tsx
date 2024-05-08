@@ -27,7 +27,7 @@ export const HeroHighlight = ({
 	}
 
 	return (
-		<div
+		<section
 			className={cn(
 				'group relative flex w-full items-center justify-center py-20',
 				containerClassName,
@@ -65,7 +65,7 @@ export const HeroHighlight = ({
 			<div className={cn('relative z-20', className)}>
 				<>{children}</>
 			</div>
-		</div>
+		</section>
 	)
 }
 
