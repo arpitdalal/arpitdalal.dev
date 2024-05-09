@@ -195,7 +195,12 @@ function Footer() {
 						<LogoSpinner />
 						<LogoImage />
 					</Logo>
-					<span className="underlined xs:text-h2 text-h5">Arpit Dalal</span>
+					<span
+						className="underlined xs:text-h2 text-h5"
+						data-content="Arpit Dalal"
+					>
+						Arpit Dalal
+					</span>
 				</Link>
 				<nav>
 					<p className="text-lg">
