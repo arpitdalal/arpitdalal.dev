@@ -1,6 +1,12 @@
 import { useMeasure, useWindowSize } from '@reactuses/core'
 import { Link, NavLink } from '@remix-run/react'
-import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
+import {
+	AnimatePresence,
+	motion,
+	useScroll,
+	useTransform,
+	transform,
+} from 'framer-motion'
 import { useRef, useState } from 'react'
 import ExternalLink from '#app/components/external-link'
 import { Logo, LogoCircle, LogoImage, LogoSpinner } from '#app/components/logo'
@@ -22,6 +28,12 @@ const DIV_STYLES = {
 	BORDER_RADIUS_END: '3rem',
 	BORDER_WIDTH_START: '0px',
 	BORDER_WIDTH_END: '1px',
+	BG_OPACITY_START: 0,
+	BG_OPACITY_END: 0.6,
+	BACKDROP_BLUR_START: '0px',
+	BACKDROP_BLUR_END: '12px',
+	SHADOW_OPACITY_START: 0,
+	SHADOW_OPACITY_END: 0.1,
 }
 const NAV_STYLES = {
 	PADDING_START: '0 2rem',
@@ -107,6 +119,30 @@ export function Header({
 				: DIV_STYLES.BORDER_WIDTH_END,
 		],
 	)
+	const divBgColor = useTransform(() => {
+		const transformedValue = transform(
+			scrollYProgress.get(),
+			[0, SCROLL_THRESHOLD],
+			[DIV_STYLES.BG_OPACITY_START, DIV_STYLES.BG_OPACITY_END],
+		)
+		return `hsl(var(--accent) / ${transformedValue})`
+	})
+	const divShadowOpacity = useTransform(() => {
+		const transformedValue = transform(
+			scrollYProgress.get(),
+			[0, SCROLL_THRESHOLD],
+			[DIV_STYLES.SHADOW_OPACITY_START, DIV_STYLES.SHADOW_OPACITY_END],
+		)
+		return `0 10px 15px -3px rgb(0 0 0 / ${transformedValue}), 0 4px 6px -4px rgb(0 0 0 / ${transformedValue})`
+	})
+	const divBackdropBlur = useTransform(() => {
+		const transformedValue = transform(
+			scrollYProgress.get(),
+			[0, SCROLL_THRESHOLD],
+			[DIV_STYLES.BACKDROP_BLUR_START, DIV_STYLES.BACKDROP_BLUR_END],
+		)
+		return `blur(${transformedValue})`
+	})
 	const navPadding = useTransform(
 		scrollYProgress,
 		[0, SCROLL_THRESHOLD],
@@ -145,13 +181,15 @@ export function Header({
 			}}
 		>
 			<motion.div
-				className="mx-auto bg-accent/60 py-4 shadow-lg backdrop-blur-md"
+				className="mx-auto border-solid border-foreground/40 py-4 shadow-lg backdrop-blur-md"
 				style={{
 					borderRadius: divBorderRadius,
 					maxWidth: divMaxWidth,
 					borderWidth: divBorderWidth,
-					borderStyle: 'solid',
-					borderColor: 'hsl(var(--foreground) / 0.4)',
+					backgroundColor: divBgColor,
+					// @ts-expect-error overrides tw variables to animate them
+					'--tw-backdrop-blur': divBackdropBlur,
+					'--tw-shadow': divShadowOpacity,
 				}}
 			>
 				<motion.nav
