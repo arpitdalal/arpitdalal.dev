@@ -153,7 +153,7 @@ function App() {
 			allowIndexing={allowIndexing}
 			env={data.ENV}
 		>
-			<div className="flex h-screen flex-col justify-between">
+			<div className="flex min-h-screen flex-col justify-between">
 				<ClientOnly fallback={<Header />}>{() => <ClientHeader />}</ClientOnly>
 				<main id="main" className="flex-1 pb-20">
 					<Outlet />
