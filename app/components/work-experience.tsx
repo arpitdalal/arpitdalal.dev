@@ -1,6 +1,9 @@
+import { useMouse } from '@reactuses/core'
+import { useEffect, useRef, useState } from 'react'
 import ExternalLink from '#app/components/external-link.js'
 import { Badge } from '#app/components/ui/badge.js'
 import { Icon } from '#app/components/ui/icon.js'
+import { useHints } from '#app/utils/client-hints.js'
 
 export type WorkExperienceCardProps = {
 	title: string
@@ -24,39 +27,72 @@ export function WorkExperienceCard({
 	endDate,
 	technologies,
 }: WorkExperienceCardProps) {
+	const hoverBgRef = useRef<HTMLDivElement>(null)
+	const articleRef = useRef<HTMLDivElement>(null)
+	const mouse = useMouse(articleRef)
+	const { reducedMotion } = useHints()
+	const isReducedMotion = reducedMotion === 'reduce'
+
+	const [offsetX, setOffsetX] = useState(0)
+	const [offsetY, setOffsetY] = useState(0)
+
+	useEffect(() => {
+		const element = hoverBgRef.current
+
+		if (isReducedMotion) return
+		if (!element) return
+		if (!mouse.clientX || !mouse.clientY) return
+
+		const rect = element.getBoundingClientRect()
+		setOffsetX(mouse.clientX - rect.left - rect.width / 2)
+		setOffsetY(mouse.clientY - rect.top - rect.height / 2)
+	}, [mouse.clientX, mouse.clientY, hoverBgRef, isReducedMotion])
+
 	return (
 		<li>
-			<article className="group relative grid py-8 transition-all sm:grid-cols-8 sm:gap-8 md:gap-4 lg:hover:!opacity-100 lg:group-hover/ol:opacity-50">
+			<article
+				ref={articleRef}
+				className="group relative grid py-8 transition-all sm:grid-cols-8 sm:gap-8 md:gap-4 lg:hover:!opacity-100 lg:group-hover/ol:opacity-50"
+			>
+				{/* Hover background */}
 				<div
-					className="absolute -inset-x-4 -inset-y-4 z-0 hidden rounded-md transition motion-reduce:transition-none lg:-inset-x-6 lg:block lg:group-hover:bg-accent/60 lg:group-hover:shadow-[inset_0_1px_0_0_rgba(148,163,184,0.1)] lg:group-hover:drop-shadow-lg"
+					ref={hoverBgRef}
+					style={{
+						['--x' as any]: `${offsetX / 8}px`,
+						['--y' as any]: `${offsetY / 6}px`,
+					}}
+					className="absolute inset-0 z-0 hidden translate-x-[var(--x)] translate-y-[var(--y)] rounded-md transition motion-reduce:transition-none lg:block lg:group-hover:bg-accent/60 lg:group-hover:shadow-[inset_0_1px_0_0_rgba(148,163,184,0.1)] lg:group-hover:drop-shadow-lg"
 					aria-hidden
 				/>
-				<div
-					className="absolute inset-0 mr-4 hidden grid-cols-8 sm:grid"
-					aria-hidden
-				>
-					<div className="col-span-2 border-r-2" />
-					<div className="relative">
-						<div className="absolute -left-[9px] top-10 size-4 rounded-full bg-primary" />
+				{/* Timeline */}
+				<div className="absolute inset-0 mr-4 grid grid-cols-8" aria-hidden>
+					<div className="col-span-2 max-sm:border-l-2 sm:border-r-2">
+						<div className="relative">
+							{/* Bigger circle for the background */}
+							<div className="absolute top-[38px] size-5 rounded-full bg-background max-sm:-left-[11px] sm:-right-[11px] lg:group-hover:bg-accent/60" />
+							{/* Timeline circle */}
+							<div className="absolute top-10 size-4 rounded-full bg-primary max-sm:-left-[9px] sm:-right-[9px]" />
+						</div>
 					</div>
 				</div>
 				<header
-					className="z-10 mb-2 mt-1 font-semibold uppercase tracking-wide text-foreground/70 sm:col-span-2 sm:pr-3 sm:text-right"
+					className="z-10 mb-2 mt-1 font-semibold uppercase tracking-wide text-foreground/70 max-sm:pl-5 sm:col-span-2 sm:pr-3 sm:text-right"
 					aria-label={`${startDate} ${endDate.toLowerCase() === 'present' ? 'till' : 'to'} ${endDate}`}
 				>
 					<time>
 						{startDate} - {endDate}
 					</time>
 				</header>
-				<div className="z-10 sm:col-span-6 sm:pl-3">
+				<div className="z-10 pl-5 sm:col-span-6 sm:pl-3">
 					<h3 className="font-medium">
 						<ExternalLink
 							href={link}
 							className="group/link inline-flex items-baseline font-medium leading-tight"
 							aria-label={`${title} at ${company} (opens in a new tab)`}
 						>
+							{/* This is for making the link clickable on the whole card */}
 							<span
-								className="absolute -inset-x-4 -inset-y-2.5 hidden rounded md:-inset-x-6 md:-inset-y-4 lg:block"
+								className="absolute inset-0 hidden rounded lg:block"
 								aria-hidden
 							></span>
 							<span>
