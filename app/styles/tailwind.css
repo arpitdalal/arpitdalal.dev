@@ -74,6 +74,10 @@
 }
 
 @layer utilities {
+	.bg-gradient-radial {
+		background-image: radial-gradient(closest-side, var(--tw-gradient-stops));
+	}
+
 	.underlined {
 		position: relative;
 		text-decoration: none;

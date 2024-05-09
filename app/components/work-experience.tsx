@@ -18,7 +18,6 @@ export function WorkExperience({
 	workExperience: WorkExperienceCardProps[]
 }) {
 	const sectionRef = useRef<HTMLElement>(null)
-	const h2Ref = useRef<HTMLHeadingElement>(null)
 	const { width } = useWindowSize()
 	const isXSScreen = width < 420
 	const { scrollYProgress } = useScroll({
@@ -42,25 +41,28 @@ export function WorkExperience({
 	)
 
 	return (
-		<section
-			ref={sectionRef}
-			className="container scroll-mt-16 pb-12 pt-32 lg:scroll-mt-24"
-			id="work"
-		>
-			<motion.h2
-				ref={h2Ref}
-				style={{
-					paddingLeft: h2Left,
-				}}
-				className="motion-safe:xs:top-14 sticky z-40 motion-safe:top-12 motion-safe:max-w-fit motion-reduce:top-24 motion-reduce:pt-4 motion-reduce:backdrop-blur motion-safe:sm:top-12"
-			>
-				<HighlightUnderline>Work Experience</HighlightUnderline>
-			</motion.h2>
-			<ol className="group/ol mt-8">
-				{workExperience.map(props => (
-					<WorkExperienceCard key={props.title} {...props} />
-				))}
-			</ol>
+		<section ref={sectionRef} id="work">
+			<div className="relative h-32 overflow-hidden" aria-hidden>
+				<div className="absolute -top-[100px] left-0 right-0 h-56 opacity-40 dark:opacity-20">
+					<div className="bg-gradient-radial h-36 from-violet-600 blur-2xl"></div>
+				</div>
+				<div className="h-px bg-gradient-to-r from-transparent from-30% via-violet-400 to-transparent to-70% opacity-50 dark:via-violet-600"></div>
+			</div>
+			<div className="container pb-12">
+				<motion.h2
+					style={{
+						paddingLeft: h2Left,
+					}}
+					className="motion-safe:xs:top-14 sticky z-40 motion-safe:top-12 motion-safe:max-w-fit motion-reduce:top-24 motion-reduce:pt-4 motion-reduce:backdrop-blur motion-safe:sm:top-12"
+				>
+					<HighlightUnderline>Work Experience</HighlightUnderline>
+				</motion.h2>
+				<ol className="group/ol mt-8">
+					{workExperience.map(props => (
+						<WorkExperienceCard key={props.title} {...props} />
+					))}
+				</ol>
+			</div>
 		</section>
 	)
 }
