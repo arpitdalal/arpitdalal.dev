@@ -52,7 +52,7 @@ export function WorkExperience({
 				style={{
 					paddingLeft: h2Left,
 				}}
-				className="xs:top-14 sticky top-12 z-40 max-w-fit sm:top-12"
+				className="motion-safe:xs:top-14 sticky z-40 motion-safe:top-12 motion-safe:max-w-fit motion-reduce:top-24 motion-reduce:pt-4 motion-reduce:backdrop-blur motion-safe:sm:top-12"
 			>
 				<HighlightUnderline>Work Experience</HighlightUnderline>
 			</motion.h2>
