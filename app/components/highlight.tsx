@@ -2,7 +2,7 @@ import { useMotionValue, motion, useMotionTemplate } from 'framer-motion'
 import React from 'react'
 import { cn } from '#app/utils/misc'
 
-export const HeroHighlight = ({
+export function HeroHighlight({
 	children,
 	className,
 	containerClassName,
@@ -10,7 +10,7 @@ export const HeroHighlight = ({
 	children: React.ReactNode
 	className?: string
 	containerClassName?: string
-}) => {
+}) {
 	let mouseX = useMotionValue(0)
 	let mouseY = useMotionValue(0)
 
@@ -69,13 +69,13 @@ export const HeroHighlight = ({
 	)
 }
 
-export const Highlight = ({
+export function HighlightBackground({
 	children,
 	className,
 }: {
 	children: React.ReactNode
 	className?: string
-}) => {
+}) {
 	return (
 		<motion.span
 			initial={{
@@ -101,5 +101,17 @@ export const Highlight = ({
 		>
 			{children}
 		</motion.span>
+	)
+}
+
+export function HighlightUnderline({
+	children,
+}: {
+	children: React.ReactNode
+}) {
+	return (
+		<span className="underline decoration-primary decoration-wavy">
+			{children}
+		</span>
 	)
 }

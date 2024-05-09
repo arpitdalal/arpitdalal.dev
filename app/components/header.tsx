@@ -8,13 +8,13 @@ import { headerAndFooterCommonLinks } from '#app/root'
 import { useHints } from '#app/utils/client-hints'
 import { capitalize, cn } from '#app/utils/misc'
 
+const SCROLL_THRESHOLD = 0.3
 const HEADER_STYLES = {
 	PADDING_INLINE_START: '0',
 	PADDING_INLINE_END: '2rem',
 	TOP_START: '0',
 	TOP_END: '1.25rem',
 }
-
 const DIV_STYLES = {
 	MAX_WIDTH_START: 4000,
 	MAX_WIDTH_END: 1400,
@@ -23,12 +23,10 @@ const DIV_STYLES = {
 	BORDER_WIDTH_START: '0px',
 	BORDER_WIDTH_END: '1px',
 }
-
 const NAV_STYLES = {
 	PADDING_START: '0 2rem',
 	PADDING_END: '0 1rem',
 }
-
 const TEXT_STYLES = {
 	OPACITY_START: 1,
 	OPACITY_END: 0,
@@ -62,14 +60,13 @@ export function Header({
 }) {
 	const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
 	const { reducedMotion } = useHints()
+	const { scrollYProgress } = useScroll()
 	const isReducedMotion = reducedMotion === 'reduce'
 	const transition = isReducedMotion ? { duration: 0 } : {}
 
-	const { scrollYProgress } = useScroll()
-
 	const headerPaddingInline = useTransform(
 		scrollYProgress,
-		[0, 0.1],
+		[0, SCROLL_THRESHOLD],
 		[
 			HEADER_STYLES.PADDING_INLINE_START,
 			isReducedMotion
@@ -79,7 +76,7 @@ export function Header({
 	)
 	const headerTop = useTransform(
 		scrollYProgress,
-		[0, 0.1],
+		[0, SCROLL_THRESHOLD],
 		[
 			HEADER_STYLES.TOP_START,
 			isReducedMotion ? HEADER_STYLES.TOP_START : HEADER_STYLES.TOP_END,
@@ -87,12 +84,12 @@ export function Header({
 	)
 	const divMaxWidth = useTransform(
 		scrollYProgress,
-		[0, 0.1],
+		[0, SCROLL_THRESHOLD],
 		[windowWidth, isReducedMotion ? windowWidth : DIV_STYLES.MAX_WIDTH_END],
 	)
 	const divBorderRadius = useTransform(
 		scrollYProgress,
-		[0, 0.1],
+		[0, SCROLL_THRESHOLD],
 		[
 			DIV_STYLES.BORDER_RADIUS_START,
 			isReducedMotion
@@ -102,7 +99,7 @@ export function Header({
 	)
 	const divBorderWidth = useTransform(
 		scrollYProgress,
-		[0, 0.1],
+		[0, SCROLL_THRESHOLD],
 		[
 			DIV_STYLES.BORDER_WIDTH_START,
 			isReducedMotion
@@ -112,7 +109,7 @@ export function Header({
 	)
 	const navPadding = useTransform(
 		scrollYProgress,
-		[0, 0.1],
+		[0, SCROLL_THRESHOLD],
 		[
 			NAV_STYLES.PADDING_START,
 			isReducedMotion ? NAV_STYLES.PADDING_START : NAV_STYLES.PADDING_END,
@@ -120,7 +117,7 @@ export function Header({
 	)
 	const textOpacity = useTransform(
 		scrollYProgress,
-		[0, 0.1],
+		[0, SCROLL_THRESHOLD],
 		[
 			TEXT_STYLES.OPACITY_START,
 			isReducedMotion ? TEXT_STYLES.OPACITY_START : TEXT_STYLES.OPACITY_END,
@@ -128,7 +125,7 @@ export function Header({
 	)
 	const textX = useTransform(
 		scrollYProgress,
-		[0, 0.1],
+		[0, SCROLL_THRESHOLD],
 		[
 			TEXT_STYLES.X_START,
 			isReducedMotion ? TEXT_STYLES.X_START : -(spanWidth ?? TEXT_STYLES.X_END),
@@ -141,7 +138,7 @@ export function Header({
 
 	return (
 		<motion.header
-			className="fixed left-0 right-0 z-50 mx-auto w-full"
+			className="fixed left-0 right-0 z-30 mx-auto w-full"
 			style={{
 				paddingInline: headerPaddingInline,
 				top: headerTop,
@@ -181,11 +178,11 @@ export function Header({
 								<LogoImage />
 							</Logo>
 							<motion.span
-								className="underlined xs:text-h2 text-h3"
 								style={{
 									opacity: textOpacity,
 									x: textX,
 								}}
+								className="underlined xs:text-h2 text-h5"
 								ref={spanRef}
 							>
 								Arpit Dalal

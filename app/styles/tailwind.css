@@ -34,7 +34,7 @@
     --card-foreground: 210 20% 98%;
     --popover: 224 71.4% 4.1%;
     --popover-foreground: 210 20% 98%;
-    --primary: 263.4 70% 50.4%;
+    --primary: 255 81.7% 70.4%;
     --primary-foreground: 210 20% 98%;
     --secondary: 215 27.9% 16.9%;
     --secondary-foreground: 210 20% 98%;
@@ -53,15 +53,15 @@
 
 @layer base {
   h1 {
-		@apply text-3xl font-bold lg:text-4xl;
+		@apply text-2xl sm:text-3xl font-bold lg:text-4xl;
 	}
 
 	h2 {
-		@apply text-2xl font-bold lg:text-3xl;
+		@apply text-xl sm:text-2xl font-bold lg:text-3xl;
 	}
 
 	h3 {
-		@apply text-xl lg:text-2xl;
+		@apply text-lg sm:text-xl lg:text-2xl;
 	}
 
 	a {

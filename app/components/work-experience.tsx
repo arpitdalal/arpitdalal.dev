@@ -1,6 +1,69 @@
-import ExternalLink from '#app/components/external-link.js'
-import { Badge } from '#app/components/ui/badge.js'
-import { Icon } from '#app/components/ui/icon.js'
+import { useWindowSize } from '@reactuses/core'
+import { motion, useScroll, useTransform } from 'framer-motion'
+import { useRef } from 'react'
+import ExternalLink from '#app/components/external-link'
+import { HighlightUnderline } from '#app/components/highlight'
+import { Badge } from '#app/components/ui/badge'
+import { Icon } from '#app/components/ui/icon'
+import { useHints } from '#app/utils/client-hints.js'
+
+const H2_STYLES = {
+	LEFT_START: '0px',
+	LEFT_END: '92px',
+	LEFT_END_SMALL_SCREEN: '78px',
+}
+export function WorkExperience({
+	workExperience,
+}: {
+	workExperience: WorkExperienceCardProps[]
+}) {
+	const sectionRef = useRef<HTMLElement>(null)
+	const h2Ref = useRef<HTMLHeadingElement>(null)
+	const { width } = useWindowSize()
+	const isXSScreen = width < 420
+	const { scrollYProgress } = useScroll({
+		target: sectionRef,
+		offset: ['start start', '80px start'],
+	})
+	const { reducedMotion } = useHints()
+	const isReducedMotion = reducedMotion === 'reduce'
+
+	const h2Left = useTransform(
+		scrollYProgress,
+		[0, 1],
+		[
+			H2_STYLES.LEFT_START,
+			isReducedMotion
+				? H2_STYLES.LEFT_START
+				: isXSScreen
+					? H2_STYLES.LEFT_END_SMALL_SCREEN
+					: H2_STYLES.LEFT_END,
+		],
+	)
+
+	return (
+		<section
+			ref={sectionRef}
+			className="container scroll-mt-16 pb-12 pt-32 lg:scroll-mt-24"
+			id="work"
+		>
+			<motion.h2
+				ref={h2Ref}
+				style={{
+					paddingLeft: h2Left,
+				}}
+				className="xs:top-14 sticky top-12 z-40 max-w-fit sm:top-12"
+			>
+				<HighlightUnderline>Work Experience</HighlightUnderline>
+			</motion.h2>
+			<ol className="group/ol mt-8">
+				{workExperience.map(props => (
+					<WorkExperienceCard key={props.title} {...props} />
+				))}
+			</ol>
+		</section>
+	)
+}
 
 export type WorkExperienceCardProps = {
 	title: string
@@ -55,7 +118,7 @@ export function WorkExperienceCard({
 					<h3 className="font-medium">
 						<ExternalLink
 							href={link}
-							className="group/link inline-flex items-baseline font-medium leading-tight"
+							className="group/link inline-flex items-baseline font-medium leading-tight hover:text-primary focus-visible:text-primary"
 							aria-label={`${title} at ${company} (opens in a new tab)`}
 						>
 							{/* This is for making the link clickable on the whole card */}

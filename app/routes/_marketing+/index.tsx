@@ -1,9 +1,9 @@
 import { Link } from '@remix-run/react'
 import ExternalLink from '#app/components/external-link'
-import { HeroHighlight } from '#app/components/hero-highlight'
+import { HeroHighlight, HighlightUnderline } from '#app/components/highlight'
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon'
-import { WorkExperienceCard } from '#app/components/work-experience'
+import { WorkExperience } from '#app/components/work-experience'
 import { socialLinks, workExperience } from '#app/routes/_marketing+/__data'
 
 export default function Index() {
@@ -60,24 +60,7 @@ export default function Index() {
 					</div>
 				</div>
 			</HeroHighlight>
-			<section className="container relative py-12" id="work">
-				<h2>
-					<HighlightUnderline>Work Experience</HighlightUnderline>
-				</h2>
-				<ol className="group/ol mt-8">
-					{workExperience.map(props => (
-						<WorkExperienceCard key={props.title} {...props} />
-					))}
-				</ol>
-			</section>
+			<WorkExperience workExperience={workExperience} />
 		</>
-	)
-}
-
-function HighlightUnderline({ children }: { children: React.ReactNode }) {
-	return (
-		<span className="underline decoration-primary decoration-wavy">
-			{children}
-		</span>
 	)
 }
