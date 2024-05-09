@@ -95,10 +95,7 @@ morgan.token('url', req => decodeURIComponent(req.url ?? ''))
 app.use(
 	morgan('tiny', {
 		skip: (req, res) =>
-			res.statusCode === 200 &&
-			(req.url?.startsWith('/resources/note-images') ||
-				req.url?.startsWith('/resources/user-images') ||
-				req.url?.startsWith('/resources/healthcheck')),
+			res.statusCode === 200 && req.url?.startsWith('/resources/healthcheck'),
 	}),
 )
 
@@ -123,7 +120,7 @@ app.use(
 				].filter(Boolean),
 				'font-src': ["'self'"],
 				'frame-src': ["'self'"],
-				'img-src': ["'self'", 'data:'],
+				'img-src': ["'self'", 'data:', '*.cloudinary.com'],
 				'script-src': [
 					"'strict-dynamic'",
 					"'self'",

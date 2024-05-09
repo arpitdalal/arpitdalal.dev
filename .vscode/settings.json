@@ -19,6 +19,7 @@
   "conventionalCommits.scopes": [
     "project",
     "frontend",
-    "styles"
+    "styles",
+    "headers"
   ]
 }
