@@ -203,7 +203,11 @@ function Footer() {
 					</p>
 					<ul className="mt-3 flex flex-col gap-1">
 						<li>
-							<Link className="underlined text-foreground/70" to="/">
+							<Link
+								className="underlined text-foreground/70"
+								to="/"
+								data-content="Home"
+							>
 								Home
 							</Link>
 						</li>
@@ -217,7 +221,11 @@ function Footer() {
 						</li>
 						{Object.entries(headerAndFooterCommonLinks).map(([key, value]) => (
 							<li key={key}>
-								<Link to={value} className="underlined text-foreground/70">
+								<Link
+									to={value}
+									className="underlined text-foreground/70"
+									data-content={capitalize(key)}
+								>
 									{capitalize(key)}
 								</Link>
 							</li>

@@ -184,6 +184,7 @@ export function Header({
 								}}
 								className="underlined xs:text-h2 text-h5"
 								ref={spanRef}
+								data-content="Arpit Dalal"
 							>
 								Arpit Dalal
 							</motion.span>
@@ -203,6 +204,7 @@ export function Header({
 										<NavLink
 											to={value}
 											className="underlined text-foreground/70"
+											data-content={capitalize(key)}
 										>
 											{capitalize(key)}
 										</NavLink>

@@ -52,6 +52,10 @@
 }
 
 @layer base {
+	html{
+		overscroll-behavior: none;
+	}
+
   h1 {
 		@apply text-2xl sm:text-3xl font-bold lg:text-4xl;
 	}
@@ -72,7 +76,7 @@
 @layer utilities {
 	.underlined {
 		position: relative;
-		text-decoration: none !important;
+		text-decoration: none;
 		white-space: nowrap;
 	}
 
@@ -82,17 +86,21 @@
 
 	.underlined:focus {
 		outline: none;
-		text-decoration: none !important;
+		text-decoration: none;
 	}
 
 	.underlined:after {
-		content: '';
-		height: 2px;
-		transform: scaleX(0);
-		transition: transform 0.25s ease;
-		transform-origin: left;
+		content: attr(data-content);
+		height: auto;
+		color: transparent;
+		transform: scaleY(0);
+		transition: transform 0.1s cubic-bezier(.55, .085, .68, .53);
+		transform-origin: bottom;
+		text-decoration: underline;
+		text-decoration-color: hsl(var(--primary));
+		text-decoration-style: wavy;
 		left: 0;
-		bottom: -4px;
+		top: 0;
 		width: 100%;
 		display: block;
 		position: absolute;
@@ -101,8 +109,7 @@
 	.underlined:hover:after,
 	.underlined:focus:after,
 	.active.underlined:after {
-		background-color: hsl(var(--primary));
-		transform: scaleX(1);
+		transform: scaleY(1);
 	}
 
 	@media (prefers-reduced-motion) {

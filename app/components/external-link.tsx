@@ -23,6 +23,7 @@ export default function ExternalLink({
 			className={cn(applyBaseClassName && baseClassName, className)}
 			target="_blank"
 			rel="noreferrer"
+			data-content={children}
 			{...props}
 		>
 			{children}
