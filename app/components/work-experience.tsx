@@ -1,9 +1,6 @@
-import { useMouse } from '@reactuses/core'
-import { useEffect, useRef, useState } from 'react'
-import ExternalLink from '#app/components/external-link'
-import { Badge } from '#app/components/ui/badge'
-import { Icon } from '#app/components/ui/icon'
-import { useHints } from '#app/utils/client-hints'
+import ExternalLink from '#app/components/external-link.js'
+import { Badge } from '#app/components/ui/badge.js'
+import { Icon } from '#app/components/ui/icon.js'
 
 export type WorkExperienceCardProps = {
 	title: string
@@ -27,41 +24,12 @@ export function WorkExperienceCard({
 	endDate,
 	technologies,
 }: WorkExperienceCardProps) {
-	const hoverBgRef = useRef<HTMLDivElement>(null)
-	const articleRef = useRef<HTMLDivElement>(null)
-	const mouse = useMouse(articleRef)
-	const { reducedMotion } = useHints()
-	const isReducedMotion = reducedMotion === 'reduce'
-
-	const [offsetX, setOffsetX] = useState(0)
-	const [offsetY, setOffsetY] = useState(0)
-
-	useEffect(() => {
-		const element = hoverBgRef.current
-
-		if (isReducedMotion) return
-		if (!element) return
-		if (!mouse.clientX || !mouse.clientY) return
-
-		const rect = element.getBoundingClientRect()
-		setOffsetX(mouse.clientX - rect.left - rect.width / 2)
-		setOffsetY(mouse.clientY - rect.top - rect.height / 2)
-	}, [mouse.clientX, mouse.clientY, hoverBgRef, isReducedMotion])
-
 	return (
 		<li>
-			<article
-				ref={articleRef}
-				className="group relative grid py-8 transition-all sm:grid-cols-8 sm:gap-8 md:gap-4 lg:hover:!opacity-100 lg:group-hover/ol:opacity-50"
-			>
+			<article className="group relative grid py-8 transition-all sm:grid-cols-8 sm:gap-8 md:gap-4 lg:hover:!opacity-100 lg:group-hover/ol:opacity-50">
 				{/* Hover background */}
 				<div
-					ref={hoverBgRef}
-					style={{
-						['--x' as any]: `${offsetX / 8}px`,
-						['--y' as any]: `${offsetY / 6}px`,
-					}}
-					className="absolute inset-0 z-0 hidden translate-x-[var(--x)] translate-y-[var(--y)] rounded-md transition motion-reduce:transition-none lg:block lg:group-hover:bg-accent/60 lg:group-hover:shadow-[inset_0_1px_0_0_rgba(148,163,184,0.1)] lg:group-hover:drop-shadow-lg"
+					className="absolute -inset-x-4 -inset-y-4 z-0 hidden rounded-md transition motion-reduce:transition-none lg:-inset-x-6 lg:block lg:group-hover:bg-accent/60 lg:group-hover:shadow-[inset_0_1px_0_0_rgba(148,163,184,0.1)] lg:group-hover:drop-shadow-lg"
 					aria-hidden
 				/>
 				{/* Timeline */}
@@ -92,7 +60,7 @@ export function WorkExperienceCard({
 						>
 							{/* This is for making the link clickable on the whole card */}
 							<span
-								className="absolute inset-0 hidden rounded lg:block"
+								className="absolute -inset-x-4 -inset-y-2.5 hidden rounded md:-inset-x-6 md:-inset-y-4 lg:block"
 								aria-hidden
 							></span>
 							<span>
