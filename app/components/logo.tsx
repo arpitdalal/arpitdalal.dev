@@ -1,4 +1,4 @@
-import { cn } from '#app/utils/misc.tsx'
+import { cn } from '#app/utils/misc'
 
 export function Logo({
 	className,

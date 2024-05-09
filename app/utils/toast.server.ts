@@ -1,7 +1,7 @@
 import { createId as cuid } from '@paralleldrive/cuid2'
 import { createCookieSessionStorage, redirect } from '@remix-run/node'
 import { z } from 'zod'
-import { combineHeaders } from './misc.tsx'
+import { combineHeaders } from './misc'
 
 export const toastKey = 'toast'
 

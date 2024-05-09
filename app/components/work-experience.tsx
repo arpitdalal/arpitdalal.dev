@@ -1,9 +1,9 @@
 import { useMouse } from '@reactuses/core'
 import { useEffect, useRef, useState } from 'react'
-import ExternalLink from '#app/components/external-link.js'
-import { Badge } from '#app/components/ui/badge.js'
-import { Icon } from '#app/components/ui/icon.js'
-import { useHints } from '#app/utils/client-hints.js'
+import ExternalLink from '#app/components/external-link'
+import { Badge } from '#app/components/ui/badge'
+import { Icon } from '#app/components/ui/icon'
+import { useHints } from '#app/utils/client-hints'
 
 export type WorkExperienceCardProps = {
 	title: string

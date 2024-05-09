@@ -17,28 +17,23 @@ import {
 import { withSentry } from '@sentry/remix'
 import { ClientOnly } from 'remix-utils/client-only'
 import { HoneypotProvider } from 'remix-utils/honeypot/react'
-import ExternalLink from '#app/components/external-link.js'
-import { Header, ClientHeader } from '#app/components/header.tsx'
-import {
-	Logo,
-	LogoCircle,
-	LogoImage,
-	LogoSpinner,
-} from '#app/components/logo.tsx'
-import { getSocialMetas } from '#app/utils/seo.ts'
-import { type Theme } from '#types/index.ts'
-import { GeneralErrorBoundary } from './components/error-boundary.tsx'
-import { EpicProgress } from './components/progress-bar.tsx'
-import { useToast } from './components/toaster.tsx'
-import { href as iconsHref } from './components/ui/icon.tsx'
-import { EpicToaster } from './components/ui/sonner.tsx'
+import ExternalLink from '#app/components/external-link'
+import { Header, ClientHeader } from '#app/components/header'
+import { Logo, LogoCircle, LogoImage, LogoSpinner } from '#app/components/logo'
+import { getSocialMetas } from '#app/utils/seo'
+import { type Theme } from '#types/index'
+import { GeneralErrorBoundary } from './components/error-boundary'
+import { EpicProgress } from './components/progress-bar'
+import { useToast } from './components/toaster'
+import { href as iconsHref } from './components/ui/icon'
+import { EpicToaster } from './components/ui/sonner'
 import tailwindStyleSheetUrl from './styles/tailwind.css?url'
-import { ClientHintCheck, getHints } from './utils/client-hints.tsx'
-import { getEnv } from './utils/env.server.ts'
-import { honeypot } from './utils/honeypot.server.ts'
-import { capitalize, getDomainUrl, getUrl } from './utils/misc.tsx'
-import { useNonce } from './utils/nonce-provider.ts'
-import { getToast } from './utils/toast.server.ts'
+import { ClientHintCheck, getHints } from './utils/client-hints'
+import { getEnv } from './utils/env.server'
+import { honeypot } from './utils/honeypot.server'
+import { capitalize, getDomainUrl, getUrl } from './utils/misc'
+import { useNonce } from './utils/nonce-provider'
+import { getToast } from './utils/toast.server'
 
 export const links: LinksFunction = () => {
 	return [

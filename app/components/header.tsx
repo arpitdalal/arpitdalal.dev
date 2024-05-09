@@ -2,16 +2,11 @@ import { useMeasure, useWindowSize } from '@reactuses/core'
 import { Link, NavLink } from '@remix-run/react'
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
 import { useRef, useState } from 'react'
-import ExternalLink from '#app/components/external-link.tsx'
-import {
-	Logo,
-	LogoCircle,
-	LogoImage,
-	LogoSpinner,
-} from '#app/components/logo.tsx'
-import { headerAndFooterCommonLinks } from '#app/root.tsx'
-import { useHints } from '#app/utils/client-hints.tsx'
-import { capitalize, cn } from '#app/utils/misc.tsx'
+import ExternalLink from '#app/components/external-link'
+import { Logo, LogoCircle, LogoImage, LogoSpinner } from '#app/components/logo'
+import { headerAndFooterCommonLinks } from '#app/root'
+import { useHints } from '#app/utils/client-hints'
+import { capitalize, cn } from '#app/utils/misc'
 
 const HEADER_STYLES = {
 	PADDING_INLINE_START: '0',

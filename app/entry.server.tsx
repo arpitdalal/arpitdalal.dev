@@ -9,9 +9,9 @@ import { RemixServer } from '@remix-run/react'
 import * as Sentry from '@sentry/remix'
 import { isbot } from 'isbot'
 import { renderToPipeableStream } from 'react-dom/server'
-import { getEnv, init } from './utils/env.server.ts'
-import { NonceProvider } from './utils/nonce-provider.ts'
-import { makeTimings } from './utils/timing.server.ts'
+import { getEnv, init } from './utils/env.server'
+import { NonceProvider } from './utils/nonce-provider'
+import { makeTimings } from './utils/timing.server'
 
 const ABORT_DELAY = 5000
 
@@ -19,7 +19,7 @@ init()
 global.ENV = getEnv()
 
 if (ENV.MODE === 'production' && ENV.SENTRY_DSN) {
-	import('./utils/monitoring.server.ts').then(({ init }) => init())
+	import('./utils/monitoring.server').then(({ init }) => init())
 }
 
 type DocRequestArgs = Parameters<HandleDocumentRequestFunction>

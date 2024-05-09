@@ -1,6 +1,6 @@
 import { useMotionValue, motion, useMotionTemplate } from 'framer-motion'
 import React from 'react'
-import { cn } from '#app/utils/misc.tsx'
+import { cn } from '#app/utils/misc'
 
 export const HeroHighlight = ({
 	children,

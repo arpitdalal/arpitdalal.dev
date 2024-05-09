@@ -1,4 +1,4 @@
-import { cn } from '#app/utils/misc.js'
+import { cn } from '#app/utils/misc'
 
 interface ExternalLinkProps
 	extends React.AnchorHTMLAttributes<HTMLAnchorElement> {

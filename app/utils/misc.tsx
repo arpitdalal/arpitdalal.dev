@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from 'clsx'
 import { extendTailwindMerge } from 'tailwind-merge'
-import { extendedTheme } from './extended-theme.ts'
+import { extendedTheme } from './extended-theme'
 
 export function getErrorMessage(error: unknown) {
 	if (typeof error === 'string') return error

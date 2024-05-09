@@ -29,7 +29,7 @@ export function init() {
 }
 
 /**
- * This is used in both `entry.server.ts` and `root.tsx` to ensure that
+ * This is used in both `entry.server` and `root` to ensure that
  * the environment variables are set and globally available before the app is
  * started.
  *

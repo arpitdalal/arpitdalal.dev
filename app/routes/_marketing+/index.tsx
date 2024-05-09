@@ -1,10 +1,10 @@
 import { Link } from '@remix-run/react'
-import ExternalLink from '#app/components/external-link.tsx'
-import { HeroHighlight } from '#app/components/hero-highlight.js'
-import { Button } from '#app/components/ui/button.tsx'
-import { Icon } from '#app/components/ui/icon.tsx'
-import { WorkExperienceCard } from '#app/components/work-experience.js'
-import { socialLinks, workExperience } from '#app/routes/_marketing+/__data.js'
+import ExternalLink from '#app/components/external-link'
+import { HeroHighlight } from '#app/components/hero-highlight'
+import { Button } from '#app/components/ui/button'
+import { Icon } from '#app/components/ui/icon'
+import { WorkExperienceCard } from '#app/components/work-experience'
+import { socialLinks, workExperience } from '#app/routes/_marketing+/__data'
 
 export default function Index() {
 	return (

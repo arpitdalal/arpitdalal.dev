@@ -1,5 +1,5 @@
 import { type IconName } from '#app/components/ui/icon'
-import { type WorkExperienceCardProps } from '#app/components/work-experience.js'
+import { type WorkExperienceCardProps } from '#app/components/work-experience'
 
 type SocialLink = {
 	name: string
@@ -39,7 +39,7 @@ export const workExperience = [
 			'Develop production-ready storefronts for millions of users, collaborating with multiple stakeholders to formulate comprehensive plans for product development, testing, and launch.',
 		startDate: 'Aug 2021',
 		endDate: 'Present',
-		technologies: ['React', 'JavaScript', 'Typescript', 'Node.js', 'PHP'],
+		technologies: ['React', 'JavaScript', 'Typescript', 'Node', 'PHP'],
 	},
 	{
 		title: 'Web Developer',
@@ -54,7 +54,7 @@ export const workExperience = [
 			'React',
 			'Typescript',
 			'Bootstrap',
-			'Node.js',
+			'Node',
 			'PHP',
 			'WordPress',
 		],
@@ -72,7 +72,7 @@ export const workExperience = [
 			'React',
 			'Typescript',
 			'Tailwind CSS',
-			'Node.js',
+			'Node',
 			'PHP',
 			'WordPress',
 		],
@@ -83,10 +83,10 @@ export const workExperience = [
 		company: 'Big Surge',
 		location: 'PE, Canada',
 		description:
-			'Collaborate within a dynamic team, contributing to multiple codebases in a fast-paced startup. Utilize React, Next.js, Redux, and TypeScript to craft highly responsive user interfaces.',
+			'Collaborate within a dynamic team, contributing to multiple codebases in a fast-paced startup. Utilize React, Next, Redux, and TypeScript to craft highly responsive user interfaces.',
 		startDate: 'Feb 2019',
 		endDate: 'Jun 2019',
-		technologies: ['React', 'Next.js', 'Typescript', 'Node.js'],
+		technologies: ['React', 'Next', 'Typescript', 'Node'],
 	},
 	{
 		title: 'Junior Developer',
@@ -94,9 +94,9 @@ export const workExperience = [
 		company: 'Auberon',
 		location: 'Remote, Canada',
 		description:
-			'Gained valuable experience and proficiency in HTML, CSS, React, JavaScript, and Node.js, contributing actively to projects and accelerating learning curve.',
+			'Gained valuable experience and proficiency in HTML, CSS, React, JavaScript, and Node, contributing actively to projects and accelerating learning curve.',
 		startDate: 'Feb 2017',
 		endDate: 'May 2018',
-		technologies: ['JavaScript', 'Node.js', 'React', 'HTML', 'CSS'],
+		technologies: ['JavaScript', 'Node', 'React', 'HTML', 'CSS'],
 	},
 ] satisfies WorkExperienceCardProps[]

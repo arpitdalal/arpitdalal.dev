@@ -2,7 +2,7 @@ import svgToDataUri from 'mini-svg-data-uri'
 import { type Config } from 'tailwindcss'
 import animatePlugin from 'tailwindcss-animate'
 import radixPlugin from 'tailwindcss-radix'
-import { extendedTheme } from './app/utils/extended-theme.ts'
+import { extendedTheme } from './app/utils/extended-theme'
 
 const {
 	default: flattenColorPalette,
