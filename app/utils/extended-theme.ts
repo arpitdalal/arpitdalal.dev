@@ -103,8 +103,25 @@ export const extendedTheme = {
 			from: { transform: 'translateY(20px)', opacity: '0' },
 			to: { transform: 'translateY(0px)', opacity: '1' },
 		},
+		'bounce-up': {
+			'0%, 100%': { transform: 'translateY(0)' },
+			'50%': { transform: 'translateY(-25%)' },
+		},
+		slidein: {
+			from: {
+				opacity: '0',
+				transform: 'translateY(-10px)',
+			},
+			to: {
+				opacity: '1',
+				transform: 'translateY(0)',
+			},
+		},
 	},
 	animation: {
-		'reveal-up': 'reveal-up 0.4s cubic-bezier(0.4,0.0,.2,1)',
+		'reveal-up': 'reveal-up 0.4s cubic-bezier(0.4,0.0,0.2,1)',
+		'bounce-up': 'bounce-up 0.4s cubic-bezier(0.4,0.0,0.2,1)',
+		slidein:
+			'slidein 0.4s cubic-bezier(0.4,0.0,0.2,1) var(--slidein-delay, 0) forwards',
 	},
 } satisfies Config['theme']
