@@ -93,7 +93,7 @@ export function WorkExperienceCard({
 					<p className="mt-1 text-foreground/70">{location}</p>
 					<p className="mt-2 leading-normal">{description}</p>
 					<ul
-						className="mt-4 flex flex-wrap space-x-2"
+						className="mt-4 flex flex-wrap gap-2"
 						aria-label="Technologies used"
 					>
 						{technologies.map(technology => (
