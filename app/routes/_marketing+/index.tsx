@@ -11,7 +11,7 @@ export default function Index() {
 		<>
 			<HeroHighlight className="pt-24">
 				<div className="flex flex-col items-center justify-between gap-6">
-					<h1 className="motion-safe:animate-slidein max-w-[15ch] text-center text-6xl opacity-0 [--slidein-delay:0ms] sm:text-8xl">
+					<h1 className="motion-safe:animate-slidein max-w-[15ch] text-center text-6xl [--slidein-delay:0ms] motion-safe:opacity-0 sm:text-8xl">
 						<span className="block text-sm uppercase text-foreground/70">
 							Hello there, I'm
 						</span>
@@ -20,14 +20,14 @@ export default function Index() {
 							<span className="first-letter:text-primary">Dalal</span>
 						</span>
 					</h1>
-					<p className="motion-safe:animate-slidein max-w-[60ch] px-8 text-center text-lg opacity-0 [--slidein-delay:300ms] sm:text-xl">
+					<p className="motion-safe:animate-slidein max-w-[60ch] px-8 text-center text-lg [--slidein-delay:300ms] motion-safe:opacity-0 sm:text-xl">
 						I'm a <HighlightUnderline>software engineer</HighlightUnderline> and
 						a <HighlightUnderline>full-stack developer</HighlightUnderline>{' '}
 						living in the Greater Toronto Area. I have a passion for building
 						web applications and have a strong background in{' '}
 						<HighlightUnderline>front-end development</HighlightUnderline>.
 					</p>
-					<div className="motion-safe:animate-slidein flex gap-5 opacity-0 [--slidein-delay:500ms]">
+					<div className="motion-safe:animate-slidein flex gap-5 [--slidein-delay:500ms] motion-safe:opacity-0">
 						<Button variant="outline" asChild>
 							<Link to="contact">Contact me</Link>
 						</Button>
@@ -46,7 +46,7 @@ export default function Index() {
 							</Link>
 						</Button>
 					</div>
-					<div className="motion-safe:animate-slidein mt-2 flex gap-5 opacity-0 [--slidein-delay:700ms]">
+					<div className="motion-safe:animate-slidein mt-2 flex gap-5 [--slidein-delay:700ms] motion-safe:opacity-0">
 						{socialLinks.map(({ href, name, icon }) => (
 							<Button
 								key={href}
