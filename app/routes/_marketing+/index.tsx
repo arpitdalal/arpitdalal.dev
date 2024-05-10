@@ -66,10 +66,10 @@ export default function Index() {
 			</HeroHighlight>
 			<ClientOnly
 				fallback={
-					<WorkExperience workExperience={workExperience} jSEnabled={false} />
+					<WorkExperience workExperience={workExperience} jsEnabled={false} />
 				}
 			>
-				{() => <WorkExperience workExperience={workExperience} jSEnabled />}
+				{() => <WorkExperience workExperience={workExperience} jsEnabled />}
 			</ClientOnly>
 		</>
 	)

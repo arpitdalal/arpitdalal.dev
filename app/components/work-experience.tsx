@@ -1,5 +1,5 @@
 import { useEventListener, useWindowSize } from '@reactuses/core'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, transform, useScroll, useTransform } from 'framer-motion'
 import { useRef, useState } from 'react'
 import ExternalLink from '#app/components/external-link'
 import { HighlightUnderline } from '#app/components/highlight'
@@ -18,10 +18,10 @@ const H2_STYLES_NO_JS_OR_MOTION_SAFE =
 
 export function WorkExperience({
 	workExperience,
-	jSEnabled,
+	jsEnabled,
 }: {
 	workExperience: WorkExperienceCardProps[]
-	jSEnabled: boolean
+	jsEnabled: boolean
 }) {
 	const sectionRef = useRef<HTMLElement>(null)
 	const { width } = useWindowSize()
@@ -33,18 +33,18 @@ export function WorkExperience({
 	const { reducedMotion } = useHints()
 	const isReducedMotion = reducedMotion === 'reduce'
 
-	const h2Left = useTransform(
-		scrollYProgress,
-		[0, 1],
-		[
-			H2_STYLES.LEFT_START,
-			isReducedMotion || !jSEnabled
-				? H2_STYLES.LEFT_START
-				: isXSScreen
-					? H2_STYLES.LEFT_END_SMALL_SCREEN
-					: H2_STYLES.LEFT_END,
-		],
-	)
+	const h2Left = useTransform(() => {
+		if (isReducedMotion || !jsEnabled) return H2_STYLES.LEFT_START
+
+		return transform(
+			scrollYProgress.get(),
+			[0, 1],
+			[
+				H2_STYLES.LEFT_START,
+				isXSScreen ? H2_STYLES.LEFT_END_SMALL_SCREEN : H2_STYLES.LEFT_END,
+			],
+		)
+	})
 
 	return (
 		<section ref={sectionRef} id="work">
@@ -61,7 +61,7 @@ export function WorkExperience({
 					}}
 					className={cn(
 						'xs:top-14 sticky top-12 z-40 max-w-fit sm:top-12',
-						(!jSEnabled || isReducedMotion) && H2_STYLES_NO_JS_OR_MOTION_SAFE,
+						(!jsEnabled || isReducedMotion) && H2_STYLES_NO_JS_OR_MOTION_SAFE,
 					)}
 				>
 					<HighlightUnderline>Work Experience</HighlightUnderline>

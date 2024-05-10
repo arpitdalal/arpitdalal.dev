@@ -154,8 +154,8 @@ function App() {
 			env={data.ENV}
 		>
 			<div className="flex min-h-screen flex-col justify-between">
-				<ClientOnly fallback={<Header jSEnabled={false} />}>
-					{() => <Header jSEnabled />}
+				<ClientOnly fallback={<Header jsEnabled={false} />}>
+					{() => <Header jsEnabled />}
 				</ClientOnly>
 				<main id="main" className="flex-1 pb-20">
 					<Outlet />
