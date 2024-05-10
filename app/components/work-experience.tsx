@@ -134,7 +134,7 @@ export function WorkExperienceCard({
 									{company}
 									<Icon
 										name="arrow-up-right-outline"
-										className="ml-1 translate-y-px transition-transform group-hover/link:-translate-y-1 group-hover/link:translate-x-1 group-focus-visible/link:-translate-y-1 group-focus-visible/link:translate-x-1 motion-reduce:transition-none"
+										className="ml-1 translate-y-px transition-transform ease-in-out group-hover/link:-translate-y-1 group-hover/link:translate-x-1 group-focus-visible/link:-translate-y-1 group-focus-visible/link:translate-x-1 motion-reduce:transition-none"
 										aria-hidden
 									/>
 								</span>
