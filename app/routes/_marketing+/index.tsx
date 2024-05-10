@@ -11,7 +11,7 @@ export default function Index() {
 		<>
 			<HeroHighlight className="pt-24">
 				<div className="flex flex-col items-center justify-between gap-6">
-					<h1 className="motion-safe:animate-slidein max-w-[15ch] text-center text-6xl [--slidein-delay:0ms] motion-safe:opacity-0 sm:text-8xl">
+					<h1 className="motion-safe:animate-slidein max-w-[15ch] text-center text-6xl [--slidein-delay:100ms] motion-safe:opacity-0 sm:text-8xl">
 						<span className="block text-sm uppercase text-foreground/70">
 							Hello there, I'm
 						</span>
@@ -41,7 +41,7 @@ export default function Index() {
 								<span>Resume</span>
 								<Icon
 									name="download-outline"
-									className="motion-safe:group-hover/resume:animate-bounce-up size-4"
+									className="motion-safe:group-hover/resume:animate-bounce-down size-4"
 								/>
 							</Link>
 						</Button>
