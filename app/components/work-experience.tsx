@@ -1,6 +1,6 @@
-import { useWindowSize } from '@reactuses/core'
+import { useEventListener, useWindowSize } from '@reactuses/core'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import ExternalLink from '#app/components/external-link'
 import { HighlightUnderline } from '#app/components/highlight'
 import { Badge } from '#app/components/ui/badge'
@@ -89,11 +89,45 @@ export function WorkExperienceCard({
 	endDate,
 	technologies,
 }: WorkExperienceCardProps) {
+	const articleRef = useRef<HTMLElement>(null)
+	const { reducedMotion } = useHints()
+	const isReducedMotion = reducedMotion === 'reduce'
+
+	const [offsetX, setOffsetX] = useState(0)
+	const [offsetY, setOffsetY] = useState(0)
+
+	useEventListener(
+		'mousemove',
+		(event: MouseEvent) => {
+			if (!articleRef.current || isReducedMotion) return
+			const hoverBg = articleRef.current
+			const centerX = hoverBg.offsetWidth / 2
+			const centerY = hoverBg.offsetHeight / 2
+
+			console.log({ offsetX: event.offsetX, offsetY: event.offsetY })
+
+			setOffsetX(event.offsetX - centerX)
+			setOffsetY(event.offsetY - centerY)
+		},
+		articleRef,
+	)
+
 	return (
 		<li>
-			<article className="group relative grid py-8 transition-all sm:grid-cols-8 sm:gap-8 md:gap-4 lg:hover:!opacity-100 lg:group-hover/ol:opacity-50">
+			<article
+				ref={articleRef}
+				className="group relative grid py-8 transition-all sm:grid-cols-8 sm:gap-8 md:gap-4 lg:hover:!opacity-100 lg:group-hover/ol:opacity-50"
+			>
 				{/* Hover background */}
 				<div
+					style={{
+						// @ts-expect-error - CSS variables
+						'--motion-factor': isReducedMotion ? 0 : 0.05,
+						'--x-motion': `${offsetX}px`,
+						'--y-motion': `${offsetY}px`,
+						transform: `translate(calc(var(--x-motion) * var(--motion-factor) * -1),calc(var(--y-motion) * var(--motion-factor) * -1))`,
+						transitionTimingFunction: 'var(--in-out-quad)',
+					}}
 					className="absolute -inset-x-4 -inset-y-4 z-0 hidden rounded-md transition motion-reduce:transition-none lg:-inset-x-6 lg:block lg:group-hover:bg-accent/60 lg:group-hover:shadow-[inset_0_1px_0_0_rgba(148,163,184,0.1)] lg:group-hover:drop-shadow-lg"
 					aria-hidden
 				/>
