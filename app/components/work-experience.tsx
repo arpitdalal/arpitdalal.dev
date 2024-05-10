@@ -6,16 +6,22 @@ import { HighlightUnderline } from '#app/components/highlight'
 import { Badge } from '#app/components/ui/badge'
 import { Icon } from '#app/components/ui/icon'
 import { useHints } from '#app/utils/client-hints.js'
+import { cn } from '#app/utils/misc.js'
 
 const H2_STYLES = {
 	LEFT_START: '0px',
 	LEFT_END: '92px',
 	LEFT_END_SMALL_SCREEN: '78px',
 }
+const H2_STYLES_NO_JS_OR_MOTION_SAFE =
+	'xs:top-24 sm:top-24 pt-4 backdrop-blur max-w-full'
+
 export function WorkExperience({
 	workExperience,
+	jSEnabled,
 }: {
 	workExperience: WorkExperienceCardProps[]
+	jSEnabled: boolean
 }) {
 	const sectionRef = useRef<HTMLElement>(null)
 	const { width } = useWindowSize()
@@ -32,7 +38,7 @@ export function WorkExperience({
 		[0, 1],
 		[
 			H2_STYLES.LEFT_START,
-			isReducedMotion
+			isReducedMotion || !jSEnabled
 				? H2_STYLES.LEFT_START
 				: isXSScreen
 					? H2_STYLES.LEFT_END_SMALL_SCREEN
@@ -53,7 +59,10 @@ export function WorkExperience({
 					style={{
 						paddingLeft: h2Left,
 					}}
-					className="motion-safe:xs:top-14 sticky z-40 motion-safe:top-12 motion-safe:max-w-fit motion-reduce:top-24 motion-reduce:pt-4 motion-reduce:backdrop-blur motion-safe:sm:top-12"
+					className={cn(
+						'xs:top-14 sticky top-12 z-40 max-w-fit sm:top-12',
+						(!jSEnabled || isReducedMotion) && H2_STYLES_NO_JS_OR_MOTION_SAFE,
+					)}
 				>
 					<HighlightUnderline>Work Experience</HighlightUnderline>
 				</motion.h2>
@@ -104,8 +113,6 @@ export function WorkExperienceCard({
 			const centerX = hoverBg.offsetWidth / 2
 			const centerY = hoverBg.offsetHeight / 2
 
-			console.log({ offsetX: event.offsetX, offsetY: event.offsetY })
-
 			setOffsetX(event.offsetX - centerX)
 			setOffsetY(event.offsetY - centerY)
 		},
@@ -128,7 +135,7 @@ export function WorkExperienceCard({
 						transform: `translate(calc(var(--x-motion) * var(--motion-factor) * -1),calc(var(--y-motion) * var(--motion-factor) * -1))`,
 						transitionTimingFunction: 'var(--in-out-quad)',
 					}}
-					className="absolute -inset-x-4 -inset-y-4 z-0 hidden rounded-md transition motion-reduce:transition-none lg:-inset-x-6 lg:block lg:group-hover:bg-accent/60 lg:group-hover:shadow-[inset_0_1px_0_0_rgba(148,163,184,0.1)] lg:group-hover:drop-shadow-lg"
+					className="absolute -inset-x-4 -inset-y-4 z-0 hidden rounded-md transition motion-reduce:transition-none lg:-inset-x-6 lg:block motion-safe:lg:group-hover:bg-accent/60 motion-safe:lg:group-hover:shadow-[inset_0_1px_0_0_rgba(148,163,184,0.1)] motion-safe:lg:group-hover:drop-shadow-lg"
 					aria-hidden
 				/>
 				{/* Timeline */}
@@ -168,7 +175,7 @@ export function WorkExperienceCard({
 									{company}
 									<Icon
 										name="arrow-up-right-outline"
-										className="ml-1 translate-y-px transition-transform ease-in-out group-hover/link:-translate-y-1 group-hover/link:translate-x-1 group-focus-visible/link:-translate-y-1 group-focus-visible/link:translate-x-1 motion-reduce:transition-none"
+										className="ml-1 ease-in-out motion-safe:translate-y-px motion-safe:transition-transform motion-safe:group-hover/link:-translate-y-1 motion-safe:group-hover/link:translate-x-1 motion-safe:group-focus-visible/link:-translate-y-1 motion-safe:group-focus-visible/link:translate-x-1"
 										aria-hidden
 									/>
 								</span>

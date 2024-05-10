@@ -1,4 +1,5 @@
 import { Link } from '@remix-run/react'
+import { ClientOnly } from 'remix-utils/client-only'
 import ExternalLink from '#app/components/external-link'
 import { HeroHighlight, HighlightUnderline } from '#app/components/highlight'
 import { Button } from '#app/components/ui/button'
@@ -63,7 +64,13 @@ export default function Index() {
 					</div>
 				</div>
 			</HeroHighlight>
-			<WorkExperience workExperience={workExperience} />
+			<ClientOnly
+				fallback={
+					<WorkExperience workExperience={workExperience} jSEnabled={false} />
+				}
+			>
+				{() => <WorkExperience workExperience={workExperience} jSEnabled />}
+			</ClientOnly>
 		</>
 	)
 }

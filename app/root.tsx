@@ -18,7 +18,7 @@ import { withSentry } from '@sentry/remix'
 import { ClientOnly } from 'remix-utils/client-only'
 import { HoneypotProvider } from 'remix-utils/honeypot/react'
 import ExternalLink from '#app/components/external-link'
-import { Header, ClientHeader } from '#app/components/header'
+import { Header } from '#app/components/header'
 import { Logo, LogoCircle, LogoImage, LogoSpinner } from '#app/components/logo'
 import { getSocialMetas } from '#app/utils/seo'
 import { type Theme } from '#types/index'
@@ -154,7 +154,9 @@ function App() {
 			env={data.ENV}
 		>
 			<div className="flex min-h-screen flex-col justify-between">
-				<ClientOnly fallback={<Header />}>{() => <ClientHeader />}</ClientOnly>
+				<ClientOnly fallback={<Header jSEnabled={false} />}>
+					{() => <Header jSEnabled />}
+				</ClientOnly>
 				<main id="main" className="flex-1 pb-20">
 					<Outlet />
 				</main>

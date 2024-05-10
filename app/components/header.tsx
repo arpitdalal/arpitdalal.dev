@@ -61,65 +61,83 @@ const mobileButtonVariants = {
 	},
 }
 
-export function Header({
-	spanRef,
-	spanWidth,
-	windowWidth = DIV_STYLES.MAX_WIDTH_START,
-}: {
-	spanRef?: React.RefObject<HTMLSpanElement>
-	spanWidth?: number
-	windowWidth?: number
-}) {
+export function Header({ jSEnabled }: { jSEnabled: boolean }) {
 	const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
+	const { width: windowWidth } = useWindowSize()
 	const { reducedMotion } = useHints()
 	const { scrollYProgress } = useScroll()
 	const isReducedMotion = reducedMotion === 'reduce'
 	const transition = isReducedMotion ? { duration: 0 } : {}
+	const spanRef = useRef<HTMLSpanElement>(null)
+	const [rect] = useMeasure(spanRef)
+	const spanWidth = rect.width
 
-	const headerPaddingInline = useTransform(
-		scrollYProgress,
-		[0, SCROLL_THRESHOLD],
-		[
-			HEADER_STYLES.PADDING_INLINE_START,
-			isReducedMotion
-				? HEADER_STYLES.PADDING_INLINE_START
-				: HEADER_STYLES.PADDING_INLINE_END,
-		],
-	)
-	const headerTop = useTransform(
-		scrollYProgress,
-		[0, SCROLL_THRESHOLD],
-		[
-			HEADER_STYLES.TOP_START,
-			isReducedMotion ? HEADER_STYLES.TOP_START : HEADER_STYLES.TOP_END,
-		],
-	)
-	const divMaxWidth = useTransform(
-		scrollYProgress,
-		[0, SCROLL_THRESHOLD],
-		[windowWidth, isReducedMotion ? windowWidth : DIV_STYLES.MAX_WIDTH_END],
-	)
-	const divBorderRadius = useTransform(
-		scrollYProgress,
-		[0, SCROLL_THRESHOLD],
-		[
-			DIV_STYLES.BORDER_RADIUS_START,
-			isReducedMotion
-				? DIV_STYLES.BORDER_RADIUS_START
-				: DIV_STYLES.BORDER_RADIUS_END,
-		],
-	)
-	const divBorderWidth = useTransform(
-		scrollYProgress,
-		[0, SCROLL_THRESHOLD],
-		[
-			DIV_STYLES.BORDER_WIDTH_START,
-			isReducedMotion
-				? DIV_STYLES.BORDER_WIDTH_START
-				: DIV_STYLES.BORDER_WIDTH_END,
-		],
-	)
+	const headerPaddingInline = useTransform(() => {
+		if (!jSEnabled) return HEADER_STYLES.PADDING_INLINE_START
+
+		return transform(
+			scrollYProgress.get(),
+			[0, SCROLL_THRESHOLD],
+			[
+				HEADER_STYLES.PADDING_INLINE_START,
+				isReducedMotion
+					? HEADER_STYLES.PADDING_INLINE_START
+					: HEADER_STYLES.PADDING_INLINE_END,
+			],
+		)
+	})
+	const headerTop = useTransform(() => {
+		if (!jSEnabled) return HEADER_STYLES.TOP_START
+
+		return transform(
+			scrollYProgress.get(),
+			[0, SCROLL_THRESHOLD],
+			[
+				HEADER_STYLES.TOP_START,
+				isReducedMotion ? HEADER_STYLES.TOP_START : HEADER_STYLES.TOP_END,
+			],
+		)
+	})
+	const divMaxWidth = useTransform(() => {
+		if (!jSEnabled) return DIV_STYLES.MAX_WIDTH_START
+
+		return transform(
+			scrollYProgress.get(),
+			[0, SCROLL_THRESHOLD],
+			[windowWidth, isReducedMotion ? windowWidth : DIV_STYLES.MAX_WIDTH_END],
+		)
+	})
+	const divBorderRadius = useTransform(() => {
+		if (!jSEnabled) return DIV_STYLES.BORDER_RADIUS_START
+
+		return transform(
+			scrollYProgress.get(),
+			[0, SCROLL_THRESHOLD],
+			[
+				DIV_STYLES.BORDER_RADIUS_START,
+				isReducedMotion
+					? DIV_STYLES.BORDER_RADIUS_START
+					: DIV_STYLES.BORDER_RADIUS_END,
+			],
+		)
+	})
+	const divBorderWidth = useTransform(() => {
+		if (!jSEnabled) return DIV_STYLES.BORDER_WIDTH_START
+
+		return transform(
+			scrollYProgress.get(),
+			[0, SCROLL_THRESHOLD],
+			[
+				DIV_STYLES.BORDER_WIDTH_START,
+				isReducedMotion
+					? DIV_STYLES.BORDER_WIDTH_START
+					: DIV_STYLES.BORDER_WIDTH_END,
+			],
+		)
+	})
 	const divBgColor = useTransform(() => {
+		if (!jSEnabled) return `hsl(var(--accent) / ${DIV_STYLES.BG_OPACITY_END})`
+
 		const transformedValue = transform(
 			scrollYProgress.get(),
 			[0, SCROLL_THRESHOLD],
@@ -128,6 +146,9 @@ export function Header({
 		return `hsl(var(--accent) / ${transformedValue})`
 	})
 	const divShadowOpacity = useTransform(() => {
+		if (!jSEnabled)
+			return `0 10px 15px -3px rgb(0 0 0 / ${DIV_STYLES.SHADOW_OPACITY_END}), 0 4px 6px -4px rgb(0 0 0 / ${DIV_STYLES.SHADOW_OPACITY_END})`
+
 		const transformedValue = transform(
 			scrollYProgress.get(),
 			[0, SCROLL_THRESHOLD],
@@ -136,6 +157,8 @@ export function Header({
 		return `0 10px 15px -3px rgb(0 0 0 / ${transformedValue}), 0 4px 6px -4px rgb(0 0 0 / ${transformedValue})`
 	})
 	const divBackdropBlur = useTransform(() => {
+		if (!jSEnabled) return `blur(${DIV_STYLES.BACKDROP_BLUR_END})`
+
 		const transformedValue = transform(
 			scrollYProgress.get(),
 			[0, SCROLL_THRESHOLD],
@@ -143,30 +166,44 @@ export function Header({
 		)
 		return `blur(${transformedValue})`
 	})
-	const navPadding = useTransform(
-		scrollYProgress,
-		[0, SCROLL_THRESHOLD],
-		[
-			NAV_STYLES.PADDING_START,
-			isReducedMotion ? NAV_STYLES.PADDING_START : NAV_STYLES.PADDING_END,
-		],
-	)
-	const textOpacity = useTransform(
-		scrollYProgress,
-		[0, SCROLL_THRESHOLD],
-		[
-			TEXT_STYLES.OPACITY_START,
-			isReducedMotion ? TEXT_STYLES.OPACITY_START : TEXT_STYLES.OPACITY_END,
-		],
-	)
-	const textX = useTransform(
-		scrollYProgress,
-		[0, SCROLL_THRESHOLD],
-		[
-			TEXT_STYLES.X_START,
-			isReducedMotion ? TEXT_STYLES.X_START : -(spanWidth ?? TEXT_STYLES.X_END),
-		],
-	)
+	const navPadding = useTransform(() => {
+		if (!jSEnabled) return NAV_STYLES.PADDING_START
+
+		return transform(
+			scrollYProgress.get(),
+			[0, SCROLL_THRESHOLD],
+			[
+				NAV_STYLES.PADDING_START,
+				isReducedMotion ? NAV_STYLES.PADDING_START : NAV_STYLES.PADDING_END,
+			],
+		)
+	})
+	const textOpacity = useTransform(() => {
+		if (!jSEnabled) return TEXT_STYLES.OPACITY_START
+
+		return transform(
+			scrollYProgress.get(),
+			[0, SCROLL_THRESHOLD],
+			[
+				TEXT_STYLES.OPACITY_START,
+				isReducedMotion ? TEXT_STYLES.OPACITY_START : TEXT_STYLES.OPACITY_END,
+			],
+		)
+	})
+	const textX = useTransform(() => {
+		if (!jSEnabled) return TEXT_STYLES.X_START
+
+		return transform(
+			scrollYProgress.get(),
+			[0, SCROLL_THRESHOLD],
+			[
+				TEXT_STYLES.X_START,
+				isReducedMotion
+					? TEXT_STYLES.X_START
+					: -(spanWidth ?? TEXT_STYLES.X_END),
+			],
+		)
+	})
 
 	const toggleMobileNav = () => {
 		setIsMobileNavOpen(prevIsMobileNavOpen => !prevIsMobileNavOpen)
@@ -342,12 +379,4 @@ export function Header({
 			</motion.div>
 		</motion.header>
 	)
-}
-
-export function ClientHeader() {
-	const { width } = useWindowSize()
-	const spanRef = useRef<HTMLSpanElement>(null)
-	const [rect] = useMeasure(spanRef)
-
-	return <Header spanRef={spanRef} spanWidth={rect.width} windowWidth={width} />
 }
