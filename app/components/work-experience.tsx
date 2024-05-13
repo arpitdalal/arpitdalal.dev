@@ -15,6 +15,10 @@ const H2_STYLES = {
 }
 const H2_STYLES_NO_JS_OR_MOTION_SAFE =
 	'xs:top-24 sm:top-24 pt-4 backdrop-blur max-w-full'
+const DIV_STYLES = {
+	HEIGHT_START: '0px',
+	HEIGHT_END: '100%',
+}
 
 export function WorkExperience({
 	workExperience,
@@ -24,11 +28,16 @@ export function WorkExperience({
 	jsEnabled: boolean
 }) {
 	const sectionRef = useRef<HTMLElement>(null)
+	const olRef = useRef<HTMLOListElement>(null)
 	const { width } = useWindowSize()
 	const isXSScreen = width < 420
-	const { scrollYProgress } = useScroll({
+	const { scrollYProgress: scrollYProgressOfSection } = useScroll({
 		target: sectionRef,
 		offset: ['start start', '80px start'],
+	})
+	const { scrollYProgress: scrollYProgressOfOl } = useScroll({
+		target: olRef,
+		offset: ['start center', 'end center'],
 	})
 	const { reducedMotion } = useHints()
 	const isReducedMotion = reducedMotion === 'reduce'
@@ -37,12 +46,21 @@ export function WorkExperience({
 		if (isReducedMotion || !jsEnabled) return H2_STYLES.LEFT_START
 
 		return transform(
-			scrollYProgress.get(),
+			scrollYProgressOfSection.get(),
 			[0, 1],
 			[
 				H2_STYLES.LEFT_START,
 				isXSScreen ? H2_STYLES.LEFT_END_SMALL_SCREEN : H2_STYLES.LEFT_END,
 			],
+		)
+	})
+	const divHeight = useTransform(() => {
+		if (isReducedMotion || !jsEnabled) return DIV_STYLES.HEIGHT_START
+
+		return transform(
+			scrollYProgressOfOl.get(),
+			[0, 1],
+			[DIV_STYLES.HEIGHT_START, DIV_STYLES.HEIGHT_END],
 		)
 	})
 
@@ -60,13 +78,27 @@ export function WorkExperience({
 						paddingLeft: h2Left,
 					}}
 					className={cn(
-						'xs:top-14 sticky top-12 z-40 max-w-fit sm:top-12',
+						'sticky top-12 z-40 max-w-fit xs:top-14 sm:top-12',
 						(!jsEnabled || isReducedMotion) && H2_STYLES_NO_JS_OR_MOTION_SAFE,
 					)}
 				>
 					<HighlightUnderline>Work Experience</HighlightUnderline>
 				</motion.h2>
-				<ol className="group/ol mt-8">
+				<ol ref={olRef} className="group/ol relative mt-8">
+					{/* Background Timeline */}
+					<div className="absolute inset-0 grid grid-cols-8" aria-hidden>
+						<div className="col-span-2 max-sm:border-l-2 sm:border-r-2" />
+					</div>
+					{/* Active Timeline */}
+					<motion.div
+						className="absolute inset-0 grid grid-cols-8"
+						style={{
+							height: divHeight,
+						}}
+						aria-hidden
+					>
+						<div className="pointer-events-none z-10 col-span-2 border-primary max-sm:border-l-2 sm:border-r-2" />
+					</motion.div>
 					{workExperience.map(props => (
 						<WorkExperienceCard key={props.title} {...props} />
 					))}
@@ -101,6 +133,8 @@ export function WorkExperienceCard({
 	const articleRef = useRef<HTMLElement>(null)
 	const { reducedMotion } = useHints()
 	const isReducedMotion = reducedMotion === 'reduce'
+	const { width } = useWindowSize()
+	const isMdScreen = width < 1024
 
 	const [offsetX, setOffsetX] = useState(0)
 	const [offsetY, setOffsetY] = useState(0)
@@ -108,7 +142,9 @@ export function WorkExperienceCard({
 	useEventListener(
 		'mousemove',
 		(event: MouseEvent) => {
+			if (isMdScreen) return
 			if (!articleRef.current || isReducedMotion) return
+
 			const hoverBg = articleRef.current
 			const centerX = hoverBg.offsetWidth / 2
 			const centerY = hoverBg.offsetHeight / 2
@@ -135,17 +171,17 @@ export function WorkExperienceCard({
 						transform: `translate(calc(var(--x-motion) * var(--motion-factor) * -1),calc(var(--y-motion) * var(--motion-factor) * -1))`,
 						transitionTimingFunction: 'var(--in-out-quad)',
 					}}
-					className="absolute -inset-x-4 -inset-y-4 z-0 hidden rounded-md transition motion-reduce:transition-none lg:-inset-x-6 lg:block motion-safe:lg:group-hover:bg-accent/60 motion-safe:lg:group-hover:shadow-[inset_0_1px_0_0_rgba(148,163,184,0.1)] motion-safe:lg:group-hover:drop-shadow-lg"
+					className="absolute inset-0 z-0 hidden rounded-md transition motion-reduce:transition-none lg:block motion-safe:lg:group-hover:bg-accent/60 motion-safe:lg:group-hover:shadow-[inset_0_1px_0_0_rgba(148,163,184,0.1)] motion-safe:lg:group-hover:drop-shadow-lg"
 					aria-hidden
 				/>
 				{/* Timeline */}
-				<div className="absolute inset-0 mr-4 grid grid-cols-8" aria-hidden>
-					<div className="col-span-2 max-sm:border-l-2 sm:border-r-2">
+				<div className="absolute inset-0 grid grid-cols-8" aria-hidden>
+					<div className="col-span-2">
 						<div className="relative">
 							{/* Bigger circle for the background */}
-							<div className="absolute top-[38px] size-5 rounded-full bg-background max-sm:-left-[11px] sm:-right-[11px] lg:group-hover:bg-accent/60" />
+							<div className="absolute top-[38px] z-20 size-5 rounded-full bg-background max-sm:-left-[9px] sm:-right-[9px]" />
 							{/* Timeline circle */}
-							<div className="absolute top-10 size-4 rounded-full bg-primary max-sm:-left-[9px] sm:-right-[9px]" />
+							<div className="absolute top-10 z-20 size-4 rounded-full bg-primary max-sm:-left-[7px] sm:-right-[7px]" />
 						</div>
 					</div>
 				</div>
