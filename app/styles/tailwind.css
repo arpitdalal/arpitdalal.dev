@@ -3,65 +3,65 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 224 71.4% 4.1%;
-    --card: 0 0% 100%;
-    --card-foreground: 224 71.4% 4.1%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 71.4% 4.1%;
-    --primary: 262.1 83.3% 57.8%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 220 8.9% 46.1%;
-    --accent: 220 14.3% 95.9%;
-    --accent-foreground: 220.9 39.3% 11%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
+	:root {
+		--background: 0 0% 100%;
+		--foreground: 224 71.4% 4.1%;
+		--card: 0 0% 100%;
+		--card-foreground: 224 71.4% 4.1%;
+		--popover: 0 0% 100%;
+		--popover-foreground: 224 71.4% 4.1%;
+		--primary: 262.1 83.3% 57.8%;
+		--primary-foreground: 210 20% 98%;
+		--secondary: 220 14.3% 95.9%;
+		--secondary-foreground: 220.9 39.3% 11%;
+		--muted: 220 14.3% 95.9%;
+		--muted-foreground: 220 8.9% 46.1%;
+		--accent: 220 14.3% 95.9%;
+		--accent-foreground: 220.9 39.3% 11%;
+		--destructive: 0 84.2% 60.2%;
+		--destructive-foreground: 210 20% 98%;
+		--border: 220 13% 91%;
+		--input: 220 13% 91%;
 		--input-invalid: 0 84.2% 60.2%;
-    --ring: 262.1 83.3% 57.8%;
-    --radius: 0.3rem;
-  }
+		--ring: 262.1 83.3% 57.8%;
+		--radius: 0.3rem;
+	}
 
-  .dark {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 20% 98%;
-    --card: 224 71.4% 4.1%;
-    --card-foreground: 210 20% 98%;
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 255 81.7% 70.4%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 215 27.9% 16.9%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-    --accent: 215 27.9% 16.9%;
-    --accent-foreground: 210 20% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
+	.dark {
+		--background: 224 71.4% 4.1%;
+		--foreground: 210 20% 98%;
+		--card: 224 71.4% 4.1%;
+		--card-foreground: 210 20% 98%;
+		--popover: 224 71.4% 4.1%;
+		--popover-foreground: 210 20% 98%;
+		--primary: 255 81.7% 70.4%;
+		--primary-foreground: 210 20% 98%;
+		--secondary: 215 27.9% 16.9%;
+		--secondary-foreground: 210 20% 98%;
+		--muted: 215 27.9% 16.9%;
+		--muted-foreground: 217.9 10.6% 64.9%;
+		--accent: 215 27.9% 16.9%;
+		--accent-foreground: 210 20% 98%;
+		--destructive: 0 62.8% 30.6%;
+		--destructive-foreground: 210 20% 98%;
+		--border: 215 27.9% 16.9%;
+		--input: 215 27.9% 16.9%;
 		--input-invalid: 0 62.8% 30.6%;
-    --ring: 263.4 70% 50.4%;
-  }
+		--ring: 263.4 70% 50.4%;
+	}
 }
 
 @layer base {
-	html{
+	html {
 		overscroll-behavior: none;
 	}
 
-  h1 {
-		@apply text-2xl sm:text-3xl font-bold lg:text-4xl;
+	h1 {
+		@apply text-2xl font-bold sm:text-3xl lg:text-4xl;
 	}
 
 	h2 {
-		@apply text-xl sm:text-2xl font-bold lg:text-3xl;
+		@apply text-xl font-bold sm:text-2xl lg:text-3xl;
 	}
 
 	h3 {
@@ -75,26 +75,26 @@
 
 @layer utilities {
 	:root {
-		--ease-in-quad: cubic-bezier(.55, .085, .68, .53);
-		--ease-in-cubic: cubic-bezier(.550, .055, .675, .19);
-		--ease-in-quart: cubic-bezier(.895, .03, .685, .22);
-		--ease-in-quint: cubic-bezier(.755, .05, .855, .06);
-		--ease-in-expo: cubic-bezier(.95, .05, .795, .035);
-		--ease-in-circ: cubic-bezier(.6, .04, .98, .335);
-	 
-		--ease-out-quad: cubic-bezier(.25, .46, .45, .94);
-		--ease-out-cubic: cubic-bezier(.215, .61, .355, 1);
-		--ease-out-quart: cubic-bezier(.165, .84, .44, 1);
-		--ease-out-quint: cubic-bezier(.23, 1, .32, 1);
-		--ease-out-expo: cubic-bezier(.19, 1, .22, 1);
-		--ease-out-circ: cubic-bezier(.075, .82, .165, 1);
-	 
-		--ease-in-out-quad: cubic-bezier(.455, .03, .515, .955);
-		--ease-in-out-cubic: cubic-bezier(.645, .045, .355, 1);
-		--ease-in-out-quart: cubic-bezier(.77, 0, .175, 1);
-		--ease-in-out-quint: cubic-bezier(.86, 0, .07, 1);
+		--ease-in-quad: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+		--ease-in-cubic: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+		--ease-in-quart: cubic-bezier(0.895, 0.03, 0.685, 0.22);
+		--ease-in-quint: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+		--ease-in-expo: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+		--ease-in-circ: cubic-bezier(0.6, 0.04, 0.98, 0.335);
+
+		--ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+		--ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+		--ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
+		--ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+		--ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+		--ease-out-circ: cubic-bezier(0.075, 0.82, 0.165, 1);
+
+		--ease-in-out-quad: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+		--ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
+		--ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
+		--ease-in-out-quint: cubic-bezier(0.86, 0, 0.07, 1);
 		--ease-in-out-expo: cubic-bezier(1, 0, 0, 1);
-		--ease-in-out-circ: cubic-bezier(.785, .135, .15, .86);
+		--ease-in-out-circ: cubic-bezier(0.785, 0.135, 0.15, 0.86);
 	}
 
 	.bg-gradient-radial {
@@ -107,9 +107,9 @@
 		white-space: nowrap;
 	}
 
-  .active.underlined {
-    color: hsl(var(--primary));
-  }
+	.active.underlined {
+		color: hsl(var(--primary));
+	}
 
 	.underlined:focus {
 		outline: none;

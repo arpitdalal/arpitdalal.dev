@@ -229,7 +229,7 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
 									opacity: textOpacity,
 									x: textX,
 								}}
-								className="underlined xs:text-h2 text-h5"
+								className="underlined text-h5 xs:text-h2"
 								ref={spanRef}
 								data-content="Arpit Dalal"
 							>

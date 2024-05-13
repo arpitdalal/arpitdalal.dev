@@ -12,7 +12,7 @@ export default function Index() {
 		<>
 			<HeroHighlight className="pt-24">
 				<div className="flex flex-col items-center justify-between gap-6">
-					<h1 className="motion-safe:animate-slidein max-w-[15ch] text-center text-6xl [--slidein-delay:100ms] motion-safe:opacity-0 sm:text-8xl">
+					<h1 className="max-w-[15ch] text-center text-6xl [--slidein-delay:100ms] motion-safe:animate-slidein motion-safe:opacity-0 sm:text-8xl">
 						<span className="block text-sm uppercase text-foreground/70">
 							Hello there, I'm
 						</span>
@@ -21,14 +21,14 @@ export default function Index() {
 							<span className="first-letter:text-primary">Dalal</span>
 						</span>
 					</h1>
-					<p className="motion-safe:animate-slidein max-w-[60ch] px-8 text-center text-lg [--slidein-delay:300ms] motion-safe:opacity-0 sm:text-xl">
+					<p className="max-w-[60ch] px-8 text-center text-lg [--slidein-delay:300ms] motion-safe:animate-slidein motion-safe:opacity-0 sm:text-xl">
 						I'm a <HighlightUnderline>software engineer</HighlightUnderline> and
 						a <HighlightUnderline>full-stack developer</HighlightUnderline>{' '}
 						living in the Greater Toronto Area. I have a passion for building
 						web applications and have a strong background in{' '}
 						<HighlightUnderline>front-end development</HighlightUnderline>.
 					</p>
-					<div className="motion-safe:animate-slidein flex gap-5 [--slidein-delay:500ms] motion-safe:opacity-0">
+					<div className="flex gap-5 [--slidein-delay:500ms] motion-safe:animate-slidein motion-safe:opacity-0">
 						<Button variant="outline" asChild>
 							<Link to="contact">Contact me</Link>
 						</Button>
@@ -42,12 +42,12 @@ export default function Index() {
 								<span>Resume</span>
 								<Icon
 									name="download-outline"
-									className="motion-safe:group-hover/resume:animate-bounce-down size-4"
+									className="size-4 motion-safe:group-hover/resume:animate-bounce-down"
 								/>
 							</Link>
 						</Button>
 					</div>
-					<div className="motion-safe:animate-slidein mt-2 flex gap-5 [--slidein-delay:700ms] motion-safe:opacity-0">
+					<div className="mt-2 flex gap-5 [--slidein-delay:700ms] motion-safe:animate-slidein motion-safe:opacity-0">
 						{socialLinks.map(({ href, name, icon }) => (
 							<Button
 								key={href}

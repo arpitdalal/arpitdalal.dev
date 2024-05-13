@@ -198,7 +198,7 @@ function Footer() {
 						<LogoImage />
 					</Logo>
 					<span
-						className="underlined xs:text-h2 text-h5"
+						className="underlined text-h5 xs:text-h2"
 						data-content="Arpit Dalal"
 					>
 						Arpit Dalal

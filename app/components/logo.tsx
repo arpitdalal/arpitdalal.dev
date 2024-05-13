@@ -10,7 +10,7 @@ export function Logo({
 	return (
 		<div
 			className={cn(
-				'xs:size-16 relative inline-flex size-12 items-end justify-center rounded-full',
+				'relative inline-flex size-12 items-end justify-center rounded-full xs:size-16',
 				className,
 			)}
 			aria-hidden
@@ -28,7 +28,7 @@ export function LogoSpinner({ className }: { className?: string }) {
 				className,
 			)}
 		>
-			<svg className="xs:size-16 size-12" viewBox="0 0 56 56">
+			<svg className="size-12 xs:size-16" viewBox="0 0 56 56">
 				<path
 					d="M29.465,0.038373A28,28,0,0,1,52.948,40.712L51.166,39.804A26,26,0,0,0,29.361,2.0356Z"
 					className="fill-current"
@@ -50,7 +50,7 @@ export function LogoCircle({ className }: { className?: string }) {
 	return (
 		<>
 			<svg
-				className={cn('xs:size-16 absolute size-12 cursor-pointer', className)}
+				className={cn('absolute size-12 cursor-pointer xs:size-16', className)}
 				viewBox="0 0 56 56"
 			>
 				<circle cx="28" cy="28" r="28" className="fill-primary" />
@@ -58,7 +58,7 @@ export function LogoCircle({ className }: { className?: string }) {
 			<img
 				src="https://res.cloudinary.com/arpitdalal-dev/image/upload/w_120,h_120/v1714157047/arpitdalal-dev/shadow_v2njin.png"
 				alt="Shadow"
-				className="xs:size-16 absolute size-12 cursor-pointer"
+				className="absolute size-12 cursor-pointer xs:size-16"
 			/>
 		</>
 	)
@@ -70,7 +70,7 @@ export function LogoImage({ className }: { className?: string }) {
 			src="https://res.cloudinary.com/arpitdalal-dev/image/upload/w_120,h_120/v1713461933/arpitdalal-dev/arpit-logo-rounded_chwr4o.webp"
 			alt="Arpit Dalal Logo"
 			className={cn(
-				'xs:size-[60px] relative bottom-[2px] size-[44px] cursor-pointer select-none rounded-full',
+				'relative bottom-[2px] size-[44px] cursor-pointer select-none rounded-full xs:size-[60px]',
 				className,
 			)}
 		/>
