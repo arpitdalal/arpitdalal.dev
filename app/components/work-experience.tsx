@@ -5,15 +5,16 @@ import ExternalLink from '#app/components/external-link'
 import { HighlightUnderline } from '#app/components/highlight'
 import { Badge } from '#app/components/ui/badge'
 import { Icon } from '#app/components/ui/icon'
+import { type WorkExperience } from '#app/routes/_marketing+/__data.js'
 import { useHints } from '#app/utils/client-hints.js'
 import { cn } from '#app/utils/misc.js'
 
-const H2_STYLES = {
+export const H2_STYLES = {
 	LEFT_START: '0px',
 	LEFT_END: '92px',
 	LEFT_END_SMALL_SCREEN: '78px',
 }
-const H2_STYLES_NO_JS_OR_MOTION_SAFE =
+export const H2_STYLES_NO_JS_OR_MOTION_SAFE =
 	'xs:top-24 sm:top-24 pt-4 backdrop-blur max-w-full'
 const DIV_STYLES = {
 	HEIGHT_START: '0px',
@@ -24,7 +25,7 @@ export function WorkExperience({
 	workExperience,
 	jsEnabled,
 }: {
-	workExperience: WorkExperienceCardProps[]
+	workExperience: WorkExperience[]
 	jsEnabled: boolean
 }) {
 	const sectionRef = useRef<HTMLElement>(null)
@@ -108,17 +109,6 @@ export function WorkExperience({
 	)
 }
 
-export type WorkExperienceCardProps = {
-	title: string
-	previousTitles?: string[]
-	link: string
-	company: string
-	location: string
-	description: string
-	startDate: string
-	endDate: string
-	technologies: string[]
-}
 export function WorkExperienceCard({
 	title,
 	previousTitles,
@@ -129,7 +119,7 @@ export function WorkExperienceCard({
 	startDate,
 	endDate,
 	technologies,
-}: WorkExperienceCardProps) {
+}: WorkExperience) {
 	const articleRef = useRef<HTMLElement>(null)
 	const { reducedMotion } = useHints()
 	const isReducedMotion = reducedMotion === 'reduce'
@@ -171,7 +161,7 @@ export function WorkExperienceCard({
 						transform: `translate(calc(var(--x-motion) * var(--motion-factor) * -1),calc(var(--y-motion) * var(--motion-factor) * -1))`,
 						transitionTimingFunction: 'var(--in-out-quad)',
 					}}
-					className="absolute inset-0 z-0 hidden rounded-md transition motion-reduce:transition-none lg:block motion-safe:lg:group-hover:bg-accent/60 motion-safe:lg:group-hover:shadow-[inset_0_1px_0_0_rgba(148,163,184,0.1)] motion-safe:lg:group-hover:drop-shadow-lg"
+					className="absolute -inset-x-4 -inset-y-4 z-0 hidden rounded-md transition motion-reduce:transition-none lg:-inset-x-6 lg:block motion-safe:lg:group-hover:bg-accent/60 motion-safe:lg:group-hover:shadow-[inset_0_1px_0_0_rgba(148,163,184,0.1)] motion-safe:lg:group-hover:drop-shadow-lg"
 					aria-hidden
 				/>
 				{/* Timeline */}

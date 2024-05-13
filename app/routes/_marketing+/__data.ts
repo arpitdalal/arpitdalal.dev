@@ -1,5 +1,4 @@
 import { type IconName } from '#app/components/ui/icon'
-import { type WorkExperienceCardProps } from '#app/components/work-experience'
 
 type SocialLink = {
 	name: string
@@ -29,6 +28,17 @@ export const socialLinks = [
 	},
 ] satisfies SocialLink[]
 
+export type WorkExperience = {
+	title: string
+	previousTitles?: string[]
+	link: string
+	company: string
+	location: string
+	description: string
+	startDate: string
+	endDate: string
+	technologies: string[]
+}
 export const workExperience = [
 	{
 		title: 'Web Developer Product Specialist',
@@ -99,4 +109,57 @@ export const workExperience = [
 		endDate: 'May 2018',
 		technologies: ['JavaScript', 'Node', 'React', 'HTML', 'CSS'],
 	},
-] satisfies WorkExperienceCardProps[]
+] satisfies WorkExperience[]
+
+export type Project = {
+	title: string
+	link: string
+	imageUrl: string
+	imageAlt: string
+	description: string
+	technologies?: string[]
+	githubLink?: string
+	openSource?: boolean
+	hightLightLinks?: Array<{ name: string; href: string }>
+}
+export const projects = [
+	{
+		title: 'X̂ Man',
+		link: 'https://xman.arpitdalal.dev/',
+		imageUrl:
+			'https://res.cloudinary.com/arpitdalal-dev/image/upload/w_500/v1715629303/arpitdalal-dev/XMAN-home-page_tq33fw.png',
+		imageAlt: 'X̂ Man home page',
+		description:
+			'A minimal finance management app for individuals. Built with productivity in mind.',
+		technologies: [
+			'React',
+			'Typescript',
+			'Remix',
+			'Tailwind CSS',
+			'Node',
+			'Express',
+			'Prisma',
+			'SQLite',
+		],
+	},
+	{
+		title: 'Epic Content Stack',
+		openSource: true,
+		link: 'https://arpit.im/epc',
+		imageUrl:
+			'https://res.cloudinary.com/arpitdalal-dev/image/upload/e_500/v1715634672/arpitdalal-dev/epic-gh_cuncf0.png',
+		imageAlt: 'Epic Content Stack GitHub page',
+		description:
+			'Stripped down Epic Stack for content sites, no DB and Auth Code.',
+		hightLightLinks: [
+			{
+				name: 'GitHub',
+				href: 'https://github.com/arpit-dalal/epic-content-stack',
+			},
+			{
+				name: 'X',
+				href: 'https://x.com/kentcdodds/status/1782815976331047404',
+			},
+		],
+	},
+] satisfies Project[]

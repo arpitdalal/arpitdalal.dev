@@ -2,10 +2,15 @@ import { Link } from '@remix-run/react'
 import { ClientOnly } from 'remix-utils/client-only'
 import ExternalLink from '#app/components/external-link'
 import { HeroHighlight, HighlightUnderline } from '#app/components/highlight'
+import Projects from '#app/components/projects.js'
 import { Button } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon'
 import { WorkExperience } from '#app/components/work-experience'
-import { socialLinks, workExperience } from '#app/routes/_marketing+/__data'
+import {
+	projects,
+	socialLinks,
+	workExperience,
+} from '#app/routes/_marketing+/__data'
 
 export default function Index() {
 	return (
@@ -70,6 +75,9 @@ export default function Index() {
 				}
 			>
 				{() => <WorkExperience workExperience={workExperience} jsEnabled />}
+			</ClientOnly>
+			<ClientOnly fallback={<Projects projects={projects} jsEnabled={false} />}>
+				{() => <Projects projects={projects} jsEnabled />}
 			</ClientOnly>
 		</>
 	)
