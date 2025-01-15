@@ -1,21 +1,25 @@
 import { vitePlugin as remix } from '@remix-run/dev'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
-import { glob } from 'glob'
 import { flatRoutes } from 'remix-flat-routes'
-import { defineConfig } from 'vite'
+import { type UserConfig } from 'vite'
+import { envOnlyMacros } from 'vite-env-only'
 
 const MODE = process.env.NODE_ENV
 
-export default defineConfig({
+export default {
 	build: {
 		cssMinify: MODE === 'production',
 
 		rollupOptions: {
-			external: [/node:.*/, 'stream', 'crypto', 'fsevents'],
+			external: [/node:.*/, 'fsevents'],
 		},
 
 		assetsInlineLimit: (source: string) => {
-			if (source.endsWith('sprite.svg')) {
+			if (
+				source.endsWith('sprite.svg') ||
+				source.endsWith('favicon.svg') ||
+				source.endsWith('apple-touch-icon.png')
+			) {
 				return false
 			}
 		},
@@ -23,9 +27,18 @@ export default defineConfig({
 		sourcemap: true,
 	},
 	plugins: [
+		envOnlyMacros(),
 		remix({
 			ignoredRouteFiles: ['**/*'],
 			serverModuleFormat: 'esm',
+			future: {
+				unstable_optimizeDeps: true,
+				v3_fetcherPersist: true,
+				v3_lazyRouteDiscovery: true,
+				v3_relativeSplatPath: true,
+				v3_throwAbortReason: true,
+				v3_singleFetch: true,
+			},
 			routes: async defineRoutes => {
 				return flatRoutes('routes', defineRoutes, {
 					ignoredRouteFiles: [
@@ -57,12 +70,12 @@ export default defineConfig({
 						},
 					},
 					sourcemaps: {
-						filesToDeleteAfterUpload: await glob([
+						filesToDeleteAfterUpload: [
 							'./build/**/*.map',
 							'.server-build/**/*.map',
-						]),
+						],
 					},
 				})
 			: null,
 	],
-})
+} satisfies UserConfig

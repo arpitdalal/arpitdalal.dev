@@ -24,16 +24,13 @@ import { getSocialMetas } from '#app/utils/seo'
 import { type Theme } from '#types/index'
 import { GeneralErrorBoundary } from './components/error-boundary'
 import { EpicProgress } from './components/progress-bar'
-import { useToast } from './components/toaster'
 import { href as iconsHref } from './components/ui/icon'
-import { EpicToaster } from './components/ui/sonner'
 import tailwindStyleSheetUrl from './styles/tailwind.css?url'
 import { ClientHintCheck, getHints } from './utils/client-hints'
 import { getEnv } from './utils/env.server'
 import { honeypot } from './utils/honeypot.server'
 import { capitalize, getDomainUrl, getUrl } from './utils/misc'
 import { useNonce } from './utils/nonce-provider'
-import { getToast } from './utils/toast.server'
 
 export const links: LinksFunction = () => {
 	return [
@@ -52,7 +49,7 @@ export const links: LinksFunction = () => {
 			href: '/site.webmanifest',
 			crossOrigin: 'use-credentials',
 		} as const, // necessary to make typescript happy
-		{ rel: 'icon', type: 'image/svg+xml', href: '/favicons/favicon.svg' },
+		{ rel: 'icon', type: 'image/ico', href: '/favicon.ico' },
 		// { rel: "stylesheet", href: fontStyleStyleSheetUrl },
 		{ rel: 'stylesheet', href: tailwindStyleSheetUrl },
 	].filter(Boolean)
@@ -72,24 +69,17 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	const { toast, headers: toastHeaders } = await getToast(request)
 	const honeyProps = honeypot.getInputProps()
 
-	return json(
-		{
-			requestInfo: {
-				hints: getHints(request),
-				origin: getDomainUrl(request),
-				path: new URL(request.url).pathname,
-			},
-			ENV: getEnv(),
-			toast,
-			honeyProps,
+	return json({
+		requestInfo: {
+			hints: getHints(request),
+			origin: getDomainUrl(request),
+			path: new URL(request.url).pathname,
 		},
-		{
-			headers: toastHeaders ?? {},
-		},
-	)
+		ENV: getEnv(),
+		honeyProps,
+	})
 }
 
 export const headers: HeadersFunction = ({ loaderHeaders }) => {
@@ -144,7 +134,6 @@ function App() {
 	const nonce = useNonce()
 	const theme = data.requestInfo.hints.theme
 	const allowIndexing = data.ENV.ALLOW_INDEXING !== 'false'
-	useToast(data.toast)
 
 	return (
 		<Document
@@ -162,7 +151,6 @@ function App() {
 				</main>
 				<Footer />
 			</div>
-			<EpicToaster closeButton position="top-center" theme={theme} />
 			<EpicProgress />
 		</Document>
 	)

@@ -147,7 +147,7 @@ export const projects = [
 		openSource: true,
 		link: 'https://arpit.im/epc',
 		imageUrl:
-			'https://res.cloudinary.com/arpitdalal-dev/image/upload/e_500/v1715634672/arpitdalal-dev/epic-gh_cuncf0.png',
+			'https://res.cloudinary.com/arpitdalal-dev/image/upload/w_500/v1715634672/arpitdalal-dev/epic-gh_cuncf0.png',
 		imageAlt: 'Epic Content Stack GitHub page',
 		description:
 			'Stripped down Epic Stack for content sites, no DB and Auth Code.',
