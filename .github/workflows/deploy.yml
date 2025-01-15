@@ -72,8 +72,8 @@ jobs:
         uses: SebRollen/toml-action@v1.2.0
         id: app_name
         with:
-          file: 'fly.toml'
-          field: 'app'
+          file: "fly.toml"
+          field: "app"
 
       # move Dockerfile to root
       - name: 🚚 Move Dockerfile
