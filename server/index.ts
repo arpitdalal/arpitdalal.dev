@@ -27,7 +27,7 @@ const viteDevServer = IS_PROD
   : await import("vite").then((vite) =>
       vite.createServer({
         server: { middlewareMode: true },
-      }),
+      })
     );
 
 const app = express();
@@ -73,7 +73,7 @@ if (viteDevServer) {
   // Remix fingerprints its assets so we can cache forever.
   app.use(
     "/assets",
-    express.static("build/client/assets", { immutable: true, maxAge: "1y" }),
+    express.static("build/client/assets", { immutable: true, maxAge: "1y" })
   );
 
   // Everything else (like favicon.ico) is cached for an hour. You may want to be
@@ -93,7 +93,7 @@ app.use(
   morgan("tiny", {
     skip: (req, res) =>
       res.statusCode === 200 && req.url?.startsWith("/resources/healthcheck"),
-  }),
+  })
 );
 
 app.use((_, res, next) => {
@@ -131,7 +131,7 @@ app.use(
         "upgrade-insecure-requests": null,
       },
     },
-  }),
+  })
 );
 
 // When running tests or running in development, we want to effectively disable
@@ -183,7 +183,8 @@ async function getBuild() {
   try {
     const build = viteDevServer
       ? viteDevServer.ssrLoadModule("virtual:remix/server-build")
-      : await import("../build/server/index.js");
+      : // @ts-ignore - the file might not exist yet but it will
+        await import("../build/server/index.js");
     return { build: build as unknown as ServerBuild, error: null };
   } catch (error) {
     // Catch error and return null to make express happy and avoid an unrecoverable crash
@@ -215,7 +216,7 @@ app.all(
       }
       return build;
     },
-  }),
+  })
 );
 
 const desiredPort = Number(process.env.PORT || 3000);
@@ -232,8 +233,8 @@ const server = app.listen(portToUse, () => {
   if (!portAvailable) {
     console.warn(
       chalk.yellow(
-        `⚠️  Port ${desiredPort} is not available, using ${portToUse} instead.`,
-      ),
+        `⚠️  Port ${desiredPort} is not available, using ${portToUse} instead.`
+      )
     );
   }
   console.log(`🚀  We have liftoff!`);
@@ -252,7 +253,7 @@ const server = app.listen(portToUse, () => {
 ${chalk.bold("Local:")}            ${chalk.cyan(localUrl)}
 ${lanUrl ? `${chalk.bold("On Your Network:")}  ${chalk.cyan(lanUrl)}` : ""}
 ${chalk.bold("Press Ctrl+C to stop")}
-		`.trim(),
+		`.trim()
   );
 });
 
