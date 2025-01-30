@@ -13,6 +13,7 @@ import { Logo, LogoCircle, LogoImage, LogoSpinner } from "#app/components/logo";
 import { headerAndFooterCommonLinks } from "#app/root";
 import { useHints } from "#app/utils/client-hints";
 import { capitalize, cn } from "#app/utils/misc";
+import { useIsScrollable } from "#app/utils/use-is-scrollable";
 
 const SCROLL_THRESHOLD = 0.25;
 const HEADER_STYLES = {
@@ -72,8 +73,11 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
   const [rect] = useMeasure(spanRef);
   const spanWidth = rect.width;
 
+  // need this as useScroll returns 1 if the page is not scrollable - https://github.com/motiondivision/motion/issues/1848
+  const isScrollable = useIsScrollable();
+
   const headerPaddingInline = useTransform(() => {
-    if (!jsEnabled || isReducedMotion)
+    if (!jsEnabled || isReducedMotion || !isScrollable)
       return HEADER_STYLES.PADDING_INLINE_START;
 
     return transform(
@@ -83,7 +87,8 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     );
   });
   const headerTop = useTransform(() => {
-    if (!jsEnabled || isReducedMotion) return HEADER_STYLES.TOP_START;
+    if (!jsEnabled || isReducedMotion || !isScrollable)
+      return HEADER_STYLES.TOP_START;
 
     return transform(
       scrollYProgress.get(),
@@ -92,7 +97,7 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     );
   });
   const divMaxWidth = useTransform(() => {
-    if (!jsEnabled) return DIV_STYLES.MAX_WIDTH_START;
+    if (!jsEnabled || !isScrollable) return DIV_STYLES.MAX_WIDTH_START;
     if (isReducedMotion) return windowWidth;
 
     return transform(
@@ -102,7 +107,8 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     );
   });
   const divBorderRadius = useTransform(() => {
-    if (!jsEnabled || isReducedMotion) return DIV_STYLES.BORDER_RADIUS_START;
+    if (!jsEnabled || isReducedMotion || !isScrollable)
+      return DIV_STYLES.BORDER_RADIUS_START;
 
     return transform(
       scrollYProgress.get(),
@@ -111,7 +117,8 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     );
   });
   const divBorderWidth = useTransform(() => {
-    if (!jsEnabled || isReducedMotion) return DIV_STYLES.BORDER_WIDTH_START;
+    if (!jsEnabled || isReducedMotion || !isScrollable)
+      return DIV_STYLES.BORDER_WIDTH_START;
 
     return transform(
       scrollYProgress.get(),
@@ -120,6 +127,12 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     );
   });
   const divBackdropBlur = useTransform(() => {
+    if (!isScrollable) {
+      if (isMobileNavOpen) {
+        return `blur(${DIV_STYLES.BACKDROP_BLUR_END})`;
+      }
+      return `blur(${DIV_STYLES.BACKDROP_BLUR_START})`;
+    }
     if (!jsEnabled) return `blur(${DIV_STYLES.BACKDROP_BLUR_END})`;
 
     if (isMobileNavOpen && scrollYProgress.get() === 0) {
@@ -134,7 +147,14 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     return `blur(${transformedValue})`;
   });
   const divBgColor = useTransform(() => {
-    if (!jsEnabled) return `hsl(var(--accent) / ${DIV_STYLES.BG_OPACITY_END})`;
+    if (!isScrollable) {
+      if (isMobileNavOpen) {
+        return `hsl(var(--accent) / ${DIV_STYLES.BG_OPACITY_END})`;
+      }
+      return `hsl(var(--accent) / ${DIV_STYLES.BG_OPACITY_START})`;
+    }
+    if (!jsEnabled)
+      return `hsl(var(--accent) / ${DIV_STYLES.BG_OPACITY_START})`;
 
     if (isMobileNavOpen && scrollYProgress.get() === 0) {
       return `hsl(var(--accent) / ${DIV_STYLES.BG_OPACITY_END})`;
@@ -148,8 +168,8 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     return `hsl(var(--accent) / ${transformedValue})`;
   });
   const divShadowOpacity = useTransform(() => {
-    if (!jsEnabled)
-      return `0 10px 15px -3px rgb(0 0 0 / ${DIV_STYLES.SHADOW_OPACITY_END}), 0 4px 6px -4px rgb(0 0 0 / ${DIV_STYLES.SHADOW_OPACITY_END})`;
+    if (!jsEnabled || !isScrollable)
+      return `0 10px 15px -3px rgb(0 0 0 / ${DIV_STYLES.SHADOW_OPACITY_START}), 0 4px 6px -4px rgb(0 0 0 / ${DIV_STYLES.SHADOW_OPACITY_START})`;
 
     const transformedValue = transform(
       scrollYProgress.get(),
@@ -159,7 +179,8 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     return `0 10px 15px -3px rgb(0 0 0 / ${transformedValue}), 0 4px 6px -4px rgb(0 0 0 / ${transformedValue})`;
   });
   const navPadding = useTransform(() => {
-    if (!jsEnabled || isReducedMotion) return NAV_STYLES.PADDING_START;
+    if (!jsEnabled || isReducedMotion || !isScrollable)
+      return NAV_STYLES.PADDING_START;
 
     return transform(
       scrollYProgress.get(),
@@ -168,7 +189,8 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     );
   });
   const textOpacity = useTransform(() => {
-    if (!jsEnabled || isReducedMotion) return TEXT_STYLES.OPACITY_START;
+    if (!jsEnabled || isReducedMotion || !isScrollable)
+      return TEXT_STYLES.OPACITY_START;
 
     return transform(
       scrollYProgress.get(),
@@ -177,7 +199,8 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     );
   });
   const textX = useTransform(() => {
-    if (!jsEnabled || isReducedMotion) return TEXT_STYLES.X_START;
+    if (!jsEnabled || isReducedMotion || !isScrollable)
+      return TEXT_STYLES.X_START;
 
     return transform(
       scrollYProgress.get(),
