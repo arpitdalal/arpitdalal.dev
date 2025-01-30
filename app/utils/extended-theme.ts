@@ -9,12 +9,13 @@ export const extendedTheme = {
     },
     ring: {
       DEFAULT: "hsl(var(--ring))",
-      invalid: "hsl(var(--foreground-destructive))",
+      invalid: "hsl(var(--destructive))",
     },
     background: "hsl(var(--background))",
     foreground: {
       DEFAULT: "hsl(var(--foreground))",
-      destructive: "hsl(var(--foreground-destructive))",
+      success: "hsl(var(--success-foreground))",
+      destructive: "hsl(var(--destructive-foreground))",
     },
     primary: {
       DEFAULT: "hsl(var(--primary))",
@@ -26,7 +27,11 @@ export const extendedTheme = {
     },
     destructive: {
       DEFAULT: "hsl(var(--destructive))",
-      foreground: "hsl(var(--destructive-foreground))",
+      foreground: "hsl(var(--foreground))",
+    },
+    success: {
+      DEFAULT: "hsl(var(--success))",
+      foreground: "hsl(var(--foreground))",
     },
     muted: {
       DEFAULT: "hsl(var(--muted))",
@@ -103,9 +108,17 @@ export const extendedTheme = {
       from: { transform: "translateY(20px)", opacity: "0" },
       to: { transform: "translateY(0px)", opacity: "1" },
     },
+    bounce: {
+      "0%, 100%": { transform: "scale(1)" },
+      "50%": { transform: "scale(1.2)" },
+    },
     "bounce-down": {
       "0%, 100%": { transform: "translateY(0)" },
       "50%": { transform: "translateY(25%)" },
+    },
+    "bounce-right": {
+      "0%, 100%": { transform: "translateX(0)" },
+      "50%": { transform: "translateX(25%)" },
     },
     slidein: {
       from: {
@@ -140,7 +153,9 @@ export const extendedTheme = {
   },
   animation: {
     "reveal-up": "reveal-up 0.4s ease-in-out",
+    bounce: "bounce 0.4s var(--ease-in-out-quad)",
     "bounce-down": "bounce-down 0.4s var(--ease-in-out-quad)",
+    "bounce-right": "bounce-right 0.4s var(--ease-in-out-quad)",
     slidein:
       "slidein 0.4s var(--ease-in-out-quad) var(--slidein-delay, 0) forwards",
   },

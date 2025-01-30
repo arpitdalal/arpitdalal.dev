@@ -6,6 +6,9 @@ const schema = z.object({
   INTERNAL_COMMAND_TOKEN: z.string(),
   HONEYPOT_SECRET: z.string(),
   SENTRY_DSN: z.string(),
+  NODEMAILER_HOST: z.string(),
+  NODEMAILER_USER: z.string(),
+  NODEMAILER_PASSWORD: z.string(),
   ALLOW_INDEXING: z.enum(["true", "false"]).optional(),
 });
 
@@ -21,7 +24,7 @@ export function init() {
   if (parsed.success === false) {
     console.error(
       "❌ Invalid environment variables:",
-      parsed.error.flatten().fieldErrors,
+      parsed.error.flatten().fieldErrors
     );
 
     throw new Error("Invalid environment variables");

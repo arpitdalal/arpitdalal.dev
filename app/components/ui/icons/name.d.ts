@@ -2,6 +2,7 @@
 
 export type IconName =
   | "arrow-left-outline"
+  | "arrow-right-outline"
   | "arrow-up-outline"
   | "arrow-up-right-outline"
   | "brand-github-outline"
