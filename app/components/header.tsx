@@ -79,7 +79,7 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     return transform(
       scrollYProgress.get(),
       [0, SCROLL_THRESHOLD],
-      [HEADER_STYLES.PADDING_INLINE_START, HEADER_STYLES.PADDING_INLINE_END],
+      [HEADER_STYLES.PADDING_INLINE_START, HEADER_STYLES.PADDING_INLINE_END]
     );
   });
   const headerTop = useTransform(() => {
@@ -88,7 +88,7 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     return transform(
       scrollYProgress.get(),
       [0, SCROLL_THRESHOLD],
-      [HEADER_STYLES.TOP_START, HEADER_STYLES.TOP_END],
+      [HEADER_STYLES.TOP_START, HEADER_STYLES.TOP_END]
     );
   });
   const divMaxWidth = useTransform(() => {
@@ -98,7 +98,7 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     return transform(
       scrollYProgress.get(),
       [0, SCROLL_THRESHOLD],
-      [windowWidth, DIV_STYLES.MAX_WIDTH_END],
+      [windowWidth, DIV_STYLES.MAX_WIDTH_END]
     );
   });
   const divBorderRadius = useTransform(() => {
@@ -107,7 +107,7 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     return transform(
       scrollYProgress.get(),
       [0, SCROLL_THRESHOLD],
-      [DIV_STYLES.BORDER_RADIUS_START, DIV_STYLES.BORDER_RADIUS_END],
+      [DIV_STYLES.BORDER_RADIUS_START, DIV_STYLES.BORDER_RADIUS_END]
     );
   });
   const divBorderWidth = useTransform(() => {
@@ -116,16 +116,34 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     return transform(
       scrollYProgress.get(),
       [0, SCROLL_THRESHOLD],
-      [DIV_STYLES.BORDER_WIDTH_START, DIV_STYLES.BORDER_WIDTH_END],
+      [DIV_STYLES.BORDER_WIDTH_START, DIV_STYLES.BORDER_WIDTH_END]
     );
   });
-  const divBgColor = useTransform(() => {
-    if (!jsEnabled) return `hsl(var(--accent) / ${DIV_STYLES.BG_OPACITY_END})`;
+  const divBackdropBlur = useTransform(() => {
+    if (!jsEnabled) return `blur(${DIV_STYLES.BACKDROP_BLUR_END})`;
+
+    if (isMobileNavOpen && scrollYProgress.get() === 0) {
+      return `blur(${DIV_STYLES.BACKDROP_BLUR_END})`;
+    }
 
     const transformedValue = transform(
       scrollYProgress.get(),
       [0, SCROLL_THRESHOLD],
-      [DIV_STYLES.BG_OPACITY_START, DIV_STYLES.BG_OPACITY_END],
+      [DIV_STYLES.BACKDROP_BLUR_START, DIV_STYLES.BACKDROP_BLUR_END]
+    );
+    return `blur(${transformedValue})`;
+  });
+  const divBgColor = useTransform(() => {
+    if (!jsEnabled) return `hsl(var(--accent) / ${DIV_STYLES.BG_OPACITY_END})`;
+
+    if (isMobileNavOpen && scrollYProgress.get() === 0) {
+      return `hsl(var(--accent) / ${DIV_STYLES.BG_OPACITY_END})`;
+    }
+
+    const transformedValue = transform(
+      scrollYProgress.get(),
+      [0, SCROLL_THRESHOLD],
+      [DIV_STYLES.BG_OPACITY_START, DIV_STYLES.BG_OPACITY_END]
     );
     return `hsl(var(--accent) / ${transformedValue})`;
   });
@@ -136,19 +154,9 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     const transformedValue = transform(
       scrollYProgress.get(),
       [0, SCROLL_THRESHOLD],
-      [DIV_STYLES.SHADOW_OPACITY_START, DIV_STYLES.SHADOW_OPACITY_END],
+      [DIV_STYLES.SHADOW_OPACITY_START, DIV_STYLES.SHADOW_OPACITY_END]
     );
     return `0 10px 15px -3px rgb(0 0 0 / ${transformedValue}), 0 4px 6px -4px rgb(0 0 0 / ${transformedValue})`;
-  });
-  const divBackdropBlur = useTransform(() => {
-    if (!jsEnabled) return `blur(${DIV_STYLES.BACKDROP_BLUR_END})`;
-
-    const transformedValue = transform(
-      scrollYProgress.get(),
-      [0, SCROLL_THRESHOLD],
-      [DIV_STYLES.BACKDROP_BLUR_START, DIV_STYLES.BACKDROP_BLUR_END],
-    );
-    return `blur(${transformedValue})`;
   });
   const navPadding = useTransform(() => {
     if (!jsEnabled || isReducedMotion) return NAV_STYLES.PADDING_START;
@@ -156,7 +164,7 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     return transform(
       scrollYProgress.get(),
       [0, SCROLL_THRESHOLD],
-      [NAV_STYLES.PADDING_START, NAV_STYLES.PADDING_END],
+      [NAV_STYLES.PADDING_START, NAV_STYLES.PADDING_END]
     );
   });
   const textOpacity = useTransform(() => {
@@ -165,7 +173,7 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     return transform(
       scrollYProgress.get(),
       [0, SCROLL_THRESHOLD],
-      [TEXT_STYLES.OPACITY_START, TEXT_STYLES.OPACITY_END],
+      [TEXT_STYLES.OPACITY_START, TEXT_STYLES.OPACITY_END]
     );
   });
   const textX = useTransform(() => {
@@ -174,7 +182,7 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     return transform(
       scrollYProgress.get(),
       [0, SCROLL_THRESHOLD],
-      [TEXT_STYLES.X_START, -(spanWidth ?? TEXT_STYLES.X_END)],
+      [TEXT_STYLES.X_START, -(spanWidth ?? TEXT_STYLES.X_END)]
     );
   });
 
@@ -191,15 +199,14 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
       }}
     >
       <motion.div
-        className="mx-auto border-solid border-foreground/40 py-4 shadow-lg backdrop-blur-md"
+        className="mx-auto border-solid border-foreground/40 py-4"
         style={{
           borderRadius: divBorderRadius,
           maxWidth: divMaxWidth,
           borderWidth: divBorderWidth,
           backgroundColor: divBgColor,
-          // @ts-expect-error overrides tw variables to animate them
-          "--tw-backdrop-blur": divBackdropBlur,
-          "--tw-shadow": divShadowOpacity,
+          backdropFilter: divBackdropBlur,
+          boxShadow: divShadowOpacity,
         }}
       >
         <motion.nav
@@ -256,7 +263,7 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
                       {capitalize(key)}
                     </NavLink>
                   </li>
-                ),
+                )
               )}
             </ul>
             <div className="md:hidden">
@@ -335,14 +342,14 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
                         className={({ isActive }) =>
                           cn(
                             `block w-full py-4 text-foreground/70 hover:text-foreground`,
-                            isActive && "text-foreground",
+                            isActive && "text-foreground"
                           )
                         }
                       >
                         {capitalize(key)}
                       </NavLink>
                     </li>
-                  ),
+                  )
                 )}
               </motion.ul>
             )}
