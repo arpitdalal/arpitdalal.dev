@@ -16,20 +16,20 @@ import {
 import { withSentry } from "@sentry/remix";
 import { ClientOnly } from "remix-utils/client-only";
 import { HoneypotProvider } from "remix-utils/honeypot/react";
+import { GeneralErrorBoundary } from "#app/components/error-boundary";
 import ExternalLink from "#app/components/external-link";
 import { Header } from "#app/components/header";
 import { Logo, LogoCircle, LogoImage, LogoSpinner } from "#app/components/logo";
+import { EpicProgress } from "#app/components/progress-bar";
+import { href as iconsHref } from "#app/components/ui/icon";
+import tailwindStyleSheetUrl from "#app/styles/tailwind.css?url";
+import { ClientHintCheck, getHints, useHints } from "#app/utils/client-hints";
+import { getEnv } from "#app/utils/env.server";
+import { honeypot } from "#app/utils/honeypot.server";
+import { capitalize, getDomainUrl, getUrl } from "#app/utils/misc";
+import { useNonce } from "#app/utils/nonce-provider";
 import { getSocialMetas } from "#app/utils/seo";
 import { type Theme } from "#types/index";
-import { GeneralErrorBoundary } from "./components/error-boundary";
-import { EpicProgress } from "./components/progress-bar";
-import { href as iconsHref } from "./components/ui/icon";
-import tailwindStyleSheetUrl from "./styles/tailwind.css?url";
-import { ClientHintCheck, getHints } from "./utils/client-hints";
-import { getEnv } from "./utils/env.server";
-import { honeypot } from "./utils/honeypot.server";
-import { capitalize, getDomainUrl, getUrl } from "./utils/misc";
-import { useNonce } from "./utils/nonce-provider";
 
 export const links: LinksFunction = () => {
   return [
@@ -91,7 +91,7 @@ export const headers: HeadersFunction = ({ loaderHeaders }) => {
 function Document({
   children,
   nonce,
-  theme = "light",
+  theme,
   env = {},
   allowIndexing = true,
 }: {
@@ -101,8 +101,12 @@ function Document({
   env?: Record<string, string>;
   allowIndexing?: boolean;
 }) {
+  const { theme: hintTheme } = useHints();
   return (
-    <html lang="en" className={`${theme} h-full overflow-x-hidden`}>
+    <html
+      lang="en"
+      className={`${theme || hintTheme || "light"} h-full overflow-x-hidden`}
+    >
       <head>
         <ClientHintCheck nonce={nonce} />
         <Meta />
@@ -167,7 +171,6 @@ function AppWithProviders() {
 export default withSentry(AppWithProviders);
 
 export const headerAndFooterCommonLinks = {
-  about: "about",
   contact: "contact",
 };
 
