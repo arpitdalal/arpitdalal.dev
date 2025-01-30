@@ -118,7 +118,7 @@ export function WorkExperienceCard({
   description,
   startDate,
   endDate,
-  technologies,
+  tags,
 }: WorkExperience) {
   const articleRef = useRef<HTMLElement>(null);
   const { reducedMotion } = useHints();
@@ -224,12 +224,9 @@ export function WorkExperienceCard({
           )}
           <p className="mt-1 text-foreground/70">{location}</p>
           <p className="mt-2 leading-normal">{description}</p>
-          <ul
-            className="mt-4 flex flex-wrap gap-2"
-            aria-label="Technologies used"
-          >
-            {technologies.map((technology) => (
-              <Badge key={technology}>{technology}</Badge>
+          <ul className="mt-4 flex flex-wrap gap-2" aria-label="Tags">
+            {tags.map((tag) => (
+              <Badge key={tag}>{tag}</Badge>
             ))}
           </ul>
         </div>

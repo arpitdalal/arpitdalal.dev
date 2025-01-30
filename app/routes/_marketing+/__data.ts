@@ -37,7 +37,7 @@ export type WorkExperience = {
   description: string;
   startDate: string;
   endDate: string;
-  technologies: string[];
+  tags: string[];
 };
 export const workExperience = [
   {
@@ -49,7 +49,7 @@ export const workExperience = [
       "Develop production-ready storefronts for millions of users, collaborating with multiple stakeholders to formulate comprehensive plans for product development, testing, and launch.",
     startDate: "Aug 2021",
     endDate: "Present",
-    technologies: ["React", "JavaScript", "Typescript", "Node", "PHP"],
+    tags: ["React", "JavaScript", "Typescript", "Node", "PHP"],
   },
   {
     title: "Web Developer",
@@ -60,14 +60,7 @@ export const workExperience = [
       "Work collaboratively with clients and in-house teams to provide fast, secure, responsive and client-acclaimed full-stack web applications for user-optimized experiences.",
     startDate: "Aug 2020",
     endDate: "Jul 2021",
-    technologies: [
-      "React",
-      "Typescript",
-      "Bootstrap",
-      "Node",
-      "PHP",
-      "WordPress",
-    ],
+    tags: ["React", "Typescript", "Bootstrap", "Node", "PHP", "WordPress"],
   },
   {
     title: "Full Stack Web Developer",
@@ -78,9 +71,10 @@ export const workExperience = [
       "Create robust full-stack web solutions tailored to client needs, leveraging the most suitable technology stack for optimal performance and accessibility.",
     startDate: "Jul 2019",
     endDate: "Apr 2020",
-    technologies: [
+    tags: [
       "React",
       "Typescript",
+      "jQuery",
       "Tailwind CSS",
       "Node",
       "PHP",
@@ -96,7 +90,7 @@ export const workExperience = [
       "Collaborate within a dynamic team, contributing to multiple codebases in a fast-paced startup. Utilize React, Next, Redux, and TypeScript to craft highly responsive user interfaces.",
     startDate: "Feb 2019",
     endDate: "Jun 2019",
-    technologies: ["React", "Next", "Typescript", "Node"],
+    tags: ["React", "Next.js", "JavaScript", "Node"],
   },
   {
     title: "Junior Developer",
@@ -107,7 +101,7 @@ export const workExperience = [
       "Gained valuable experience and proficiency in HTML, CSS, React, JavaScript, and Node, contributing actively to projects and accelerating learning curve.",
     startDate: "Feb 2017",
     endDate: "May 2018",
-    technologies: ["JavaScript", "Node", "React", "HTML", "CSS"],
+    tags: ["JavaScript", "Node", "React", "HTML", "CSS"],
   },
 ] satisfies WorkExperience[];
 
@@ -117,21 +111,21 @@ export type Project = {
   imageUrl: string;
   imageAlt: string;
   description: string;
-  technologies?: string[];
+  tags?: string[];
   githubLink?: string;
   openSource?: boolean;
   hightLightLinks?: Array<{ name: string; href: string }>;
 };
 export const projects = [
   {
-    title: "X̂ Man",
-    link: "https://xman.arpitdalal.dev/",
+    title: "X Man",
+    link: "https://arpit.im/xman",
     imageUrl:
       "https://res.cloudinary.com/arpitdalal-dev/image/upload/w_500/v1715629303/arpitdalal-dev/XMAN-home-page_tq33fw.png",
-    imageAlt: "X̂ Man home page",
+    imageAlt: "X Man home page",
     description:
       "A minimal finance management app for individuals. Built with productivity in mind.",
-    technologies: [
+    tags: [
       "React",
       "Typescript",
       "Remix",
@@ -161,5 +155,6 @@ export const projects = [
         href: "https://x.com/kentcdodds/status/1782815976331047404",
       },
     ],
+    tags: ["Open Source"],
   },
 ] satisfies Project[];

@@ -82,7 +82,7 @@ function ProjectCard({
   imageUrl,
   imageAlt,
   description,
-  technologies,
+  tags,
 }: Project) {
   return (
     <li>
@@ -123,13 +123,10 @@ function ProjectCard({
             </ExternalLink>
           </h3>
           <p className="mt-2 leading-normal">{description}</p>
-          {technologies && technologies.length > 0 ? (
-            <ul
-              className="mt-4 flex flex-wrap gap-2"
-              aria-label="Technologies used"
-            >
-              {technologies.map((technology) => (
-                <Badge key={technology}>{technology}</Badge>
+          {tags && tags.length > 0 ? (
+            <ul className="mt-4 flex flex-wrap gap-2" aria-label="Tags">
+              {tags.map((tag) => (
+                <Badge key={tag}>{tag}</Badge>
               ))}
             </ul>
           ) : null}
