@@ -146,7 +146,7 @@ function SubmitButton({
   data: Awaited<ReturnType<typeof action>> | undefined;
 }) {
   const [showStatus, setShowStatus] = useState<"success" | "error" | null>(
-    null
+    null,
   );
   const isSubmitting = state === "submitting";
   const isSuccess = state === "idle" && data && !data.error;
