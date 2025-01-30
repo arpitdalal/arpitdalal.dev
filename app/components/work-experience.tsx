@@ -12,6 +12,7 @@ import {
   HEADING_STYLES,
   HEADING_STYLES_NO_JS_OR_MOTION_SAFE,
 } from "./animated-heading-styles";
+import { LineGlow } from "./line-glow";
 
 const DIV_STYLES = {
   HEIGHT_START: "0px",
@@ -66,12 +67,7 @@ export function WorkExperience({
 
   return (
     <section ref={sectionRef} id="work">
-      <div className="relative h-32 overflow-hidden" aria-hidden>
-        <div className="absolute -top-[100px] left-0 right-0 h-56 opacity-40 dark:opacity-20">
-          <div className="bg-gradient-radial h-36 from-violet-600 blur-2xl"></div>
-        </div>
-        <div className="h-px bg-gradient-to-r from-transparent from-30% via-violet-400 to-transparent to-70% opacity-50 dark:via-violet-600"></div>
-      </div>
+      <LineGlow />
       <div className="container pb-12">
         <motion.h2
           style={{
