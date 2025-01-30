@@ -8,7 +8,10 @@ import { Icon } from "#app/components/ui/icon.js";
 import { type Project } from "#app/routes/_marketing+/__data.js";
 import { useHints } from "#app/utils/client-hints.js";
 import { cn } from "#app/utils/misc.js";
-import { H2_STYLES, H2_STYLES_NO_JS_OR_MOTION_SAFE } from "./work-experience";
+import {
+  HEADING_STYLES,
+  HEADING_STYLES_NO_JS_OR_MOTION_SAFE,
+} from "./animated-heading-styles";
 
 export default function Projects({
   projects,
@@ -28,14 +31,16 @@ export default function Projects({
   const isReducedMotion = reducedMotion === "reduce";
 
   const h2Left = useTransform(() => {
-    if (isReducedMotion || !jsEnabled) return H2_STYLES.LEFT_START;
+    if (isReducedMotion || !jsEnabled) return HEADING_STYLES.LEFT_START;
 
     return transform(
       scrollYProgressOfSection.get(),
       [0, 1],
       [
-        H2_STYLES.LEFT_START,
-        isXSScreen ? H2_STYLES.LEFT_END_SMALL_SCREEN : H2_STYLES.LEFT_END,
+        HEADING_STYLES.LEFT_START,
+        isXSScreen
+          ? HEADING_STYLES.LEFT_END_SMALL_SCREEN
+          : HEADING_STYLES.LEFT_END,
       ],
     );
   });
@@ -55,7 +60,8 @@ export default function Projects({
           }}
           className={cn(
             "sticky top-12 z-40 max-w-fit xs:top-14 sm:top-12",
-            (!jsEnabled || isReducedMotion) && H2_STYLES_NO_JS_OR_MOTION_SAFE,
+            (!jsEnabled || isReducedMotion) &&
+              HEADING_STYLES_NO_JS_OR_MOTION_SAFE,
           )}
         >
           <HighlightUnderline>Projects</HighlightUnderline>
@@ -77,8 +83,6 @@ function ProjectCard({
   imageAlt,
   description,
   technologies,
-  githubLink,
-  openSource,
 }: Project) {
   return (
     <li>

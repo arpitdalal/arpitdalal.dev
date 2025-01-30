@@ -8,14 +8,11 @@ import { Icon } from "#app/components/ui/icon";
 import { type WorkExperience } from "#app/routes/_marketing+/__data.js";
 import { useHints } from "#app/utils/client-hints.js";
 import { cn } from "#app/utils/misc.js";
+import {
+  HEADING_STYLES,
+  HEADING_STYLES_NO_JS_OR_MOTION_SAFE,
+} from "./animated-heading-styles";
 
-export const H2_STYLES = {
-  LEFT_START: "0px",
-  LEFT_END: "92px",
-  LEFT_END_SMALL_SCREEN: "78px",
-};
-export const H2_STYLES_NO_JS_OR_MOTION_SAFE =
-  "xs:top-24 sm:top-24 pt-4 backdrop-blur max-w-full";
 const DIV_STYLES = {
   HEIGHT_START: "0px",
   HEIGHT_END: "100%",
@@ -44,14 +41,16 @@ export function WorkExperience({
   const isReducedMotion = reducedMotion === "reduce";
 
   const h2Left = useTransform(() => {
-    if (isReducedMotion || !jsEnabled) return H2_STYLES.LEFT_START;
+    if (isReducedMotion || !jsEnabled) return HEADING_STYLES.LEFT_START;
 
     return transform(
       scrollYProgressOfSection.get(),
       [0, 1],
       [
-        H2_STYLES.LEFT_START,
-        isXSScreen ? H2_STYLES.LEFT_END_SMALL_SCREEN : H2_STYLES.LEFT_END,
+        HEADING_STYLES.LEFT_START,
+        isXSScreen
+          ? HEADING_STYLES.LEFT_END_SMALL_SCREEN
+          : HEADING_STYLES.LEFT_END,
       ],
     );
   });
@@ -80,7 +79,8 @@ export function WorkExperience({
           }}
           className={cn(
             "sticky top-12 z-40 max-w-fit xs:top-14 sm:top-12",
-            (!jsEnabled || isReducedMotion) && H2_STYLES_NO_JS_OR_MOTION_SAFE,
+            (!jsEnabled || isReducedMotion) &&
+              HEADING_STYLES_NO_JS_OR_MOTION_SAFE,
           )}
         >
           <HighlightUnderline>Work Experience</HighlightUnderline>
