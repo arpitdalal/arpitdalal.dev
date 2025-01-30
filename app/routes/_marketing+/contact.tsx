@@ -5,28 +5,30 @@ import {
   useForm,
 } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
-import { type ActionFunctionArgs } from "@remix-run/node";
-import {
-  useFetcher,
-  useNavigate,
-  type FetcherWithComponents,
-} from "@remix-run/react";
+import { type ActionFunctionArgs, type MetaFunction } from "@remix-run/node";
+import { useFetcher, type FetcherWithComponents } from "@remix-run/react";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { HoneypotInputs } from "remix-utils/honeypot/react";
 import { z } from "zod";
 import { ErrorList } from "#app/components/error-list";
 import { Field } from "#app/components/field";
+import {
+  HeroHighlight,
+  HeroHighlightDescription,
+  HeroHighlightH1,
+} from "#app/components/highlight";
 import { TextareaField } from "#app/components/textarea-field";
 import { Button } from "#app/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "#app/components/ui/dialog";
 import { Icon } from "#app/components/ui/icon";
 import { sendEmail } from "#app/utils/email";
+import { LineGlow } from "../../components/line-glow";
+
+export const meta: MetaFunction = () => [
+  {
+    title: "Contact Arpit | Arpit Dalal",
+  },
+];
 
 export const ContactSchema = z.object({
   name: z
@@ -70,7 +72,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Contact() {
-  const navigate = useNavigate();
   const contactFetcher = useFetcher<typeof action>();
 
   const [form, fields] = useForm({
@@ -83,12 +84,22 @@ export default function Contact() {
   });
 
   return (
-    <Dialog open={true} onOpenChange={() => navigate("..")}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Contact</DialogTitle>
-        </DialogHeader>
-        <div className="grid gap-8">
+    <>
+      <HeroHighlight className="pt-24">
+        <div className="flex flex-col items-center justify-between gap-6">
+          <HeroHighlightH1>
+            <span>Contact</span>
+            <span className="first-letter:text-primary">Arpit</span>
+          </HeroHighlightH1>
+          <HeroHighlightDescription>
+            Have a question or want to work together? Send me a message and I
+            will get back to you as soon as possible.
+          </HeroHighlightDescription>
+        </div>
+      </HeroHighlight>
+      <section id="contact">
+        <LineGlow />
+        <div className="container">
           <contactFetcher.Form method="POST" {...getFormProps(form)}>
             <div className="min-h-[32px] pb-4">
               <ErrorList
@@ -97,24 +108,27 @@ export default function Contact() {
               />
             </div>
             <HoneypotInputs />
-            <Field
-              labelProps={{ children: "Name" }}
-              inputProps={{
-                autoFocus: true,
-                ...getInputProps(fields.name, { type: "text" }),
-                placeholder: "Enter your name",
-              }}
-              errors={fields.name.errors}
-            />
-
-            <Field
-              labelProps={{ children: "Email" }}
-              inputProps={{
-                ...getInputProps(fields.email, { type: "email" }),
-                placeholder: "Enter your email",
-              }}
-              errors={fields.email.errors}
-            />
+            <div className="flex flex-col sm:flex-row sm:gap-4">
+              <Field
+                labelProps={{ children: "Name" }}
+                inputProps={{
+                  autoFocus: true,
+                  ...getInputProps(fields.name, { type: "text" }),
+                  placeholder: "Enter your name",
+                }}
+                className="flex-1"
+                errors={fields.name.errors}
+              />
+              <Field
+                labelProps={{ children: "Email" }}
+                inputProps={{
+                  ...getInputProps(fields.email, { type: "email" }),
+                  placeholder: "Enter your email",
+                }}
+                className="flex-1"
+                errors={fields.email.errors}
+              />
+            </div>
 
             <TextareaField
               labelProps={{ children: "Message" }}
@@ -126,14 +140,16 @@ export default function Contact() {
               errors={fields.message.errors}
             />
 
-            <SubmitButton
-              state={contactFetcher.state}
-              data={contactFetcher.data}
-            />
+            <div className="flex justify-end">
+              <SubmitButton
+                state={contactFetcher.state}
+                data={contactFetcher.data}
+              />
+            </div>
           </contactFetcher.Form>
         </div>
-      </DialogContent>
-    </Dialog>
+      </section>
+    </>
   );
 }
 
@@ -165,7 +181,7 @@ function SubmitButton({
   return (
     <Button
       type="submit"
-      className="group/submit w-full overflow-hidden transition-colors"
+      className="group/submit w-full overflow-hidden transition-colors sm:w-[300px]"
       variant={
         showStatus === "success"
           ? "success"
@@ -175,7 +191,7 @@ function SubmitButton({
       }
       disabled={isSubmitting || !!showStatus}
     >
-      <div className="relative h-7 w-full flex items-center justify-center">
+      <div className="relative flex h-7 w-full items-center justify-center">
         <motion.div
           initial={false}
           animate={{
