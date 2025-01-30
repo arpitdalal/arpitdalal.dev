@@ -115,3 +115,36 @@ export function HighlightUnderline({
     </span>
   );
 }
+
+export function HeroHighlightH1({
+  children,
+  subtitle,
+}: {
+  children: React.ReactNode;
+  subtitle?: React.ReactNode;
+}) {
+  return (
+    <h1 className="max-w-[15ch] text-center text-6xl [--slidein-delay:100ms] motion-safe:animate-slidein motion-safe:opacity-0 sm:text-7xl lg:text-8xl">
+      {subtitle ? (
+        <span className="block text-sm uppercase text-foreground/70">
+          {subtitle}
+        </span>
+      ) : null}
+      <span className="flex flex-wrap items-center justify-center space-x-5 px-4 font-bold">
+        {children}
+      </span>
+    </h1>
+  );
+}
+
+export function HeroHighlightDescription({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <p className="max-w-[60ch] px-8 text-center text-lg [--slidein-delay:300ms] motion-safe:animate-slidein motion-safe:opacity-0 sm:text-xl">
+      {children}
+    </p>
+  );
+}
