@@ -1,13 +1,13 @@
 import { useWindowSize } from "@reactuses/core";
 import { motion, transform, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import ExternalLink from "#app/components/external-link.js";
-import { HighlightUnderline } from "#app/components/highlight.js";
-import { Badge } from "#app/components/ui/badge.js";
-import { Icon } from "#app/components/ui/icon.js";
-import { type Project } from "#app/routes/_marketing+/__data.js";
-import { useHints } from "#app/utils/client-hints.js";
-import { cn } from "#app/utils/misc.js";
+import ExternalLink from "#app/components/external-link";
+import { HighlightUnderline } from "#app/components/highlight";
+import { Badge } from "#app/components/ui/badge";
+import { Icon } from "#app/components/ui/icon";
+import { type Project } from "#app/routes/_marketing+/__data";
+import { useHints } from "#app/utils/client-hints";
+import { cn } from "#app/utils/misc";
 import {
   HEADING_STYLES,
   HEADING_STYLES_NO_JS_OR_MOTION_SAFE,

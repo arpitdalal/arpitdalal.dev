@@ -5,9 +5,9 @@ import ExternalLink from "#app/components/external-link";
 import { HighlightUnderline } from "#app/components/highlight";
 import { Badge } from "#app/components/ui/badge";
 import { Icon } from "#app/components/ui/icon";
-import { type WorkExperience } from "#app/routes/_marketing+/__data.js";
-import { useHints } from "#app/utils/client-hints.js";
-import { cn } from "#app/utils/misc.js";
+import { type WorkExperience } from "#app/routes/_marketing+/__data";
+import { useHints } from "#app/utils/client-hints";
+import { cn } from "#app/utils/misc";
 import {
   HEADING_STYLES,
   HEADING_STYLES_NO_JS_OR_MOTION_SAFE,
