@@ -14,7 +14,7 @@ import { headerAndFooterCommonLinks } from "#app/root";
 import { useHints } from "#app/utils/client-hints";
 import { capitalize, cn } from "#app/utils/misc";
 
-const SCROLL_THRESHOLD = 0.3;
+const SCROLL_THRESHOLD = 0.25;
 const HEADER_STYLES = {
   PADDING_INLINE_START: "0",
   PADDING_INLINE_END: "2rem",
