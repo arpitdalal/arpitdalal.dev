@@ -73,6 +73,7 @@
     "morgan": "^1.10.0",
     "nodemailer": "^6.10.0",
     "react": "^19.0.0",
+    "react-chrome-dino-ts": "^0.1.2",
     "react-dom": "^19.0.0",
     "remix-utils": "^8.0.0",
     "set-cookie-parser": "^2.7.1",

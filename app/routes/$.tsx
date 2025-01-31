@@ -1,40 +1,41 @@
-// This is called a "splat route" and as it's in the root `/app/routes/`
-// directory, it's a catchall. If no other routes match, this one will and we
-// can know that the user is hitting a URL that doesn't exist. By throwing a
-// 404 from the loader, we can force the error boundary to render which will
-// ensure the user gets the right status code and we can display a nicer error
-// message for them than the Remix and/or browser default.
-
-import { Link, useLocation } from "@remix-run/react";
+import { type LinksFunction } from "@remix-run/node";
+import { Link } from "@remix-run/react";
+import DinoGame from "react-chrome-dino-ts";
+import reactChromeDinoCss from "react-chrome-dino-ts/index.css?url";
 import { GeneralErrorBoundary } from "#app/components/error-boundary";
 import { Icon } from "#app/components/ui/icon";
+
+export const links: LinksFunction = () => {
+  return [{ rel: "stylesheet", href: reactChromeDinoCss }];
+};
 
 export async function loader() {
   throw new Response("Not found", { status: 404 });
 }
 
 export default function NotFound() {
-  // due to the loader, this component will never be rendered, but we'll return
-  // the error boundary just in case.
   return <ErrorBoundary />;
 }
 
 export function ErrorBoundary() {
-  const location = useLocation();
   return (
     <GeneralErrorBoundary
       statusHandlers={{
         404: () => (
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6 pt-10">
             <div className="flex flex-col gap-3">
-              <h1>We can't find this page:</h1>
-              <pre className="whitespace-pre-wrap break-all text-body-lg">
-                {location.pathname}
-              </pre>
+              <h1 className="text-h1">Lost, but not forgotten</h1>
             </div>
             <Link to="/" className="text-body-md underline">
-              <Icon name="arrow-left-outline">Back to home</Icon>
+              <Icon name="arrow-left-outline">Let's find your way back</Icon>
             </Link>
+            <div className="hidden w-full text-body-md lg:block">
+              <h2>Feel free to play a game while you're here</h2>
+              <DinoGame hideInstructions />
+              <p className="mt-6 text-center text-base text-foreground/70">
+                Press space to start the game.
+              </p>
+            </div>
           </div>
         ),
       }}
