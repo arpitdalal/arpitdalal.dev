@@ -7,7 +7,7 @@ export function getSocialMetas({
   // 	words: title,
   // 	featuredImage: images.kodyFlyingSnowboardingBlue.id,
   // }),
-  keywords = "Web Developer Portfolio, Website Consulting, Javascript Consulting, Typescript Consulting, Nodejs Consulting, React Consulting, Wordpress Developer, Website Developer, Website Architect",
+  keywords = "Web Developer Portfolio, Website Consulting, Typescript Developer, React Developer, Frontend Developer, Full Stack Developer, Wordpress Developer, Website Developer, Website Architect",
 }: {
   image?: string;
   url: string;
@@ -28,8 +28,8 @@ export function getSocialMetas({
     // 	name: 'twitter:card',
     // 	content: image ? 'summary_large_image' : 'summary',
     // },
-    { name: "twitter:creator", content: "@kentcdodds" },
-    { name: "twitter:site", content: "@kentcdodds" },
+    { name: "twitter:creator", content: "@arpitdalal_dev" },
+    { name: "twitter:site", content: "@arpitdalal_dev" },
     { name: "twitter:title", content: title },
     { name: "twitter:description", content: description },
     // { name: 'twitter:image', content: image },
