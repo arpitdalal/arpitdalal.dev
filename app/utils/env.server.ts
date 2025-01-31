@@ -9,6 +9,7 @@ const schema = z.object({
   NODEMAILER_HOST: z.string(),
   NODEMAILER_USER: z.string(),
   NODEMAILER_PASSWORD: z.string(),
+  HASHNODE_PUBLICATION_ID: z.string(),
   ALLOW_INDEXING: z.enum(["true", "false"]).optional(),
 });
 

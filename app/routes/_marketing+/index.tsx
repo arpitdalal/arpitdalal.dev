@@ -1,5 +1,6 @@
-import { Link } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { ClientOnly } from "remix-utils/client-only";
+import { BlogPosts, fetchBlogPosts } from "#app/components/blog-posts";
 import ExternalLink from "#app/components/external-link";
 import {
   HeroHighlight,
@@ -7,17 +8,31 @@ import {
   HighlightUnderline,
   HeroHighlightH1,
 } from "#app/components/highlight";
-import Projects from "#app/components/projects";
+import { Projects } from "#app/components/projects";
 import { Button } from "#app/components/ui/button";
 import { Icon } from "#app/components/ui/icon";
 import { WorkExperience } from "#app/components/work-experience";
 import {
-  projects,
-  socialLinks,
-  workExperience,
+  projectsData,
+  socialLinksData,
+  workExperienceData,
 } from "#app/routes/_marketing+/__data";
 
-export default function Layout() {
+export async function loader() {
+  const blogPosts = await fetchBlogPosts();
+
+  return {
+    blogPosts,
+    projects: projectsData,
+    workExperience: workExperienceData,
+    socialLinks: socialLinksData,
+  };
+}
+
+export default function Index() {
+  const { blogPosts, projects, workExperience, socialLinks } =
+    useLoaderData<typeof loader>();
+
   return (
     <>
       <HeroHighlight className="pt-24">
@@ -77,6 +92,11 @@ export default function Layout() {
         }
       >
         {() => <WorkExperience workExperience={workExperience} jsEnabled />}
+      </ClientOnly>
+      <ClientOnly
+        fallback={<BlogPosts blogPosts={blogPosts} jsEnabled={false} />}
+      >
+        {() => <BlogPosts blogPosts={blogPosts} jsEnabled />}
       </ClientOnly>
       <ClientOnly fallback={<Projects projects={projects} jsEnabled={false} />}>
         {() => <Projects projects={projects} jsEnabled />}
