@@ -49,7 +49,7 @@ export function BlogPosts({
   blogPosts: BlogPost[];
 }) {
   return (
-    <Section id="blog" jsEnabled={jsEnabled} sectionTitle="Blog Posts">
+    <Section id="blog" jsEnabled={jsEnabled} sectionTitle="Articles">
       {blogPosts.map((post) => (
         <Card
           key={post.title}
