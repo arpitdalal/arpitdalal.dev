@@ -182,7 +182,7 @@ app.use((req, res, next) => {
 async function getBuild() {
   try {
     const build = viteDevServer
-      ? viteDevServer.ssrLoadModule("virtual:remix/server-build")
+      ? await viteDevServer.ssrLoadModule("virtual:remix/server-build")
       : // @ts-ignore - the file might not exist yet but it will
         await import("../build/server/index.js");
     return { build: build as unknown as ServerBuild, error: null };
