@@ -15,7 +15,7 @@ import { useHints } from "#app/utils/client-hints";
 import { capitalize, cn } from "#app/utils/misc";
 import { useIsScrollable } from "#app/utils/use-is-scrollable";
 
-const SCROLL_THRESHOLD = 0.25;
+const SCROLL_THRESHOLD_PX = 300;
 const HEADER_STYLES = {
   PADDING_INLINE_START: "0",
   PADDING_INLINE_END: "2rem",
@@ -66,7 +66,7 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const { width: windowWidth } = useWindowSize();
   const { reducedMotion } = useHints();
-  const { scrollYProgress } = useScroll();
+  const { scrollY } = useScroll();
   const isReducedMotion = reducedMotion === "reduce";
   const transition = isReducedMotion ? { duration: 0 } : {};
   const spanRef = useRef<HTMLSpanElement>(null);
@@ -81,8 +81,8 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
       return HEADER_STYLES.PADDING_INLINE_START;
 
     return transform(
-      scrollYProgress.get(),
-      [0, SCROLL_THRESHOLD],
+      scrollY.get(),
+      [0, SCROLL_THRESHOLD_PX],
       [HEADER_STYLES.PADDING_INLINE_START, HEADER_STYLES.PADDING_INLINE_END],
     );
   });
@@ -91,8 +91,8 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
       return HEADER_STYLES.TOP_START;
 
     return transform(
-      scrollYProgress.get(),
-      [0, SCROLL_THRESHOLD],
+      scrollY.get(),
+      [0, SCROLL_THRESHOLD_PX],
       [HEADER_STYLES.TOP_START, HEADER_STYLES.TOP_END],
     );
   });
@@ -101,8 +101,8 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     if (isReducedMotion) return windowWidth;
 
     return transform(
-      scrollYProgress.get(),
-      [0, SCROLL_THRESHOLD],
+      scrollY.get(),
+      [0, SCROLL_THRESHOLD_PX],
       [windowWidth, DIV_STYLES.MAX_WIDTH_END],
     );
   });
@@ -111,8 +111,8 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
       return DIV_STYLES.BORDER_RADIUS_START;
 
     return transform(
-      scrollYProgress.get(),
-      [0, SCROLL_THRESHOLD],
+      scrollY.get(),
+      [0, SCROLL_THRESHOLD_PX],
       [DIV_STYLES.BORDER_RADIUS_START, DIV_STYLES.BORDER_RADIUS_END],
     );
   });
@@ -121,8 +121,8 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
       return DIV_STYLES.BORDER_WIDTH_START;
 
     return transform(
-      scrollYProgress.get(),
-      [0, SCROLL_THRESHOLD],
+      scrollY.get(),
+      [0, SCROLL_THRESHOLD_PX],
       [DIV_STYLES.BORDER_WIDTH_START, DIV_STYLES.BORDER_WIDTH_END],
     );
   });
@@ -135,13 +135,13 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     }
     if (!jsEnabled) return `blur(${DIV_STYLES.BACKDROP_BLUR_END})`;
 
-    if (isMobileNavOpen && scrollYProgress.get() === 0) {
+    if (isMobileNavOpen && scrollY.get() === 0) {
       return `blur(${DIV_STYLES.BACKDROP_BLUR_END})`;
     }
 
     const transformedValue = transform(
-      scrollYProgress.get(),
-      [0, SCROLL_THRESHOLD],
+      scrollY.get(),
+      [0, SCROLL_THRESHOLD_PX],
       [DIV_STYLES.BACKDROP_BLUR_START, DIV_STYLES.BACKDROP_BLUR_END],
     );
     return `blur(${transformedValue})`;
@@ -156,13 +156,13 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
     if (!jsEnabled)
       return `hsl(var(--accent) / ${DIV_STYLES.BG_OPACITY_START})`;
 
-    if (isMobileNavOpen && scrollYProgress.get() === 0) {
+    if (isMobileNavOpen && scrollY.get() === 0) {
       return `hsl(var(--accent) / ${DIV_STYLES.BG_OPACITY_END})`;
     }
 
     const transformedValue = transform(
-      scrollYProgress.get(),
-      [0, SCROLL_THRESHOLD],
+      scrollY.get(),
+      [0, SCROLL_THRESHOLD_PX],
       [DIV_STYLES.BG_OPACITY_START, DIV_STYLES.BG_OPACITY_END],
     );
     return `hsl(var(--accent) / ${transformedValue})`;
@@ -172,8 +172,8 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
       return `0 10px 15px -3px rgb(0 0 0 / ${DIV_STYLES.SHADOW_OPACITY_START}), 0 4px 6px -4px rgb(0 0 0 / ${DIV_STYLES.SHADOW_OPACITY_START})`;
 
     const transformedValue = transform(
-      scrollYProgress.get(),
-      [0, SCROLL_THRESHOLD],
+      scrollY.get(),
+      [0, SCROLL_THRESHOLD_PX],
       [DIV_STYLES.SHADOW_OPACITY_START, DIV_STYLES.SHADOW_OPACITY_END],
     );
     return `0 10px 15px -3px rgb(0 0 0 / ${transformedValue}), 0 4px 6px -4px rgb(0 0 0 / ${transformedValue})`;
@@ -183,8 +183,8 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
       return NAV_STYLES.PADDING_START;
 
     return transform(
-      scrollYProgress.get(),
-      [0, SCROLL_THRESHOLD],
+      scrollY.get(),
+      [0, SCROLL_THRESHOLD_PX],
       [NAV_STYLES.PADDING_START, NAV_STYLES.PADDING_END],
     );
   });
@@ -193,8 +193,8 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
       return TEXT_STYLES.OPACITY_START;
 
     return transform(
-      scrollYProgress.get(),
-      [0, SCROLL_THRESHOLD],
+      scrollY.get(),
+      [0, SCROLL_THRESHOLD_PX],
       [TEXT_STYLES.OPACITY_START, TEXT_STYLES.OPACITY_END],
     );
   });
@@ -203,8 +203,8 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
       return TEXT_STYLES.X_START;
 
     return transform(
-      scrollYProgress.get(),
-      [0, SCROLL_THRESHOLD],
+      scrollY.get(),
+      [0, SCROLL_THRESHOLD_PX],
       [TEXT_STYLES.X_START, -(spanWidth ?? TEXT_STYLES.X_END)],
     );
   });
