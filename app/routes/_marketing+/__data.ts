@@ -5,7 +5,7 @@ type SocialLink = {
   href: string;
   icon: IconName;
 };
-export const socialLinks = [
+export const socialLinksData = [
   {
     name: "Twitter",
     href: "https://arpit.im/x",
@@ -39,7 +39,7 @@ export type WorkExperience = {
   endDate: string;
   tags: string[];
 };
-export const workExperience = [
+export const workExperienceData = [
   {
     title: "Web Developer Product Specialist",
     link: "https://points.com",
@@ -116,7 +116,7 @@ export type Project = {
   openSource?: boolean;
   hightLightLinks?: Array<{ name: string; href: string }>;
 };
-export const projects = [
+export const projectsData = [
   {
     title: "X Man",
     link: "https://arpit.im/xman",
