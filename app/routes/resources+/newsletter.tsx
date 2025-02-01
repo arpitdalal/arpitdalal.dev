@@ -1,8 +1,13 @@
 import { parseWithZod } from "@conform-to/zod";
-import { type ActionFunctionArgs } from "@remix-run/node";
+import { type ActionFunctionArgs, type LinksFunction } from "@remix-run/node";
 import { z } from "zod";
+import { NotFound, dinoCssLinks } from "#app/components/error-boundary";
 import { ADD_SUBSCRIBER } from "#app/graphql/queries";
 import { checkHoneypot } from "#app/utils/honeypot.server";
+
+export const links: LinksFunction = () => {
+  return [...dinoCssLinks()];
+};
 
 const NewsletterSchema = z.object({
   email: z
@@ -37,6 +42,10 @@ export async function action({ request }: ActionFunctionArgs) {
       error: "Error subscribing to newsletter. Please try again later.",
     };
   }
+}
+
+export default function Newsletter() {
+  return <NotFound />;
 }
 
 const SubscribeResponseSchema = z.object({
