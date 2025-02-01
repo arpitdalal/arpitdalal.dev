@@ -18,11 +18,12 @@ import {
   HeroHighlightDescription,
   HeroHighlightH1,
 } from "#app/components/highlight";
+import { LineGlow } from "#app/components/line-glow";
 import { TextareaField } from "#app/components/textarea-field";
 import { Button } from "#app/components/ui/button";
 import { Icon } from "#app/components/ui/icon";
 import { sendEmail } from "#app/utils/email";
-import { LineGlow } from "../../components/line-glow";
+import { checkHoneypot } from "#app/utils/honeypot.server";
 
 export const meta: MetaFunction = () => [
   {
@@ -48,6 +49,7 @@ export const ContactSchema = z.object({
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
+  await checkHoneypot(formData);
   const submission = parseWithZod(formData, { schema: ContactSchema });
   if (submission.status !== "success") {
     return { result: submission.reply(), error: "Invalid form data" };
