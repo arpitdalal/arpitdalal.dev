@@ -1,6 +1,6 @@
 export const GET_BLOG_POSTS = `
   query GetBlogPosts {
-    publication(host: "${process.env.HASHNODE_PUBLICATION_ID}") {
+    publication(host: "${process.env.HASHNODE_PUBLICATION_HOST}") {
       posts(first: 10) {
         edges {
           node {
@@ -16,6 +16,14 @@ export const GET_BLOG_POSTS = `
           }
         }
       }
+    }
+  }
+`;
+
+export const ADD_SUBSCRIBER = `
+  mutation SubscribeToNewsletter($input: SubscribeToNewsletterInput!) {
+    subscribeToNewsletter(input: $input) {
+      status
     }
   }
 `;

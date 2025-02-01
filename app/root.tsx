@@ -20,6 +20,7 @@ import { GeneralErrorBoundary } from "#app/components/error-boundary";
 import ExternalLink from "#app/components/external-link";
 import { Header } from "#app/components/header";
 import { Logo, LogoCircle, LogoImage, LogoSpinner } from "#app/components/logo";
+import { Newsletter } from "#app/components/newsletter";
 import { EpicProgress } from "#app/components/progress-bar";
 import { href as iconsHref } from "#app/components/ui/icon";
 import tailwindStyleSheetUrl from "#app/styles/tailwind.css?url";
@@ -177,7 +178,7 @@ export const headerAndFooterCommonLinks = {
 function Footer() {
   return (
     <footer className="border-t border-foreground/40">
-      <div className="container flex flex-wrap justify-between gap-10 py-5">
+      <div className="container flex flex-wrap items-start justify-between gap-10 py-5">
         <Link
           to="/"
           className="group z-10 flex items-center gap-4 outline-none ring-ring ring-offset-2 ring-offset-background transition-colors focus-within:ring-2 focus-visible:ring-2"
@@ -194,7 +195,7 @@ function Footer() {
             Arpit Dalal
           </span>
         </Link>
-        <nav>
+        <nav className="grow">
           <p className="text-lg">
             <strong>Pages</strong>
           </p>
@@ -229,6 +230,7 @@ function Footer() {
             ))}
           </ul>
         </nav>
+        <Newsletter />
       </div>
     </footer>
   );
