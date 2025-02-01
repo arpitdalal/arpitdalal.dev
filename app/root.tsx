@@ -230,7 +230,15 @@ function Footer() {
             ))}
           </ul>
         </nav>
-        <Newsletter />
+        <div>
+          <h2 className="text-lg font-bold xs:text-2xl">
+            Subscribe to my newsletter
+          </h2>
+          <p className="mt-2 text-sm text-foreground/70">
+            Get the latest updates from me directly to your inbox, no spam.
+          </p>
+          <Newsletter />
+        </div>
       </div>
     </footer>
   );

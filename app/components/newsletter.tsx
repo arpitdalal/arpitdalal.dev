@@ -19,7 +19,11 @@ const NewsletterSchema = z.object({
     .min(1, "Email is required"),
 });
 
-export function Newsletter() {
+export function Newsletter({
+  autoFocusInput = false,
+}: {
+  autoFocusInput?: boolean;
+}) {
   const newsletterFetcher = useFetcher<typeof action>();
 
   const [form, fields] = useForm({
@@ -32,44 +36,37 @@ export function Newsletter() {
   });
 
   return (
-    <div>
-      <h2 className="text-lg font-bold xs:text-2xl">
-        Subscribe to my newsletter
-      </h2>
-      <p className="mt-2 text-sm text-foreground/70">
-        Get the latest updates from me directly to your inbox, no spam.
-      </p>
-      <newsletterFetcher.Form
-        method="POST"
-        action="/resources/newsletter"
-        className="mt-4"
-        {...getFormProps(form)}
-      >
-        <HoneypotInputs />
-        <div className="flex flex-row">
-          <Field
-            labelProps={{ children: "Email" }}
-            inputProps={{
-              ...getInputProps(fields.email, { type: "email" }),
-              placeholder: "Enter your email",
-            }}
-            errors={fields.email.errors}
-          />
-          <div className="flex justify-end">
-            <SubmitButton
-              state={newsletterFetcher.state}
-              data={newsletterFetcher.data}
-            />
-          </div>
-        </div>
-        <div className="min-h-[32px] pb-4">
-          <ErrorList
-            id="newsletter-errors"
-            errors={[newsletterFetcher.data?.error]}
+    <newsletterFetcher.Form
+      method="POST"
+      action="/resources/newsletter"
+      className="mt-4"
+      {...getFormProps(form)}
+    >
+      <HoneypotInputs />
+      <div className="flex flex-row">
+        <Field
+          labelProps={{ children: "Email" }}
+          inputProps={{
+            ...getInputProps(fields.email, { type: "email" }),
+            placeholder: "Enter your email",
+            autoFocus: autoFocusInput,
+          }}
+          errors={fields.email.errors}
+        />
+        <div className="flex justify-end">
+          <SubmitButton
+            state={newsletterFetcher.state}
+            data={newsletterFetcher.data}
           />
         </div>
-      </newsletterFetcher.Form>
-    </div>
+      </div>
+      <div className="min-h-[32px] pb-4">
+        <ErrorList
+          id="newsletter-errors"
+          errors={[newsletterFetcher.data?.error]}
+        />
+      </div>
+    </newsletterFetcher.Form>
   );
 }
 
