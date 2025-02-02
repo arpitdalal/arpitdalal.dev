@@ -1,8 +1,4 @@
 import {
-  type LoaderFunctionArgs,
-  type HeadersFunction,
-  type LinksFunction,
-  type MetaFunction,
   Link,
   Links,
   Meta,
@@ -13,6 +9,8 @@ import {
 } from "react-router";
 import { ClientOnly } from "remix-utils/client-only";
 import { HoneypotProvider } from "remix-utils/honeypot/react";
+import appleTouchIconAssetUrl from "#app/assets/favicons/apple-touch-icon.png";
+import faviconAssetUrl from "#app/assets/favicons/favicon.svg";
 import { GeneralErrorBoundary } from "#app/components/error-boundary";
 import ExternalLink from "#app/components/external-link";
 import { Header } from "#app/components/header";
@@ -28,31 +26,31 @@ import { capitalize, getDomainUrl, getUrl } from "#app/utils/misc";
 import { useNonce } from "#app/utils/nonce-provider";
 import { getSocialMetas } from "#app/utils/seo";
 import { type Theme } from "#types/index";
+import { type Route } from "./+types/root.ts";
 
-export const links: LinksFunction = () => {
+export const links: Route.LinksFunction = () => {
   return [
     { rel: "preload", href: iconsHref, as: "image" },
     // { rel: "preload", href: fontStyleStyleSheetUrl, as: "style" },
     { rel: "preload", href: tailwindStyleSheetUrl, as: "style" },
-    { rel: "mask-icon", href: "/favicons/mask-icon.svg" },
     {
-      rel: "alternate icon",
-      type: "image/png",
-      href: "/favicons/favicon-32x32.png",
+      rel: "icon",
+      href: "/favicon.ico",
+      sizes: "48x48",
     },
-    { rel: "apple-touch-icon", href: "/favicons/apple-touch-icon.png" },
+    { rel: "icon", type: "image/svg+xml", href: faviconAssetUrl },
+    { rel: "apple-touch-icon", href: appleTouchIconAssetUrl },
     {
       rel: "manifest",
       href: "/site.webmanifest",
       crossOrigin: "use-credentials",
-    } as const, // necessary to make typescript happy
-    { rel: "icon", type: "image/ico", href: "/favicon.ico" },
+    },
     // { rel: "stylesheet", href: fontStyleStyleSheetUrl },
     { rel: "stylesheet", href: tailwindStyleSheetUrl },
   ].filter(Boolean);
 };
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => {
+export const meta: Route.MetaFunction = ({ data }) => {
   const requestInfo = data?.requestInfo;
   return [
     { viewport: "width=device-width,initial-scale=1,viewport-fit=cover" },
@@ -65,7 +63,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   ];
 };
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   const honeyProps = await honeypot.getInputProps();
 
   return {
@@ -79,7 +77,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   };
 }
 
-export const headers: HeadersFunction = ({ loaderHeaders }) => {
+export const headers: Route.HeadersFunction = ({ loaderHeaders }) => {
   const headers = {
     "Server-Timing": loaderHeaders.get("Server-Timing") ?? "",
   };
@@ -91,15 +89,14 @@ function Document({
   nonce,
   theme,
   env = {},
-  allowIndexing = true,
 }: {
   children: React.ReactNode;
   nonce: string;
   theme?: Theme;
   env?: Record<string, string | undefined>;
-  allowIndexing?: boolean;
 }) {
   const { theme: hintTheme } = useHints();
+
   return (
     <html
       lang="en"
@@ -110,9 +107,6 @@ function Document({
         <Meta />
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
-        {allowIndexing ? null : (
-          <meta name="robots" content="noindex, nofollow" />
-        )}
         <Links />
       </head>
       <body className="bg-background text-foreground">
@@ -130,19 +124,25 @@ function Document({
   );
 }
 
-function App() {
-  const data = useLoaderData<typeof loader>();
+export function Layout({ children }: { children: React.ReactNode }) {
+  // if there was an error running the loader, data could be missing
+  const data = useLoaderData<typeof loader | null>();
   const nonce = useNonce();
-  const theme = data.requestInfo.hints.theme;
-  const allowIndexing = data.ENV.ALLOW_INDEXING !== "false";
 
   return (
     <Document
       nonce={nonce}
-      theme={theme}
-      allowIndexing={allowIndexing}
-      env={data.ENV}
+      theme={data?.requestInfo?.hints.theme}
+      env={data?.ENV}
     >
+      {children}
+    </Document>
+  );
+}
+
+function App() {
+  return (
+    <>
       <div className="flex min-h-screen flex-col justify-between">
         <ClientOnly fallback={<Header jsEnabled={false} />}>
           {() => <Header jsEnabled />}
@@ -153,12 +153,13 @@ function App() {
         <Footer />
       </div>
       <EpicProgress />
-    </Document>
+    </>
   );
 }
 
 function AppWithProviders() {
   const data = useLoaderData<typeof loader>();
+
   return (
     <HoneypotProvider {...data.honeyProps}>
       <App />
