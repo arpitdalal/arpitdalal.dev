@@ -10,7 +10,7 @@ import {
 import { ClientOnly } from "remix-utils/client-only";
 import { HoneypotProvider } from "remix-utils/honeypot/react";
 import appleTouchIconAssetUrl from "#app/assets/favicons/apple-touch-icon.png";
-import faviconAssetUrl from "#app/assets/favicons/favicon.svg";
+import faviconAssetUrl from "#app/assets/favicons/favicon.png";
 import { GeneralErrorBoundary } from "#app/components/error-boundary";
 import ExternalLink from "#app/components/external-link";
 import { Header } from "#app/components/header";
@@ -38,7 +38,7 @@ export const links: Route.LinksFunction = () => {
       href: "/favicon.ico",
       sizes: "48x48",
     },
-    { rel: "icon", type: "image/svg+xml", href: faviconAssetUrl },
+    { rel: "icon", type: "image/png", href: faviconAssetUrl },
     { rel: "apple-touch-icon", href: appleTouchIconAssetUrl },
     {
       rel: "manifest",
