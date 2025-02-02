@@ -1,12 +1,17 @@
 import { default as defaultConfig } from "@epic-web/config/eslint";
+import reactCompiler from "eslint-plugin-react-compiler";
 
 /** @type {import("eslint").Linter.Config} */
 export default [
   ...defaultConfig,
-  // add custom config objects here:
   {
+    plugins: {
+      "react-compiler": reactCompiler,
+    },
     files: ["**/tests/**/*.ts"],
-    rules: { "react-hooks/rules-of-hooks": "off" },
+    rules: {
+      "react-compiler/react-compiler": "error",
+    },
   },
   {
     ignores: [".react-router/*"],
