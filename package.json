@@ -4,12 +4,17 @@
   "sideEffects": false,
   "type": "module",
   "imports": {
-    "#app/*": "./app/*"
+    "#app/*": "./app/*",
+    "#types/*": "./types/*"
   },
   "author": {
     "name": "Arpit Dalal",
     "email": "arpitdalalm@gmail.com",
     "url": "https://arpitdalal.dev"
+  },
+  "epic-stack": {
+    "head": "d3a6dcca8795288e26bcdc99cd0e9be4a0d6d033",
+    "date": "2025-02-02T01:04:37Z"
   },
   "scripts": {
     "build": "run-s build:*",
@@ -124,6 +129,5 @@
   },
   "engines": {
     "node": "22"
-  },
-  "epic-stack": true
+  }
 }
