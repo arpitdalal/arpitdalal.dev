@@ -1,4 +1,4 @@
-import { useMotionValue, motion, useMotionTemplate } from "framer-motion";
+import { useMotionValue, motion, useMotionTemplate } from "motion/react";
 import React from "react";
 import { cn } from "#app/utils/misc";
 

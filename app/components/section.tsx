@@ -1,5 +1,5 @@
 import { useWindowSize } from "@reactuses/core";
-import { motion, transform, useScroll, useTransform } from "framer-motion";
+import { motion, transform, useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
 import { HighlightUnderline } from "#app/components/highlight";
 import { useHints } from "#app/utils/client-hints";

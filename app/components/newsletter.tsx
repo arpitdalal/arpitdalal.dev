@@ -1,6 +1,6 @@
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useState, useEffect } from "react";
 import { useFetcher, type FetcherWithComponents } from "react-router";
 import { HoneypotInputs } from "remix-utils/honeypot/react";

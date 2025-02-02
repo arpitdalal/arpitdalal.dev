@@ -1,5 +1,5 @@
 import { useEventListener, useWindowSize } from "@reactuses/core";
-import { motion, transform, useScroll, useTransform } from "framer-motion";
+import { motion, transform, useScroll, useTransform } from "motion/react";
 import { useRef, useState } from "react";
 import ExternalLink from "#app/components/external-link";
 import { HighlightUnderline } from "#app/components/highlight";

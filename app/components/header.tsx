@@ -5,7 +5,7 @@ import {
   useScroll,
   useTransform,
   transform,
-} from "framer-motion";
+} from "motion/react";
 import { useRef, useState } from "react";
 import { Link, NavLink } from "react-router";
 import ExternalLink from "#app/components/external-link";
