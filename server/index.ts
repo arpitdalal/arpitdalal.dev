@@ -15,7 +15,6 @@ import { type ServerBuild } from "react-router";
 const MODE = process.env.NODE_ENV ?? "development";
 const IS_PROD = MODE === "production";
 const IS_DEV = MODE === "development";
-const ALLOW_INDEXING = process.env.ALLOW_INDEXING !== "false";
 const SENTRY_ENABLED = IS_PROD && process.env.SENTRY_DSN;
 
 if (SENTRY_ENABLED) {
@@ -141,11 +140,11 @@ const maxMultiple =
   !IS_PROD || process.env.PLAYWRIGHT_TEST_BASE_URL ? 10_000 : 1;
 const rateLimitDefault = {
   windowMs: 60 * 1000,
-  max: 1000 * maxMultiple,
+  limit: 1000 * maxMultiple,
   standardHeaders: true,
   legacyHeaders: false,
   validate: { trustProxy: false },
-  // Malicious users can spoof their IP address which means we should not deault
+  // Malicious users can spoof their IP address which means we should not default
   // to trusting req.ip when hosted on Fly.io. However, users cannot spoof Fly-Client-Ip.
   // When sitting behind a CDN such as cloudflare, replace fly-client-ip with the CDN
   // specific header such as cf-connecting-ip
@@ -157,13 +156,13 @@ const rateLimitDefault = {
 const strongestRateLimit = rateLimit({
   ...rateLimitDefault,
   windowMs: 60 * 1000,
-  max: 10 * maxMultiple,
+  limit: 10 * maxMultiple,
 });
 
 const strongRateLimit = rateLimit({
   ...rateLimitDefault,
   windowMs: 60 * 1000,
-  max: 100 * maxMultiple,
+  limit: 100 * maxMultiple,
 });
 
 const generalRateLimit = rateLimit(rateLimitDefault);
@@ -191,13 +190,6 @@ async function getBuild() {
     console.error("Error creating build:", error);
     return { error: error, build: null as unknown as ServerBuild };
   }
-}
-
-if (!ALLOW_INDEXING) {
-  app.use((_, res, next) => {
-    res.set("X-Robots-Tag", "noindex, nofollow");
-    next();
-  });
 }
 
 app.all(

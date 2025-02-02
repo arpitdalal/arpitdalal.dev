@@ -10,7 +10,6 @@ const schema = z.object({
   NODEMAILER_USER: z.string(),
   NODEMAILER_PASSWORD: z.string(),
   HASHNODE_PUBLICATION_ID: z.string(),
-  ALLOW_INDEXING: z.enum(["true", "false"]).optional(),
 });
 
 declare global {
@@ -45,7 +44,6 @@ export function getEnv() {
   return {
     MODE: process.env.NODE_ENV,
     SENTRY_DSN: process.env.SENTRY_DSN,
-    ALLOW_INDEXING: process.env.ALLOW_INDEXING,
   };
 }
 
