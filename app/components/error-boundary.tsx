@@ -1,16 +1,16 @@
 import { useEventListener } from "@reactuses/core";
-import { type LinksFunction } from "@remix-run/node";
+import { captureException } from "@sentry/react";
+import { useEffect, type ReactElement } from "react";
+import DinoGame from "react-chrome-dino-ts";
+import reactChromeDinoCss from "react-chrome-dino-ts/index.css?url";
 import {
   type ErrorResponse,
   isRouteErrorResponse,
   useParams,
   useRouteError,
   Link,
-} from "@remix-run/react";
-import { captureRemixErrorBoundaryError } from "@sentry/remix";
-import { type ReactElement } from "react";
-import DinoGame from "react-chrome-dino-ts";
-import reactChromeDinoCss from "react-chrome-dino-ts/index.css?url";
+  type LinksFunction,
+} from "react-router";
 import { getErrorMessage } from "#app/utils/misc";
 import { Icon } from "./ui/icon";
 
@@ -33,8 +33,11 @@ export function GeneralErrorBoundary({
   unexpectedErrorHandler?: (error: unknown) => ReactElement | null;
 }) {
   const error = useRouteError();
-  captureRemixErrorBoundaryError(error);
   const params = useParams();
+
+  useEffect(() => {
+    captureException(error);
+  }, [error]);
 
   if (typeof document !== "undefined") {
     console.error(error);

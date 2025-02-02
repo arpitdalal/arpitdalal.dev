@@ -3,8 +3,6 @@ import {
   type HeadersFunction,
   type LinksFunction,
   type MetaFunction,
-} from "@remix-run/node";
-import {
   Link,
   Links,
   Meta,
@@ -12,8 +10,7 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
-} from "@remix-run/react";
-import { withSentry } from "@sentry/remix";
+} from "react-router";
 import { ClientOnly } from "remix-utils/client-only";
 import { HoneypotProvider } from "remix-utils/honeypot/react";
 import { GeneralErrorBoundary } from "#app/components/error-boundary";
@@ -99,7 +96,7 @@ function Document({
   children: React.ReactNode;
   nonce: string;
   theme?: Theme;
-  env?: Record<string, string>;
+  env?: Record<string, string | undefined>;
   allowIndexing?: boolean;
 }) {
   const { theme: hintTheme } = useHints();
@@ -169,7 +166,7 @@ function AppWithProviders() {
   );
 }
 
-export default withSentry(AppWithProviders);
+export default AppWithProviders;
 
 export const headerAndFooterCommonLinks = {
   contact: "contact",

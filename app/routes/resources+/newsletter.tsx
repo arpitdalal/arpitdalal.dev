@@ -1,5 +1,5 @@
 import { parseWithZod } from "@conform-to/zod";
-import { type ActionFunctionArgs, type LinksFunction } from "@remix-run/node";
+import { type ActionFunctionArgs, type LinksFunction } from "react-router";
 import { z } from "zod";
 import { NotFound, dinoCssLinks } from "#app/components/error-boundary";
 import { ADD_SUBSCRIBER } from "#app/graphql/queries";

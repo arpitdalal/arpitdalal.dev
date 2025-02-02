@@ -1,20 +1,20 @@
 import { PassThrough } from "stream";
-import {
-  createReadableStreamFromReadable,
-  type LoaderFunctionArgs,
-  type ActionFunctionArgs,
-  type HandleDocumentRequestFunction,
-} from "@remix-run/node";
-import { RemixServer } from "@remix-run/react";
-import * as Sentry from "@sentry/remix";
+import { createReadableStreamFromReadable } from "@react-router/node";
+import * as Sentry from "@sentry/node";
 import chalk from "chalk";
 import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
+import {
+  ServerRouter,
+  type LoaderFunctionArgs,
+  type ActionFunctionArgs,
+  type HandleDocumentRequestFunction,
+} from "react-router";
 import { getEnv, init } from "./utils/env.server";
 import { NonceProvider } from "./utils/nonce-provider";
 import { makeTimings } from "./utils/timing.server";
 
-const ABORT_DELAY = 5_000;
+export const streamTimeout = 5000;
 
 init();
 global.ENV = getEnv();
@@ -26,7 +26,7 @@ export default async function handleRequest(...args: DocRequestArgs) {
     request,
     responseStatusCode,
     responseHeaders,
-    remixContext,
+    reactRouterContext,
     loadContext,
   ] = args;
   responseHeaders.set("fly-region", process.env.FLY_REGION ?? "unknown");
@@ -40,7 +40,7 @@ export default async function handleRequest(...args: DocRequestArgs) {
     ? "onAllReady"
     : "onShellReady";
 
-  const nonce = String(loadContext.cspNonce) ?? undefined;
+  const nonce = loadContext.cspNonce?.toString() ?? "";
   return new Promise(async (resolve, reject) => {
     let didError = false;
     // NOTE: this timing will only include things that are rendered in the shell
@@ -49,10 +49,9 @@ export default async function handleRequest(...args: DocRequestArgs) {
 
     const { pipe, abort } = renderToPipeableStream(
       <NonceProvider value={nonce}>
-        <RemixServer
-          context={remixContext}
+        <ServerRouter
+          context={reactRouterContext}
           url={request.url}
-          abortDelay={ABORT_DELAY}
           nonce={nonce}
         />
       </NonceProvider>,
@@ -79,7 +78,7 @@ export default async function handleRequest(...args: DocRequestArgs) {
       },
     );
 
-    setTimeout(abort, ABORT_DELAY);
+    setTimeout(abort, streamTimeout + 5000);
   });
 }
 
@@ -101,12 +100,7 @@ export function handleError(
   }
   if (error instanceof Error) {
     console.error(chalk.red(error.stack));
-    void Sentry.captureRemixServerException(
-      error,
-      "remix.server",
-      request,
-      true,
-    );
+    void Sentry.captureException(error);
   } else {
     console.error(error);
     void Sentry.captureException(error);

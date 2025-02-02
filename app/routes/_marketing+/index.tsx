@@ -1,4 +1,4 @@
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "react-router";
 import { ClientOnly } from "remix-utils/client-only";
 import { BlogPosts, fetchBlogPosts } from "#app/components/blog-posts";
 import ExternalLink from "#app/components/external-link";

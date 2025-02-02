@@ -1,5 +1,5 @@
 import { generateSitemap } from "@nasa-gcn/remix-seo";
-import { type ServerBuild, type LoaderFunctionArgs } from "@remix-run/node";
+import { type ServerBuild, type LoaderFunctionArgs } from "react-router";
 import { getDomainUrl } from "#app/utils/misc";
 
 const SITEMAP_CACHE_DURATION = 60 * 5; // 5 minutes in seconds

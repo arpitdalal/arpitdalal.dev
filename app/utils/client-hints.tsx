@@ -9,8 +9,8 @@ import {
 } from "@epic-web/client-hints/color-scheme";
 import { clientHint as reducedMotionHint } from "@epic-web/client-hints/reduced-motion";
 import { clientHint as timeZoneHint } from "@epic-web/client-hints/time-zone";
-import { useRevalidator } from "@remix-run/react";
 import * as React from "react";
+import { useRevalidator } from "react-router";
 import { useRequestInfo } from "./request-info";
 
 const hintsUtils = getHintUtils({

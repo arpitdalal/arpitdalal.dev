@@ -12,6 +12,7 @@
     "strict": true,
     "noImplicitAny": true,
     "allowJs": true,
+    "allowImportingTsExtensions": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
       "#*": ["./*"],

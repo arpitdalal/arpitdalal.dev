@@ -1,4 +1,4 @@
-import { type MetaFunction } from "@remix-run/node";
+import { type MetaFunction } from "react-router";
 import {
   HeroHighlight,
   HeroHighlightH1,
@@ -13,7 +13,7 @@ export const meta: MetaFunction = () => [
   },
 ];
 
-export default function Uses() {
+export default function Subscribe() {
   return (
     <>
       <HeroHighlight className="pt-24">
