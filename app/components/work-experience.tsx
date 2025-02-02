@@ -150,7 +150,6 @@ export function WorkExperienceCard({
         {/* Hover background */}
         <div
           style={{
-            // @ts-expect-error - CSS variables
             "--motion-factor": isReducedMotion ? 0 : 0.05,
             "--x-motion": `${offsetX}px`,
             "--y-motion": `${offsetY}px`,
