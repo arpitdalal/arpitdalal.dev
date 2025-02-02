@@ -291,7 +291,7 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
             </ul>
             <div className="md:hidden">
               <motion.button
-                initial="hide"
+                initial="closed"
                 animate={isMobileNavOpen ? "open" : "closed"}
                 onClick={toggleMobileNav}
                 className="relative z-40 flex flex-col space-y-1"
