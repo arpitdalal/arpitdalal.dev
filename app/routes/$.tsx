@@ -6,6 +6,10 @@ export async function loader() {
   throw new Response("Not found", { status: 404 });
 }
 
+export function action() {
+  throw new Response("Not found", { status: 404 });
+}
+
 export default NotFound;
 
 export function ErrorBoundary() {
