@@ -1,11 +1,11 @@
 import { parseWithZod } from "@conform-to/zod";
-import { type ActionFunctionArgs, type LinksFunction } from "react-router";
 import { z } from "zod";
 import { NotFound, dinoCssLinks } from "#app/components/error-boundary";
 import { ADD_SUBSCRIBER } from "#app/graphql/queries";
 import { checkHoneypot } from "#app/utils/honeypot.server";
+import { type Route } from "./+types/newsletter";
 
-export const links: LinksFunction = () => {
+export const links: Route.LinksFunction = () => {
   return [...dinoCssLinks()];
 };
 
@@ -17,7 +17,7 @@ const NewsletterSchema = z.object({
     .min(1, "Email is required"),
 });
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   await checkHoneypot(formData);
   const submission = parseWithZod(formData, { schema: NewsletterSchema });
@@ -91,7 +91,7 @@ async function subscribeToNewsletter(email: string, publicationId: string) {
   }
 
   if (result.data.errors?.length) {
-    throw new Error(result.data.errors[0].message);
+    throw new Error(result.data.errors[0]?.message || "Unknown error");
   }
 
   if (!result.data.data?.subscribeToNewsletter.status) {

@@ -1,4 +1,3 @@
-import { type MetaFunction } from "react-router";
 import {
   HeroHighlight,
   HeroHighlightH1,
@@ -6,8 +5,9 @@ import {
 } from "#app/components/highlight";
 import { LineGlow } from "#app/components/line-glow";
 import { Newsletter } from "#app/components/newsletter";
+import { type Route } from "./+types/subscribe";
 
-export const meta: MetaFunction = () => [
+export const meta: Route.MetaFunction = () => [
   {
     title: "Subscribe to my newsletter | Arpit Dalal",
   },

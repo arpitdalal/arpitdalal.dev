@@ -7,12 +7,7 @@ import {
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { motion } from "motion/react";
 import { useState, useEffect } from "react";
-import {
-  type ActionFunctionArgs,
-  type MetaFunction,
-  useFetcher,
-  type FetcherWithComponents,
-} from "react-router";
+import { useFetcher, type FetcherWithComponents } from "react-router";
 import { HoneypotInputs } from "remix-utils/honeypot/react";
 import { z } from "zod";
 import { ErrorList } from "#app/components/error-list";
@@ -28,8 +23,9 @@ import { Button } from "#app/components/ui/button";
 import { Icon } from "#app/components/ui/icon";
 import { sendEmail } from "#app/utils/email";
 import { checkHoneypot } from "#app/utils/honeypot.server";
+import { type Route } from "./+types/contact";
 
-export const meta: MetaFunction = () => [
+export const meta: Route.MetaFunction = () => [
   {
     title: "Contact Arpit | Arpit Dalal",
   },
@@ -51,7 +47,7 @@ export const ContactSchema = z.object({
     .min(1, "Message is required"),
 });
 
-export const action = async ({ request }: ActionFunctionArgs) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   const formData = await request.formData();
   await checkHoneypot(formData);
   const submission = parseWithZod(formData, { schema: ContactSchema });
