@@ -23,7 +23,7 @@ export async function action({ request }: Route.ActionArgs) {
   const submission = parseWithZod(formData, { schema: NewsletterSchema });
 
   if (submission.status !== "success") {
-    return { result: submission.reply(), error: "Invalid form data" };
+    return { result: submission.reply(), success: false };
   }
 
   try {
@@ -33,13 +33,17 @@ export async function action({ request }: Route.ActionArgs) {
     );
     return {
       result: submission.reply({ resetForm: true }),
-      error: null,
+      success: true,
     };
   } catch (error) {
     console.error("Error subscribing to newsletter", error);
     return {
-      result: submission.reply(),
-      error: "Error subscribing to newsletter. Please try again later.",
+      result: submission.reply({
+        formErrors: [
+          "Error subscribing to newsletter. Please try again later.",
+        ],
+      }),
+      success: false,
     };
   }
 }

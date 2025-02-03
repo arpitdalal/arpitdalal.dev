@@ -52,7 +52,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
   await checkHoneypot(formData);
   const submission = parseWithZod(formData, { schema: ContactSchema });
   if (submission.status !== "success") {
-    return { result: submission.reply(), error: "Invalid form data" };
+    return { result: submission.reply(), success: false };
   }
   try {
     await sendEmail({
@@ -61,14 +61,17 @@ export const action = async ({ request }: Route.ActionArgs) => {
     });
     return {
       result: submission.reply({ resetForm: true }),
-      error: null,
+      success: true,
     };
   } catch (error) {
     console.error("Error sending email", error);
     return {
-      result: submission.reply(),
-      error:
-        "Error sending message. Please try again later. If the issue persists, please contact me.",
+      result: submission.reply({
+        formErrors: [
+          "Error sending message. Please try again later. If the issue persists, please contact me.",
+        ],
+      }),
+      success: false,
     };
   }
 };
@@ -104,10 +107,7 @@ export default function Contact() {
         <div className="container">
           <contactFetcher.Form method="POST" {...getFormProps(form)}>
             <div className="min-h-[32px] pb-4">
-              <ErrorList
-                id="general-errors"
-                errors={[contactFetcher.data?.error]}
-              />
+              <ErrorList id="general-errors" errors={form.errors} />
             </div>
             <HoneypotInputs />
             <div className="flex flex-col sm:flex-row sm:gap-4">
@@ -156,6 +156,7 @@ export default function Contact() {
 }
 
 const Y_CHANGE = 30;
+type Status = "success" | "error";
 function SubmitButton({
   state,
   data,
@@ -163,22 +164,18 @@ function SubmitButton({
   state: FetcherWithComponents<typeof action>["state"];
   data: Awaited<ReturnType<typeof action>> | undefined;
 }) {
-  const [showStatus, setShowStatus] = useState<"success" | "error" | null>(
-    null,
-  );
-  const isSubmitting = state === "submitting";
-  const isSuccess = state === "idle" && data && !data.error;
-  const isError = state === "idle" && data && data.error;
+  const [showStatus, setShowStatus] = useState<Status | null>(null);
+  const isSubmitting = state !== "idle";
+  const isSuccess = !isSubmitting && data && data.success;
 
   useEffect(() => {
-    if (isSuccess || isError) {
-      setShowStatus(isSuccess ? "success" : isError ? "error" : null);
-      const timeout = setTimeout(() => {
-        setShowStatus(null);
-      }, 2000);
-      return () => clearTimeout(timeout);
-    }
-  }, [isSuccess, isError]);
+    if (isSuccess === undefined || isSubmitting) return;
+    setShowStatus(isSuccess ? "success" : !isSuccess ? "error" : null);
+    const timeout = setTimeout(() => {
+      setShowStatus(null);
+    }, 2000);
+    return () => clearTimeout(timeout);
+  }, [isSuccess, isSubmitting]);
 
   return (
     <Button

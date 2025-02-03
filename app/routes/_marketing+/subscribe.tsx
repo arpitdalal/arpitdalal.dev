@@ -29,8 +29,8 @@ export default function Subscribe() {
       </HeroHighlight>
       <section id="subscribe">
         <LineGlow />
-        <div className="container flex items-center justify-center">
-          <Newsletter autoFocusInput />
+        <div className="container">
+          <Newsletter autoFocusInput isStandalone />
         </div>
       </section>
     </>

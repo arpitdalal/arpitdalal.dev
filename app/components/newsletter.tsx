@@ -21,13 +21,15 @@ const NewsletterSchema = z.object({
 
 export function Newsletter({
   autoFocusInput = false,
+  isStandalone = false,
 }: {
   autoFocusInput?: boolean;
+  isStandalone?: boolean;
 }) {
   const newsletterFetcher = useFetcher<typeof action>();
 
   const [form, fields] = useForm({
-    id: "newsletter-form",
+    id: isStandalone ? "newsletter-form-standalone" : "newsletter-form",
     constraint: getZodConstraint(NewsletterSchema),
     lastResult: newsletterFetcher.data?.result,
     onValidate({ formData }) {
@@ -39,7 +41,9 @@ export function Newsletter({
     <newsletterFetcher.Form
       method="POST"
       action="/resources/newsletter"
-      className="mt-4"
+      className={
+        isStandalone ? "flex flex-col items-center justify-center" : "mt-4"
+      }
       {...getFormProps(form)}
     >
       <HoneypotInputs />
@@ -53,24 +57,20 @@ export function Newsletter({
           }}
           errors={fields.email.errors}
         />
-        <div className="flex justify-end">
-          <SubmitButton
-            state={newsletterFetcher.state}
-            data={newsletterFetcher.data}
-          />
-        </div>
+        <SubmitButton
+          state={newsletterFetcher.state}
+          data={newsletterFetcher.data}
+        />
       </div>
       <div className="min-h-[32px] pb-4">
-        <ErrorList
-          id="newsletter-errors"
-          errors={[newsletterFetcher.data?.error]}
-        />
+        <ErrorList id="newsletter-errors" errors={form.errors} />
       </div>
     </newsletterFetcher.Form>
   );
 }
 
 const Y_CHANGE = 30;
+type Status = "success" | "error";
 function SubmitButton({
   state,
   data,
@@ -78,22 +78,18 @@ function SubmitButton({
   state: FetcherWithComponents<typeof action>["state"];
   data: Awaited<ReturnType<typeof action>> | undefined;
 }) {
-  const [showStatus, setShowStatus] = useState<"success" | "error" | null>(
-    null,
-  );
-  const isSubmitting = state === "submitting";
-  const isSuccess = state === "idle" && data && !data.error;
-  const isError = state === "idle" && data && data.error;
+  const [showStatus, setShowStatus] = useState<Status | null>(null);
+  const isSubmitting = state !== "idle";
+  const isSuccess = !isSubmitting && data && data.success;
 
   useEffect(() => {
-    if (isSuccess || isError) {
-      setShowStatus(isSuccess ? "success" : "error");
-      const timeout = setTimeout(() => {
-        setShowStatus(null);
-      }, 2000);
-      return () => clearTimeout(timeout);
-    }
-  }, [isSuccess, isError]);
+    if (isSuccess === undefined || isSubmitting) return;
+    setShowStatus(isSuccess ? "success" : !isSuccess ? "error" : null);
+    const timeout = setTimeout(() => {
+      setShowStatus(null);
+    }, 2000);
+    return () => clearTimeout(timeout);
+  }, [isSuccess, isSubmitting]);
 
   return (
     <Button
