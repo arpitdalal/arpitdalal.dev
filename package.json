@@ -54,6 +54,7 @@
     "@reactuses/core": "^6.0.1",
     "@sentry/profiling-node": "^8.53.0",
     "@sentry/react": "^8.53.0",
+    "@tailwindcss/typography": "^0.5.16",
     "address": "^2.0.3",
     "bcryptjs": "^2.4.3",
     "chalk": "^5.4.1",

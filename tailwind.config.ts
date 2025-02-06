@@ -1,3 +1,4 @@
+import typographyPlugin from "@tailwindcss/typography";
 import svgToDataUri from "mini-svg-data-uri";
 import { type Config } from "tailwindcss";
 import animatePlugin from "tailwindcss-animate";
@@ -22,6 +23,7 @@ export default {
     extend: extendedTheme,
   },
   plugins: [
+    typographyPlugin,
     animatePlugin,
     radixPlugin,
     function ({

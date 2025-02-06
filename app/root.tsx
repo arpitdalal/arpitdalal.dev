@@ -167,6 +167,10 @@ export default AppWithProviders;
 export const headerAndFooterCommonLinks = {
   contact: "contact",
 };
+const legalLinks = {
+  terms: "terms",
+  privacy: "privacy",
+};
 
 function Footer() {
   return (
@@ -188,40 +192,62 @@ function Footer() {
             Arpit Dalal
           </span>
         </Link>
-        <nav className="grow">
-          <p className="text-lg">
-            <strong>Pages</strong>
-          </p>
-          <ul className="mt-3 flex flex-col gap-1">
-            <li>
-              <Link
-                className="underlined text-foreground/70"
-                to="/"
-                data-content="Home"
-              >
-                Home
-              </Link>
-            </li>
-            <li>
-              <ExternalLink
-                href="https://blog.arpitdalal.dev"
-                applyBaseClassName={false}
-              >
-                Blog
-              </ExternalLink>
-            </li>
-            {Object.entries(headerAndFooterCommonLinks).map(([key, value]) => (
-              <li key={key}>
+        <nav className="flex grow gap-10">
+          <div>
+            <p className="text-lg">
+              <strong>Pages</strong>
+            </p>
+            <ul className="mt-3 flex flex-col gap-1">
+              <li>
                 <Link
-                  to={value}
                   className="underlined text-foreground/70"
-                  data-content={capitalize(key)}
+                  to="/"
+                  data-content="Home"
                 >
-                  {capitalize(key)}
+                  Home
                 </Link>
               </li>
-            ))}
-          </ul>
+              <li>
+                <ExternalLink
+                  href="https://blog.arpitdalal.dev"
+                  applyBaseClassName={false}
+                >
+                  Blog
+                </ExternalLink>
+              </li>
+              {Object.entries(headerAndFooterCommonLinks).map(
+                ([key, value]) => (
+                  <li key={key}>
+                    <Link
+                      to={value}
+                      className="underlined text-foreground/70"
+                      data-content={capitalize(key)}
+                    >
+                      {capitalize(key)}
+                    </Link>
+                  </li>
+                ),
+              )}
+            </ul>
+          </div>
+          <div>
+            <p className="text-lg">
+              <strong>Legal</strong>
+            </p>
+            <ul className="mt-3 flex flex-col gap-1">
+              {Object.entries(legalLinks).map(([key, value]) => (
+                <li key={key}>
+                  <Link
+                    to={value}
+                    className="underlined text-foreground/70"
+                    data-content={capitalize(key)}
+                  >
+                    {capitalize(key)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </nav>
         <div>
           <h2 className="text-lg font-bold xs:text-2xl">
@@ -232,6 +258,12 @@ function Footer() {
           </p>
           <Newsletter />
         </div>
+      </div>
+      <div className="container mb-5">
+        <p className="text-sm text-foreground/70">
+          Arpit Dalal &copy; 2020 - {new Date().getFullYear()}. All rights
+          reserved.
+        </p>
       </div>
     </footer>
   );
