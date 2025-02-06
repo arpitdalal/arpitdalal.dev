@@ -167,7 +167,7 @@ const strongRateLimit = rateLimit({
 
 const generalRateLimit = rateLimit(rateLimitDefault);
 app.use((req, res, next) => {
-  const strongPaths = ["/"];
+  const strongPaths = ["/contact", "/resources/newsletter"];
   if (req.method !== "GET" && req.method !== "HEAD") {
     if (strongPaths.some((p) => req.path.includes(p))) {
       return strongestRateLimit(req, res, next);
