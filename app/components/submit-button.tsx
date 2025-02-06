@@ -36,6 +36,7 @@ export function SubmitButton({
   const [showStatus, setShowStatus] = useState<Status | null>(null);
   const isSubmitting = state !== "idle";
   const isSuccess = !isSubmitting && data && data.success;
+  const isDisabled = isSubmitting || !!showStatus;
 
   useEffect(() => {
     if (isSuccess === undefined || isSubmitting) return;
@@ -50,8 +51,11 @@ export function SubmitButton({
     <Button
       type="submit"
       className={cn(
-        "group/submit overflow-hidden transition-colors",
+        "group/submit overflow-hidden transition-all active:scale-95",
         size === "icon" ? "mt-[22px] rounded-l-none" : "w-full sm:w-[300px]",
+        isSubmitting && "cursor-progress",
+        !!showStatus && "cursor-not-allowed",
+        isDisabled && "brightness-50",
         className,
       )}
       variant={
@@ -62,7 +66,11 @@ export function SubmitButton({
             : "default"
       }
       size={size === "icon" ? "icon" : "default"}
-      disabled={isSubmitting || !!showStatus}
+      onClick={(event) => {
+        if (isDisabled) {
+          return event.preventDefault();
+        }
+      }}
     >
       <div className="relative flex h-7 w-full items-center justify-center">
         <motion.div
