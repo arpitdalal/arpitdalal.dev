@@ -16,15 +16,22 @@ export default function PrivacyPolicy() {
             <span>Policy</span>
           </HeroHighlightH1>
           <HeroHighlightDescription>
-            I am transparent about the data I collect for this website.
+            I am transparent about the data I collect and how it is used.
           </HeroHighlightDescription>
         </div>
       </HeroHighlight>
       <section id="contact">
         <LineGlow />
         <div className="container">
-          <div className="prose dark:prose-invert mx-auto">
+          <div className="prose mx-auto dark:prose-invert">
             <p>Last updated: 2025-02-06</p>
+            <p>
+              This website is completely open-source, you can read the code on{" "}
+              <ExternalLink href="https://github.com/arpitdalal/arpitdalal.dev">
+                GitHub
+              </ExternalLink>
+              .
+            </p>
             <h2>1. Introduction</h2>
             <p>
               This Privacy Policy explains how Arpit Dalal (“me”, “I”, or “my”)
