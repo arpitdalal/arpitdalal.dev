@@ -166,7 +166,6 @@ export default AppWithProviders;
 
 export const headerAndFooterCommonLinks = {
   contact: "contact",
-  subscribe: "subscribe",
 };
 
 function Footer() {
