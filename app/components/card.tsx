@@ -1,6 +1,5 @@
 import ExternalLink from "./external-link";
 import { Badge } from "./ui/badge";
-import { Icon } from "./ui/icon";
 
 export type CardProps = {
   title: string;
@@ -37,7 +36,7 @@ export function Card({
           <h3 className="font-medium">
             <ExternalLink
               href={link}
-              className="group/link inline-flex items-baseline font-medium leading-tight hover:text-primary focus-visible:text-primary"
+              className="items-baseline font-medium leading-tight hover:text-primary focus-visible:text-primary"
               aria-label={`${title} (opens in a new tab)`}
             >
               {/* This is for making the link clickable on the whole card */}
@@ -45,16 +44,7 @@ export function Card({
                 className="absolute -inset-x-4 -inset-y-2.5 hidden rounded md:-inset-x-6 md:-inset-y-4 lg:block"
                 aria-hidden
               ></span>
-              <span>
-                {title}
-                <span className="inline-block">
-                  <Icon
-                    name="arrow-up-right-outline"
-                    className="ml-1 ease-in-out motion-safe:translate-y-px motion-safe:transition-transform motion-safe:group-hover/link:-translate-y-1 motion-safe:group-hover/link:translate-x-1 motion-safe:group-focus-visible/link:-translate-y-1 motion-safe:group-focus-visible/link:translate-x-1"
-                    aria-hidden
-                  />
-                </span>
-              </span>
+              <span>{title}</span>
             </ExternalLink>
           </h3>
           <p className="mt-2 leading-normal">{description}</p>

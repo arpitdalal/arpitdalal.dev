@@ -182,7 +182,7 @@ export function WorkExperienceCard({
           <h3 className="font-medium">
             <ExternalLink
               href={link}
-              className="group/link inline-flex items-baseline font-medium leading-tight hover:text-primary focus-visible:text-primary"
+              className="items-baseline font-medium leading-tight hover:text-primary focus-visible:text-primary"
               aria-label={`${title} at ${company} (opens in a new tab)`}
             >
               {/* This is for making the link clickable on the whole card */}
@@ -191,15 +191,7 @@ export function WorkExperienceCard({
                 aria-hidden
               ></span>
               <span>
-                {title} ·{" "}
-                <span className="inline-block">
-                  {company}
-                  <Icon
-                    name="arrow-up-right-outline"
-                    className="ml-1 ease-in-out motion-safe:translate-y-px motion-safe:transition-transform motion-safe:group-hover/link:-translate-y-1 motion-safe:group-hover/link:translate-x-1 motion-safe:group-focus-visible/link:-translate-y-1 motion-safe:group-focus-visible/link:translate-x-1"
-                    aria-hidden
-                  />
-                </span>
+                {title} · {company}
               </span>
             </ExternalLink>
           </h3>

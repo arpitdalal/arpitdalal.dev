@@ -78,7 +78,7 @@ export default function Index() {
                 className="rounded-full"
                 asChild
               >
-                <ExternalLink href={href} aria-label={name}>
+                <ExternalLink href={href} aria-label={name} showIcon={false}>
                   <Icon name={icon} className="size-4" />
                 </ExternalLink>
               </Button>
