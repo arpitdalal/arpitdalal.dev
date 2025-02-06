@@ -1,13 +1,8 @@
 import { parseWithZod } from "@conform-to/zod";
 import { z } from "zod";
-import { NotFound, dinoCssLinks } from "#app/components/error-boundary";
 import { ADD_SUBSCRIBER } from "#app/graphql/queries";
 import { checkHoneypot } from "#app/utils/honeypot.server";
 import { type Route } from "./+types/newsletter";
-
-export const links: Route.LinksFunction = () => {
-  return [...dinoCssLinks()];
-};
 
 const NewsletterSchema = z.object({
   email: z
@@ -46,10 +41,6 @@ export async function action({ request }: Route.ActionArgs) {
       success: false,
     };
   }
-}
-
-export default function Newsletter() {
-  return <NotFound />;
 }
 
 const SubscribeResponseSchema = z.object({
