@@ -143,10 +143,6 @@ export const extendedTheme = {
     default: "10000ms !important",
   },
   keyframes: {
-    "reveal-up": {
-      from: { transform: "translateY(20px)", opacity: "0" },
-      to: { transform: "translateY(0px)", opacity: "1" },
-    },
     bounce: {
       "0%, 100%": { transform: "scale(1)" },
       "50%": { transform: "scale(1.2)" },
@@ -191,7 +187,6 @@ export const extendedTheme = {
     "in-out-circ": "cubic-bezier(0.785, 0.135, 0.15, 0.86)",
   },
   animation: {
-    "reveal-up": "reveal-up 0.4s ease-in-out",
     bounce: "bounce 0.4s var(--ease-in-out-quad)",
     "bounce-down": "bounce-down 0.4s var(--ease-in-out-quad)",
     "bounce-right": "bounce-right 0.4s var(--ease-in-out-quad)",
