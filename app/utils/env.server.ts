@@ -10,6 +10,7 @@ const schema = z.object({
   NODEMAILER_USER: z.string(),
   NODEMAILER_PASSWORD: z.string(),
   HASHNODE_PUBLICATION_ID: z.string(),
+  POSTHOG_API_KEY: z.string(),
 });
 
 declare global {
@@ -44,6 +45,7 @@ export function getEnv() {
   return {
     MODE: process.env.NODE_ENV,
     SENTRY_DSN: process.env.SENTRY_DSN,
+    POSTHOG_API_KEY: process.env.POSTHOG_API_KEY,
   };
 }
 
