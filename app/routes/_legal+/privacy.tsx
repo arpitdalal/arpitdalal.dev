@@ -70,11 +70,17 @@ export default function PrivacyPolicy() {
               improve the Site. The data collected by PostHog is not stored by
               me on my servers. I self-host Umami so I do store data on my
               servers. Both services are privacy-focused and collect only
-              anonymous data. Umami allows me to make the analytics data public,
-              <ExternalLink href="https://stats.arpitdalal.dev/share/OzZPGxjmA4C1nlzZ/arpitdalal.dev">
-                here's all the data it collects
-              </ExternalLink>
-              , you can check it out for yourself.
+              anonymous data.
+              {ENV?.UMAMI_PUBLIC_ANALYTICS_URL ? (
+                <>
+                  Umami enables me to make analytics data publicly accessible.
+                  You can review{" "}
+                  <ExternalLink href={ENV.UMAMI_PUBLIC_ANALYTICS_URL}>
+                    all the data it collects
+                  </ExternalLink>
+                  .
+                </>
+              ) : null}
             </p>
             <h3>3. How I Use Your Information</h3>
             <p>

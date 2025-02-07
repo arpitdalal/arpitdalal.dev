@@ -235,6 +235,16 @@ function Footer() {
                   </li>
                 ),
               )}
+              {ENV?.UMAMI_PUBLIC_ANALYTICS_URL ? (
+                <li>
+                  <ExternalLink
+                    href={ENV.UMAMI_PUBLIC_ANALYTICS_URL}
+                    applyBaseClassName={false}
+                  >
+                    Analytics
+                  </ExternalLink>
+                </li>
+              ) : null}
             </ul>
           </div>
           <div>

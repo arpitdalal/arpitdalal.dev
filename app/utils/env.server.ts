@@ -15,6 +15,7 @@ const schema = z.object({
   UMAMI_DOMAIN: z.string(),
   UMAMI_DOMAINS: z.string(),
   UMAMI_SCRIPT_NAME: z.string(),
+  UMAMI_PUBLIC_ANALYTICS_URL: z.string().optional(),
 });
 
 declare global {
@@ -54,6 +55,7 @@ export function getEnv() {
     UMAMI_DOMAIN: process.env.UMAMI_DOMAIN,
     UMAMI_DOMAINS: process.env.UMAMI_DOMAINS,
     UMAMI_SCRIPT_NAME: process.env.UMAMI_SCRIPT_NAME,
+    UMAMI_PUBLIC_ANALYTICS_URL: process.env.UMAMI_PUBLIC_ANALYTICS,
   };
 }
 
