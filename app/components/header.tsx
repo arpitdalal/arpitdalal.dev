@@ -351,7 +351,7 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
               >
                 <li className="pt-4 last:pb-3">
                   <ExternalLink
-                    href="https://blog.arpitdalal.dev"
+                    href="https://blog.arpitdalal.dev?utm_source=arpitdalal.dev&utm_medium=header&utm_campaign=portfolio"
                     className="block w-full py-4 text-foreground/70 hover:text-foreground"
                   >
                     Blog

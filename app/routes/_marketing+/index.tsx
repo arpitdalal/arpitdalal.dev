@@ -52,11 +52,14 @@ export default function Index() {
           </HeroHighlightDescription>
           <div className="flex gap-5 [--slidein-delay:500ms] motion-safe:animate-slidein motion-safe:opacity-0">
             <Button variant="outline" asChild>
-              <Link to="contact">Contact me</Link>
+              <Link to="contact" data-umami-event="hero-contact-link">
+                Contact me
+              </Link>
             </Button>
             <Button asChild>
               <Link
                 to="/resume.pdf"
+                data-umami-event="hero-resume-download-link"
                 className="group/resume flex gap-2"
                 download="arpit-dalal-resume.pdf"
                 reloadDocument
@@ -78,7 +81,13 @@ export default function Index() {
                 className="rounded-full"
                 asChild
               >
-                <ExternalLink href={href} aria-label={name} showIcon={false}>
+                <ExternalLink
+                  href={href}
+                  aria-label={name}
+                  showIcon={false}
+                  data-umami-event="social-link"
+                  data-umami-event-url={href}
+                >
                   <Icon name={icon} className="size-4" />
                 </ExternalLink>
               </Button>

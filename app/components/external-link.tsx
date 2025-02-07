@@ -32,6 +32,8 @@ export default function ExternalLink({
       target="_blank"
       rel="noreferrer"
       data-content={children}
+      data-umami-event="outbound-link"
+      data-umami-event-url={href}
       {...props}
     >
       {children}

@@ -114,6 +114,13 @@ function Document({
         />
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />
+        <script
+          async
+          defer
+          src={`https://${env.UMAMI_DOMAIN}/${env.UMAMI_SCRIPT_NAME}`}
+          data-website-id={env.UMAMI_WEBSITE_ID}
+          data-domains={env.UMAMI_DOMAINS}
+        ></script>
       </body>
     </html>
   );
@@ -209,7 +216,7 @@ function Footer() {
               </li>
               <li>
                 <ExternalLink
-                  href="https://blog.arpitdalal.dev"
+                  href="https://blog.arpitdalal.dev?utm_source=arpitdalal.dev&utm_medium=footer&utm_campaign=portfolio"
                   applyBaseClassName={false}
                 >
                   Blog

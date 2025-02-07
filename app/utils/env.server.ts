@@ -11,6 +11,10 @@ const schema = z.object({
   NODEMAILER_PASSWORD: z.string(),
   HASHNODE_PUBLICATION_ID: z.string(),
   POSTHOG_API_KEY: z.string(),
+  UMAMI_WEBSITE_ID: z.string(),
+  UMAMI_DOMAIN: z.string(),
+  UMAMI_DOMAINS: z.string(),
+  UMAMI_SCRIPT_NAME: z.string(),
 });
 
 declare global {
@@ -46,6 +50,10 @@ export function getEnv() {
     MODE: process.env.NODE_ENV,
     SENTRY_DSN: process.env.SENTRY_DSN,
     POSTHOG_API_KEY: process.env.POSTHOG_API_KEY,
+    UMAMI_WEBSITE_ID: process.env.UMAMI_WEBSITE_ID,
+    UMAMI_DOMAIN: process.env.UMAMI_DOMAIN,
+    UMAMI_DOMAINS: process.env.UMAMI_DOMAINS,
+    UMAMI_SCRIPT_NAME: process.env.UMAMI_SCRIPT_NAME,
   };
 }
 

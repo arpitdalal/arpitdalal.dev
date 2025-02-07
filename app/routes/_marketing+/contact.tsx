@@ -143,6 +143,12 @@ export default function Contact() {
                 state={contactFetcher.state}
                 data={contactFetcher.data}
                 size="full"
+                dataProps={{
+                  "data-umami-event": "contact-form-submit",
+                  "data-umami-event-email": fields.email.value ?? "",
+                  "data-umami-event-name": fields.name.value ?? "",
+                  "data-umami-event-message": fields.message.value ?? "",
+                }}
               />
               <div className="mt-2">
                 <ErrorList id="general-errors" errors={form.errors} />

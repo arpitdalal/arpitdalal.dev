@@ -59,6 +59,10 @@ export function Newsletter({
           state={newsletterFetcher.state}
           data={newsletterFetcher.data}
           size="icon"
+          dataProps={{
+            "data-umami-event": "newsletter-form-submit",
+            "data-umami-event-email": fields.email.value ?? "",
+          }}
         />
       </div>
       <div className="min-h-[32px] pb-4">
