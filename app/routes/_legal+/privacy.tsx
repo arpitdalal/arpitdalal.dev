@@ -65,11 +65,16 @@ export default function PrivacyPolicy() {
             </p>
             <h3>Analytics:</h3>
             <p>
-              I use PostHog for website analytics. PostHog collects
-              non-personally identifying data (e.g. browser type, device
-              information, pages visited, and timestamps) to help me analyze and
-              improve the Site. This data is collected by PostHog and not stored
-              on my servers.
+              I use PostHog and Umami for website analytics. These services
+              collect non-personally identifying data to help me analyze and
+              improve the Site. The data collected by PostHog is not stored by
+              me on my servers. I self-host Umami so I do store data on my
+              servers. Both services are privacy-focused and collect only
+              anonymous data. Umami allows me to make the analytics data public,
+              <ExternalLink href="https://stats.arpitdalal.dev/share/OzZPGxjmA4C1nlzZ/arpitdalal.dev">
+                here's all the data it collects
+              </ExternalLink>
+              , you can check it out for yourself.
             </p>
             <h3>3. How I Use Your Information</h3>
             <p>
@@ -88,7 +93,8 @@ export default function PrivacyPolicy() {
               </li>
               <li>
                 Analytics: Data is used to understand visitor trends and improve
-                the Site’s performance; PostHog stores this data.
+                the Site's performance; PostHog and Umami store this data in an
+                anonymous format.
               </li>
             </ul>
             <h3>4. Third-Party Services</h3>
