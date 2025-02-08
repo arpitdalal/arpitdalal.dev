@@ -214,14 +214,6 @@ function Footer() {
                   Home
                 </Link>
               </li>
-              <li>
-                <ExternalLink
-                  href="https://blog.arpitdalal.dev?utm_source=arpitdalal.dev&utm_medium=footer&utm_campaign=portfolio"
-                  applyBaseClassName={false}
-                >
-                  Blog
-                </ExternalLink>
-              </li>
               {Object.entries(headerAndFooterCommonLinks).map(
                 ([key, value]) => (
                   <li key={key}>
@@ -235,6 +227,14 @@ function Footer() {
                   </li>
                 ),
               )}
+              <li>
+                <ExternalLink
+                  href="https://blog.arpitdalal.dev?utm_source=arpitdalal.dev&utm_medium=footer&utm_campaign=portfolio"
+                  applyBaseClassName={false}
+                >
+                  Blog
+                </ExternalLink>
+              </li>
               {ENV?.UMAMI_PUBLIC_ANALYTICS_URL ? (
                 <li>
                   <ExternalLink
