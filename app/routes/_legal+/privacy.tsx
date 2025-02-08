@@ -1,4 +1,4 @@
-import ExternalLink from "#app/components/external-link";
+import { ExternalLink } from "#app/components/external-link";
 import {
   HeroHighlight,
   HeroHighlightDescription,

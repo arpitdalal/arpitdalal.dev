@@ -8,7 +8,7 @@ import {
 } from "motion/react";
 import { useRef, useState } from "react";
 import { Link, NavLink } from "react-router";
-import ExternalLink from "#app/components/external-link";
+import { ExternalLink } from "#app/components/external-link";
 import { Logo, LogoCircle, LogoImage, LogoSpinner } from "#app/components/logo";
 import { headerAndFooterCommonLinks } from "#app/root";
 import { useHints } from "#app/utils/client-hints";

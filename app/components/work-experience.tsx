@@ -1,7 +1,7 @@
 import { useEventListener, useWindowSize } from "@reactuses/core";
 import { motion, transform, useScroll, useTransform } from "motion/react";
 import { useRef, useState } from "react";
-import ExternalLink from "#app/components/external-link";
+import { ExternalLink } from "#app/components/external-link";
 import { HighlightUnderline } from "#app/components/highlight";
 import { Badge } from "#app/components/ui/badge";
 import { Icon } from "#app/components/ui/icon";
