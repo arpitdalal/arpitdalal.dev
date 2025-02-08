@@ -178,6 +178,12 @@ const legalLinks = {
   terms: "terms",
   privacy: "privacy",
 };
+const externalLinks = {
+  blog: "https://blog.arpitdalal.dev",
+  analytics: ENV?.UMAMI_PUBLIC_ANALYTICS_URL
+    ? "https://stats.arpitdalal.dev"
+    : undefined,
+};
 
 function Footer() {
   return (
@@ -201,9 +207,7 @@ function Footer() {
         </Link>
         <nav className="flex grow gap-10">
           <div>
-            <p className="text-lg">
-              <strong>Pages</strong>
-            </p>
+            <strong className="text-lg">Pages</strong>
             <ul className="mt-3 flex flex-col gap-1">
               <li>
                 <Link
@@ -227,30 +231,22 @@ function Footer() {
                   </li>
                 ),
               )}
-              <li>
-                <ExternalLink
-                  href="https://blog.arpitdalal.dev?utm_source=arpitdalal.dev&utm_medium=footer&utm_campaign=portfolio"
-                  applyBaseClassName={false}
-                >
-                  Blog
-                </ExternalLink>
-              </li>
-              {ENV?.UMAMI_PUBLIC_ANALYTICS_URL ? (
-                <li>
-                  <ExternalLink
-                    href={ENV.UMAMI_PUBLIC_ANALYTICS_URL}
-                    applyBaseClassName={false}
-                  >
-                    Analytics
-                  </ExternalLink>
-                </li>
-              ) : null}
+              {Object.entries(externalLinks)
+                .filter(Boolean)
+                .map(([key, value]) => (
+                  <li key={key}>
+                    <ExternalLink
+                      href={`${value}?utm_source=arpitdalal.dev&utm_medium=footer&utm_campaign=portfolio`}
+                      applyBaseClassName={false}
+                    >
+                      {capitalize(key)}
+                    </ExternalLink>
+                  </li>
+                ))}
             </ul>
           </div>
           <div>
-            <p className="text-lg">
-              <strong>Legal</strong>
-            </p>
+            <strong className="text-lg">Legal</strong>
             <ul className="mt-3 flex flex-col gap-1">
               {Object.entries(legalLinks).map(([key, value]) => (
                 <li key={key}>
@@ -263,6 +259,28 @@ function Footer() {
                   </Link>
                 </li>
               ))}
+            </ul>
+          </div>
+          <div>
+            <strong className="text-lg">Resources</strong>
+            <ul className="mt-3 flex flex-col gap-1">
+              <li>
+                <Link
+                  to="/subscribe"
+                  className="underlined text-foreground/70"
+                  data-content="Subscribe"
+                >
+                  Subscribe
+                </Link>
+              </li>
+              <li>
+                <ExternalLink
+                  href="https://blog.arpitdalal.dev/rss.xml"
+                  applyBaseClassName={false}
+                >
+                  RSS
+                </ExternalLink>
+              </li>
             </ul>
           </div>
         </nav>
