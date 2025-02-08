@@ -1,7 +1,6 @@
 import { Link, useLoaderData } from "react-router";
 import { ClientOnly } from "remix-utils/client-only";
 import { BlogPosts, fetchBlogPosts } from "#app/components/blog-posts";
-import ExternalLink from "#app/components/external-link";
 import {
   HeroHighlight,
   HeroHighlightDescription,
@@ -9,6 +8,7 @@ import {
   HeroHighlightH1,
 } from "#app/components/highlight";
 import { Projects } from "#app/components/projects";
+import { SocialLinks } from "#app/components/social-links";
 import { Button } from "#app/components/ui/button";
 import { Icon } from "#app/components/ui/icon";
 import { WorkExperience } from "#app/components/work-experience";
@@ -72,27 +72,10 @@ export default function Index() {
               </Link>
             </Button>
           </div>
-          <div className="mt-2 flex gap-5 [--slidein-delay:700ms] motion-safe:animate-slidein motion-safe:opacity-0">
-            {socialLinks.map(({ href, name, icon }) => (
-              <Button
-                key={href}
-                variant="outline"
-                size="icon"
-                className="rounded-full"
-                asChild
-              >
-                <ExternalLink
-                  href={href}
-                  aria-label={name}
-                  showIcon={false}
-                  data-umami-event="social-link"
-                  data-umami-event-url={href}
-                >
-                  <Icon name={icon} className="size-4" />
-                </ExternalLink>
-              </Button>
-            ))}
-          </div>
+          <SocialLinks
+            socialLinks={socialLinks}
+            className="mt-2 [--slidein-delay:700ms] motion-safe:animate-slidein motion-safe:opacity-0"
+          />
         </div>
       </HeroHighlight>
       <ClientOnly

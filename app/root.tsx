@@ -12,12 +12,14 @@ import { HoneypotProvider } from "remix-utils/honeypot/react";
 import appleTouchIconAssetUrl from "#app/assets/favicons/apple-touch-icon.png";
 import faviconAssetUrl from "#app/assets/favicons/favicon.png";
 import { GeneralErrorBoundary } from "#app/components/error-boundary";
-import ExternalLink from "#app/components/external-link";
+import { ExternalLink } from "#app/components/external-link";
 import { Header } from "#app/components/header";
 import { Logo, LogoCircle, LogoImage, LogoSpinner } from "#app/components/logo";
 import { Newsletter } from "#app/components/newsletter";
 import { EpicProgress } from "#app/components/progress-bar";
+import { SocialLinks } from "#app/components/social-links";
 import { href as iconsHref } from "#app/components/ui/icon";
+import { socialLinksData } from "#app/routes/_marketing+/__data";
 import tailwindStyleSheetUrl from "#app/styles/tailwind.css?url";
 import { usePosthogPageView } from "#app/utils/analytics";
 import { ClientHintCheck, getHints, useHints } from "#app/utils/client-hints";
@@ -27,7 +29,7 @@ import { capitalize, getDomainUrl, getUrl } from "#app/utils/misc";
 import { useNonce } from "#app/utils/nonce-provider";
 import { getSocialMetas } from "#app/utils/seo";
 import { type Theme } from "#types/index";
-import { type Route } from "./+types/root.ts";
+import { type Route } from "./+types/root";
 
 export const links: Route.LinksFunction = () => {
   return [
@@ -189,22 +191,25 @@ function Footer() {
   return (
     <footer className="border-t border-foreground/40">
       <div className="container flex flex-wrap items-start justify-between gap-10 py-5">
-        <Link
-          to="/"
-          className="group z-10 flex items-center gap-4 outline-none ring-ring ring-offset-2 ring-offset-background transition-colors focus-within:ring-2 focus-visible:ring-2"
-        >
-          <Logo>
-            <LogoCircle />
-            <LogoSpinner />
-            <LogoImage />
-          </Logo>
-          <span
-            className="underlined text-h5 xs:text-h2"
-            data-content="Arpit Dalal"
+        <div className="grid gap-4">
+          <Link
+            to="/"
+            className="group z-10 flex items-center gap-4 outline-none ring-ring ring-offset-2 ring-offset-background transition-colors focus-within:ring-2 focus-visible:ring-2"
           >
-            Arpit Dalal
-          </span>
-        </Link>
+            <Logo>
+              <LogoCircle />
+              <LogoSpinner />
+              <LogoImage />
+            </Logo>
+            <span
+              className="underlined text-h5 xs:text-h2"
+              data-content="Arpit Dalal"
+            >
+              Arpit Dalal
+            </span>
+          </Link>
+          <SocialLinks socialLinks={socialLinksData} />
+        </div>
         <nav className="flex grow gap-10">
           <div>
             <strong className="text-lg">Pages</strong>

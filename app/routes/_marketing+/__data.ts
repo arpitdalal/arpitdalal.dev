@@ -1,30 +1,35 @@
 import { type IconName } from "#app/components/ui/icon";
 
-type SocialLink = {
+export type SocialLink = {
   name: string;
   href: string;
   icon: IconName;
 };
 export const socialLinksData = [
   {
-    name: "Twitter",
-    href: "https://arpit.im/x",
-    icon: "brand-x-outline",
-  },
-  {
     name: "GitHub",
     href: "https://arpit.im/gh",
     icon: "brand-github-outline",
   },
   {
-    name: "Youtube",
-    href: "https://arpit.im/yt",
-    icon: "brand-youtube-outline",
+    name: "Twitter",
+    href: "https://arpit.im/x",
+    icon: "brand-x-outline",
+  },
+  {
+    name: "Bluesky",
+    href: "https://arpit.im/bsky",
+    icon: "brand-bluesky-outline",
   },
   {
     name: "LinkedIn",
     href: "https://arpit.im/in",
     icon: "brand-linkedin-outline",
+  },
+  {
+    name: "Youtube",
+    href: "https://arpit.im/yt",
+    icon: "brand-youtube-outline",
   },
 ] satisfies SocialLink[];
 
