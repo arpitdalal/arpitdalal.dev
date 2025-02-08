@@ -16,7 +16,7 @@ const showIconClassName = "group/link";
 export default function ExternalLink({
   href,
   children,
-  className = "underlined text-foreground/70",
+  className = "cursor-new-tab underlined text-foreground/70",
   applyBaseClassName = true,
   showIcon = true,
   ...props

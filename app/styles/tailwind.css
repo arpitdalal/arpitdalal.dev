@@ -105,6 +105,12 @@
     background-image: radial-gradient(closest-side, var(--tw-gradient-stops));
   }
 
+  .cursor-new-tab {
+    cursor:
+      url("/images/new-tab.png") 10 10,
+      pointer;
+  }
+
   .underlined {
     position: relative;
     text-decoration: none;
