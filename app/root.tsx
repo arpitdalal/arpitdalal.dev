@@ -210,7 +210,7 @@ function Footer() {
           </Link>
           <SocialLinks socialLinks={socialLinksData} />
         </div>
-        <nav className="flex grow gap-10">
+        <nav className="flex grow gap-10 flex-wrap">
           <div>
             <strong className="text-lg">Pages</strong>
             <ul className="mt-3 flex flex-col gap-1">
