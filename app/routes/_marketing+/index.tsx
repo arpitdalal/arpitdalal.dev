@@ -46,8 +46,8 @@ export default function Index() {
           <HeroHighlightDescription>
             I'm a <HighlightUnderline>software engineer</HighlightUnderline> and
             a <HighlightUnderline>full-stack developer</HighlightUnderline>{" "}
-            living in the Greater Toronto Area. I have a passion for building
-            web applications and have a strong background in{" "}
+            living in the Greater Toronto Area, Canada. I have a passion for
+            building web applications and have a strong background in{" "}
             <HighlightUnderline>front-end development</HighlightUnderline>.
           </HeroHighlightDescription>
           <div className="flex gap-5 [--slidein-delay:500ms] motion-safe:animate-slidein motion-safe:opacity-0">
