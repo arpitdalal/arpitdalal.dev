@@ -144,7 +144,7 @@ export const projectsData = [
 	{
 		title: 'Epic Content Stack',
 		openSource: true,
-		link: 'https://arpit.im/epc',
+		link: 'https://arpit.im/ecs',
 		imageUrl:
 			'https://res.cloudinary.com/arpitdalal-dev/image/upload/w_500/v1715634672/arpitdalal-dev/epic-gh_cuncf0.png',
 		imageAlt: 'Epic Content Stack GitHub page',
