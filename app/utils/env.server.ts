@@ -1,40 +1,40 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 const schema = z.object({
-  NODE_ENV: z.enum(["production", "development", "test"] as const),
-  SESSION_SECRET: z.string(),
-  INTERNAL_COMMAND_TOKEN: z.string(),
-  HONEYPOT_SECRET: z.string(),
-  SENTRY_DSN: z.string(),
-  NODEMAILER_HOST: z.string(),
-  NODEMAILER_USER: z.string(),
-  NODEMAILER_PASSWORD: z.string(),
-  HASHNODE_PUBLICATION_ID: z.string(),
-  POSTHOG_API_KEY: z.string(),
-  UMAMI_WEBSITE_ID: z.string(),
-  UMAMI_DOMAIN: z.string(),
-  UMAMI_DOMAINS: z.string(),
-  UMAMI_SCRIPT_NAME: z.string(),
-  UMAMI_PUBLIC_ANALYTICS_URL: z.string().optional(),
-});
+	NODE_ENV: z.enum(['production', 'development', 'test'] as const),
+	SESSION_SECRET: z.string(),
+	INTERNAL_COMMAND_TOKEN: z.string(),
+	HONEYPOT_SECRET: z.string(),
+	SENTRY_DSN: z.string(),
+	NODEMAILER_HOST: z.string(),
+	NODEMAILER_USER: z.string(),
+	NODEMAILER_PASSWORD: z.string(),
+	HASHNODE_PUBLICATION_ID: z.string(),
+	POSTHOG_API_KEY: z.string(),
+	UMAMI_WEBSITE_ID: z.string(),
+	UMAMI_DOMAIN: z.string(),
+	UMAMI_DOMAINS: z.string(),
+	UMAMI_SCRIPT_NAME: z.string(),
+	UMAMI_PUBLIC_ANALYTICS_URL: z.string().optional(),
+})
 
 declare global {
-  namespace NodeJS {
-    interface ProcessEnv extends z.infer<typeof schema> {}
-  }
+	namespace NodeJS {
+		interface ProcessEnv extends z.infer<typeof schema> {}
+	}
 }
 
 export function init() {
-  const parsed = schema.safeParse(process.env);
+	const parsed = schema.safeParse(process.env)
 
-  if (parsed.success === false) {
-    console.error(
-      "❌ Invalid environment variables:",
-      parsed.error.flatten().fieldErrors,
-    );
+	if (parsed.success === false) {
+		console.error(
+			'❌ Invalid environment variables:',
+			parsed.error.flatten().fieldErrors,
+		)
 
-    throw new Error("Invalid environment variables");
-  }
+		throw new Error('Invalid environment variables')
+	}
 }
 
 /**
@@ -47,23 +47,23 @@ export function init() {
  * @returns all public ENV variables
  */
 export function getEnv() {
-  return {
-    MODE: process.env.NODE_ENV,
-    SENTRY_DSN: process.env.SENTRY_DSN,
-    POSTHOG_API_KEY: process.env.POSTHOG_API_KEY,
-    UMAMI_WEBSITE_ID: process.env.UMAMI_WEBSITE_ID,
-    UMAMI_DOMAIN: process.env.UMAMI_DOMAIN,
-    UMAMI_DOMAINS: process.env.UMAMI_DOMAINS,
-    UMAMI_SCRIPT_NAME: process.env.UMAMI_SCRIPT_NAME,
-    UMAMI_PUBLIC_ANALYTICS_URL: process.env.UMAMI_PUBLIC_ANALYTICS_URL,
-  };
+	return {
+		MODE: process.env.NODE_ENV,
+		SENTRY_DSN: process.env.SENTRY_DSN,
+		POSTHOG_API_KEY: process.env.POSTHOG_API_KEY,
+		UMAMI_WEBSITE_ID: process.env.UMAMI_WEBSITE_ID,
+		UMAMI_DOMAIN: process.env.UMAMI_DOMAIN,
+		UMAMI_DOMAINS: process.env.UMAMI_DOMAINS,
+		UMAMI_SCRIPT_NAME: process.env.UMAMI_SCRIPT_NAME,
+		UMAMI_PUBLIC_ANALYTICS_URL: process.env.UMAMI_PUBLIC_ANALYTICS_URL,
+	}
 }
 
-type ENV = ReturnType<typeof getEnv>;
+type ENV = ReturnType<typeof getEnv>
 
 declare global {
-  var ENV: ENV;
-  interface Window {
-    ENV: ENV;
-  }
+	var ENV: ENV
+	interface Window {
+		ENV: ENV
+	}
 }

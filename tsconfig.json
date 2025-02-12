@@ -1,16 +1,16 @@
 {
-  "include": ["**/*.ts", "**/*.tsx", ".react-router/types/**/*"],
-  "extends": ["@epic-web/config/typescript"],
-  "compilerOptions": {
-    "types": ["@react-router/node", "vite/client"],
-    "rootDirs": [".", "./.react-router/types"],
-    "paths": {
-      "#app/*": ["./app/*"],
-      "#types/*": ["./types/*"],
-      "@/icon-name": [
-        "./app/components/ui/icons/name.d.ts",
-        "./types/icon-name.d.ts"
-      ]
-    }
-  }
+	"include": ["**/*.ts", "**/*.tsx", ".react-router/types/**/*"],
+	"extends": ["@epic-web/config/typescript"],
+	"compilerOptions": {
+		"types": ["@react-router/node", "vite/client"],
+		"rootDirs": [".", "./.react-router/types"],
+		"paths": {
+			"#app/*": ["./app/*"],
+			"#types/*": ["./types/*"],
+			"@/icon-name": [
+				"./app/components/ui/icons/name.d.ts",
+				"./types/icon-name.d.ts"
+			]
+		}
+	}
 }

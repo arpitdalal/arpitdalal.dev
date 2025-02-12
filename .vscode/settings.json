@@ -1,15 +1,15 @@
 {
-  "typescript.preferences.autoImportFileExcludePatterns": [
-    "@remix-run/server-runtime",
-    "express",
-    "@radix-ui/**",
-    "@react-email/**",
-    "node:stream/consumers",
-    "node:test",
-    "node:console"
-  ],
-  "workbench.editorAssociations": {
-    "*.db": "sqlite-viewer.view"
-  },
-  "conventionalCommits.scopes": ["project", "frontend", "styles", "headers"]
+	"typescript.preferences.autoImportFileExcludePatterns": [
+		"@remix-run/server-runtime",
+		"express",
+		"@radix-ui/**",
+		"@react-email/**",
+		"node:stream/consumers",
+		"node:test",
+		"node:console"
+	],
+	"workbench.editorAssociations": {
+		"*.db": "sqlite-viewer.view"
+	},
+	"conventionalCommits.scopes": ["project", "frontend", "styles", "headers"]
 }

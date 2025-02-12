@@ -1,10 +1,10 @@
 {
-  "recommendations": [
-    "bradlc.vscode-tailwindcss",
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
-    "prisma.prisma",
-    "qwtel.sqlite-viewer",
-    "github.vscode-github-actions"
-  ]
+	"recommendations": [
+		"bradlc.vscode-tailwindcss",
+		"dbaeumer.vscode-eslint",
+		"esbenp.prettier-vscode",
+		"prisma.prisma",
+		"qwtel.sqlite-viewer",
+		"github.vscode-github-actions"
+	]
 }

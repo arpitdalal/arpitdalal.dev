@@ -18,7 +18,7 @@ export const GET_BLOG_POSTS = `
       }
     }
   }
-`;
+`
 
 export const ADD_SUBSCRIBER = `
   mutation SubscribeToNewsletter($input: SubscribeToNewsletterInput!) {
@@ -26,4 +26,4 @@ export const ADD_SUBSCRIBER = `
       status
     }
   }
-`;
+`
