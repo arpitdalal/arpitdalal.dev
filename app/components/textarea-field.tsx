@@ -40,7 +40,7 @@ export function TextareaField({
 				className="resize-y"
 				{...textareaProps}
 			/>
-			<div className="min-h-[32px] pb-3 pt-1">
+			<div className="min-h-[32px] pt-1 pb-3">
 				{errorId ? <ErrorList id={errorId} errors={errors} /> : null}
 			</div>
 		</div>

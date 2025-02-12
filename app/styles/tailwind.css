@@ -1,8 +1,22 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@config '../../tailwind.config.ts';
 
 @layer base {
+	/* START - Tailwind v3 compatibility styles. */
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		border-color: hsl(var(--border));
+	}
+	button:not(:disabled),
+	[role='button']:not(:disabled) {
+		cursor: pointer;
+	}
+	/* END - Tailwind v3 compatibility styles. */
+
 	:root {
 		--background: 0 0% 100%;
 		--foreground: 224 71.4% 4.1%;

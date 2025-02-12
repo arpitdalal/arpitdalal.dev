@@ -189,12 +189,12 @@ const externalLinks = {
 
 function Footer() {
 	return (
-		<footer className="border-t border-foreground/40">
+		<footer className="border-foreground/40 border-t">
 			<div className="container flex flex-wrap items-start justify-between gap-10 py-5">
 				<div className="grid gap-4">
 					<Link
 						to="/"
-						className="group z-10 flex items-center gap-4 outline-none ring-ring ring-offset-2 ring-offset-background transition-colors focus-within:ring-2 focus-visible:ring-2"
+						className="group ring-ring ring-offset-background z-10 flex items-center gap-4 ring-offset-2 outline-hidden transition-colors focus-within:ring-2 focus-visible:ring-2"
 					>
 						<Logo>
 							<LogoCircle />
@@ -290,17 +290,17 @@ function Footer() {
 					</div>
 				</nav>
 				<div>
-					<h2 className="text-lg font-bold xs:text-2xl">
+					<h2 className="xs:text-2xl text-lg font-bold">
 						Subscribe to my newsletter
 					</h2>
-					<p className="mt-2 text-sm text-foreground/70">
+					<p className="text-foreground/70 mt-2 text-sm">
 						Get the latest updates from me directly to your inbox, no spam.
 					</p>
 					<Newsletter />
 				</div>
 			</div>
 			<div className="container mb-5">
-				<p className="text-sm text-foreground/70">
+				<p className="text-foreground/70 text-sm">
 					Arpit Dalal &copy; 2020 - {new Date().getFullYear()}. All rights
 					reserved.
 				</p>

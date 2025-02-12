@@ -55,7 +55,7 @@ export function Section({
 						paddingLeft: h2Left,
 					}}
 					className={cn(
-						'sticky top-12 z-40 max-w-fit xs:top-14 sm:top-12',
+						'xs:top-14 sticky top-12 z-40 max-w-fit sm:top-12',
 						(!jsEnabled || isReducedMotion) &&
 							HEADING_STYLES_NO_JS_OR_MOTION_SAFE,
 					)}

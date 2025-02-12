@@ -88,7 +88,7 @@ export function SubmitButton({
 					{size === 'full' && <span>{text.default}</span>}
 					<Icon
 						name="arrow-right-outline"
-						className="size-4 motion-safe:group-hover/submit:animate-bounce-right"
+						className="motion-safe:group-hover/submit:animate-bounce-right size-4"
 					/>
 				</motion.div>
 

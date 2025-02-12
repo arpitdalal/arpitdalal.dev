@@ -44,7 +44,7 @@ export function GeneralErrorBoundary({
 	}
 
 	return (
-		<div className="container flex items-center justify-center p-20 text-h2">
+		<div className="text-h2 container flex items-center justify-center p-20">
 			{isRouteErrorResponse(error)
 				? (statusHandlers?.[error.status] ?? defaultStatusHandler)({
 						error,
@@ -68,7 +68,7 @@ export function NotFound() {
 	})
 
 	return (
-		<div className="container flex items-center justify-center p-20 text-h2">
+		<div className="text-h2 container flex items-center justify-center p-20">
 			<div className="flex flex-col gap-6 pt-10">
 				<div className="flex flex-col gap-3">
 					<h1 className="text-h1">Lost, but not forgotten</h1>
@@ -76,10 +76,10 @@ export function NotFound() {
 				<Link to="/" className="text-body-md underline">
 					<Icon name="arrow-left-outline">Let's find your way back</Icon>
 				</Link>
-				<div className="hidden w-full text-body-md lg:block">
+				<div className="text-body-md hidden w-full lg:block">
 					<h2>Feel free to play a game while you're here</h2>
 					<DinoGame hideInstructions />
-					<p className="mt-6 text-center text-base text-foreground/70">
+					<p className="text-foreground/70 mt-6 text-center text-base">
 						Press space to start the game.
 					</p>
 				</div>

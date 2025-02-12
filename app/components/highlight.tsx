@@ -35,11 +35,11 @@ export function HeroHighlight({
 			onMouseMove={handleMouseMove}
 		>
 			<div
-				className="pointer-events-none absolute inset-0 bg-dot-thick-neutral-300 dark:bg-dot-thick-neutral-800"
+				className="bg-dot-thick-neutral-300 dark:bg-dot-thick-neutral-800 pointer-events-none absolute inset-0"
 				aria-hidden
 			/>
 			<motion.div
-				className="pointer-events-none absolute inset-0 opacity-0 transition duration-300 bg-dot-thick-[#6d28d9] group-hover:opacity-100 dark:bg-dot-thick-[#6d28d9]"
+				className="bg-dot-thick-[#6d28d9] dark:bg-dot-thick-[#6d28d9] pointer-events-none absolute inset-0 opacity-0 transition duration-300 group-hover:opacity-100"
 				style={{
 					WebkitMaskImage: useMotionTemplate`
             radial-gradient(
@@ -59,7 +59,7 @@ export function HeroHighlight({
 				aria-hidden
 			/>
 			<div
-				className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background [mask-image:linear-gradient(to_bottom,transparent_20%,#030712_180%)]"
+				className="bg-background pointer-events-none absolute inset-0 flex items-center justify-center [mask-image:linear-gradient(to_bottom,transparent_20%,#030712_180%)]"
 				aria-hidden
 			></div>
 			<div className={cn('relative z-20', className)}>
@@ -95,7 +95,7 @@ export function HighlightBackground({
 				display: 'block',
 			}}
 			className={cn(
-				`relative inline-block rounded-lg bg-gradient-to-r from-indigo-300 to-purple-300 px-1 pb-1 dark:from-primary dark:to-purple-500`,
+				`dark:from-primary relative inline-block rounded-lg bg-linear-to-r from-indigo-300 to-purple-300 px-1 pb-1 dark:to-purple-500`,
 				className,
 			)}
 		>
@@ -110,7 +110,7 @@ export function HighlightUnderline({
 	children: React.ReactNode
 }) {
 	return (
-		<span className="underline decoration-primary decoration-wavy">
+		<span className="decoration-primary underline decoration-wavy">
 			{children}
 		</span>
 	)
@@ -124,9 +124,9 @@ export function HeroHighlightH1({
 	subtitle?: React.ReactNode
 }) {
 	return (
-		<h1 className="max-w-[15ch] text-center text-6xl [--slidein-delay:100ms] motion-safe:animate-slidein motion-safe:opacity-0 sm:text-7xl lg:text-8xl">
+		<h1 className="motion-safe:animate-slidein max-w-[15ch] text-center text-6xl [--slidein-delay:100ms] motion-safe:opacity-0 sm:text-7xl lg:text-8xl">
 			{subtitle ? (
-				<span className="block text-sm uppercase text-foreground/70">
+				<span className="text-foreground/70 block text-sm uppercase">
 					{subtitle}
 				</span>
 			) : null}
@@ -143,7 +143,7 @@ export function HeroHighlightDescription({
 	children: React.ReactNode
 }) {
 	return (
-		<p className="max-w-[60ch] px-8 text-center text-lg [--slidein-delay:300ms] motion-safe:animate-slidein motion-safe:opacity-0 sm:text-xl">
+		<p className="motion-safe:animate-slidein max-w-[60ch] px-8 text-center text-lg [--slidein-delay:300ms] motion-safe:opacity-0 sm:text-xl">
 			{children}
 		</p>
 	)

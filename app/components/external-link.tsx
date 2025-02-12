@@ -11,7 +11,7 @@ interface ExternalLinkProps
 }
 
 const baseClassName =
-	'ring-offset-background transition-colors outline-none focus-visible:ring-2 focus-within:ring-2 ring-ring ring-offset-2 inline-block'
+	'ring-offset-background transition-colors outline-hidden focus-visible:ring-2 focus-within:ring-2 ring-ring ring-offset-2 inline-block'
 const showIconClassName = 'group/link'
 export function ExternalLink({
 	href,

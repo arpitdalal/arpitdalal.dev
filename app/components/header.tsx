@@ -214,14 +214,14 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
 
 	return (
 		<motion.header
-			className="fixed left-0 right-0 z-30 mx-auto w-full"
+			className="fixed right-0 left-0 z-30 mx-auto w-full"
 			style={{
 				paddingInline: headerPaddingInline,
 				top: headerTop,
 			}}
 		>
 			<motion.div
-				className="mx-auto border-solid border-foreground/40 py-4"
+				className="border-foreground/40 mx-auto border-solid py-4"
 				style={{
 					borderRadius: divBorderRadius,
 					maxWidth: divMaxWidth,
@@ -239,14 +239,14 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
 				>
 					<div className="flex items-center justify-between gap-4 md:gap-8">
 						<Link
-							className="absolute -top-96 left-0 z-50 m-3 bg-primary p-3 opacity-0 outline-none ring-ring ring-offset-2 ring-offset-background transition-all duration-200 ease-in-out focus-within:ring-2 focus:top-0 focus:opacity-100 focus-visible:ring-2"
+							className="bg-primary ring-ring ring-offset-background absolute -top-96 left-0 z-50 m-3 p-3 opacity-0 ring-offset-2 outline-hidden transition-all duration-200 ease-in-out focus-within:ring-2 focus:top-0 focus:opacity-100 focus-visible:ring-2"
 							to="#main"
 						>
 							Skip Navigation
 						</Link>
 						<Link
 							to="/"
-							className="group z-10 flex items-center gap-4 overflow-clip outline-none ring-ring ring-offset-2 ring-offset-background transition-colors focus-within:ring-2 focus-visible:ring-2"
+							className="group ring-ring ring-offset-background z-10 flex items-center gap-4 overflow-clip ring-offset-2 outline-hidden transition-colors focus-within:ring-2 focus-visible:ring-2"
 						>
 							<Logo className="z-10">
 								<LogoCircle />
@@ -342,7 +342,7 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
 					<AnimatePresence>
 						{isMobileNavOpen && (
 							<motion.ul
-								className="flex flex-col divide-y divide-foreground/20 overflow-hidden md:hidden"
+								className="divide-foreground/20 flex flex-col divide-y overflow-hidden md:hidden"
 								initial={{ height: 0 }}
 								animate={{ height: 'auto' }}
 								exit={{ height: 0 }}
@@ -351,7 +351,7 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
 								<li className="pt-4 last:pb-3">
 									<ExternalLink
 										href="https://blog.arpitdalal.dev?utm_source=arpitdalal.dev&utm_medium=header&utm_campaign=portfolio"
-										className="block w-full py-4 text-foreground/70 hover:text-foreground"
+										className="text-foreground/70 hover:text-foreground block w-full py-4"
 									>
 										Blog
 									</ExternalLink>
@@ -363,7 +363,7 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
 												to={value}
 												className={({ isActive }) =>
 													cn(
-														`block w-full py-4 text-foreground/70 hover:text-foreground`,
+														`text-foreground/70 hover:text-foreground block w-full py-4`,
 														isActive && 'text-foreground',
 													)
 												}

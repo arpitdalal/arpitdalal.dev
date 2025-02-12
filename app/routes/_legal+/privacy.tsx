@@ -23,7 +23,7 @@ export default function PrivacyPolicy() {
 			<section id="contact">
 				<LineGlow />
 				<div className="container">
-					<div className="prose mx-auto dark:prose-invert">
+					<div className="prose dark:prose-invert mx-auto">
 						<p>Last updated: 2025-02-06</p>
 						<p>
 							This website is completely open-source, you can read the code on{' '}

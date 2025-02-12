@@ -1,13 +1,10 @@
 import typographyPlugin from '@tailwindcss/typography'
 import svgToDataUri from 'mini-svg-data-uri'
 import { type Config } from 'tailwindcss'
+import flattenColorPalette from 'tailwindcss/lib/util/flattenColorPalette'
 import animatePlugin from 'tailwindcss-animate'
 import radixPlugin from 'tailwindcss-radix'
 import { extendedTheme } from './app/utils/extended-theme'
-
-const {
-	default: flattenColorPalette,
-} = require('tailwindcss/lib/util/flattenColorPalette')
 
 export default {
 	content: ['./app/**/*.{ts,tsx,jsx,js}'],
