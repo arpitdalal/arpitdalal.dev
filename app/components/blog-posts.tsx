@@ -1,5 +1,12 @@
 import { GET_BLOG_POSTS } from '#app/graphql/queries'
-import { Card } from './card'
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardImage,
+	CardTags,
+	CardTitle,
+} from './card'
 import { Section } from './section'
 
 export type BlogPost = {
@@ -50,16 +57,18 @@ export function BlogPosts({
 }) {
 	return (
 		<Section id="blog" jsEnabled={jsEnabled} sectionTitle="Articles">
-			{blogPosts.map((post) => (
-				<Card
-					key={post.title}
-					title={post.title}
-					link={post.url}
-					imageUrl={post.coverImage.url}
-					imageAlt={`Cover image for ${post.title}`}
-					description={post.brief}
-					tags={post.tags.map((tag) => tag.name)}
-				/>
+			{blogPosts.map(({ title, url, coverImage, brief, tags }) => (
+				<Card key={title}>
+					<CardImage
+						imageUrl={coverImage.url}
+						imageAlt={`Cover image for ${title}`}
+					/>
+					<CardContent>
+						<CardTitle link={url} title={title} />
+						<CardDescription>{brief}</CardDescription>
+						<CardTags tags={tags.map((tag) => tag.name)} />
+					</CardContent>
+				</Card>
 			))}
 		</Section>
 	)
