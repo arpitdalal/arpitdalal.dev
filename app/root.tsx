@@ -185,7 +185,7 @@ const legalLinks = {
 const externalLinks = {
 	blog: 'https://blog.arpitdalal.dev',
 	analytics: ENV?.UMAMI_PUBLIC_ANALYTICS_URL
-		? 'https://stats.arpitdalal.dev'
+		? ENV.UMAMI_PUBLIC_ANALYTICS_URL
 		: undefined,
 }
 
