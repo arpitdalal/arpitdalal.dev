@@ -242,7 +242,7 @@ function Footer() {
 									<li key={key}>
 										<ExternalLink
 											href={`${value}?utm_source=arpitdalal.dev&utm_medium=footer&utm_campaign=portfolio`}
-											applyBaseClassName={false}
+											applyRingClassName={false}
 										>
 											{capitalize(key)}
 										</ExternalLink>
@@ -281,7 +281,7 @@ function Footer() {
 							<li>
 								<ExternalLink
 									href="https://blog.arpitdalal.dev/rss.xml"
-									applyBaseClassName={false}
+									applyRingClassName={false}
 								>
 									RSS
 								</ExternalLink>

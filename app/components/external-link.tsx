@@ -6,18 +6,22 @@ interface ExternalLinkProps
 	href: string
 	children: React.ReactNode
 	className?: string
-	applyBaseClassName?: boolean
+	applyRingClassName?: boolean
+	applyUnderlineClassName?: boolean
 	showIcon?: boolean
 }
 
-const baseClassName =
+const baseClassName = 'cursor-new-tab text-foreground/70'
+const underlineClassName = 'underlined'
+const ringClassName =
 	'ring-offset-background transition-colors outline-hidden focus-visible:ring-2 focus-within:ring-2 ring-ring ring-offset-2 inline-block'
-const showIconClassName = 'group/link'
+const iconClassName = 'group/link'
 export function ExternalLink({
 	href,
 	children,
-	className = 'cursor-new-tab underlined text-foreground/70',
-	applyBaseClassName = true,
+	className = '',
+	applyRingClassName = true,
+	applyUnderlineClassName = true,
 	showIcon = true,
 	...props
 }: ExternalLinkProps) {
@@ -25,8 +29,10 @@ export function ExternalLink({
 		<a
 			href={href}
 			className={cn(
-				applyBaseClassName && baseClassName,
-				showIcon && showIconClassName,
+				baseClassName,
+				applyRingClassName && ringClassName,
+				applyUnderlineClassName && underlineClassName,
+				showIcon && iconClassName,
 				className,
 			)}
 			target="_blank"

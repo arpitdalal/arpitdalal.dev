@@ -269,7 +269,7 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
 							<li>
 								<ExternalLink
 									href="https://blog.arpitdalal.dev"
-									applyBaseClassName={false}
+									applyRingClassName={false}
 								>
 									Blog
 								</ExternalLink>

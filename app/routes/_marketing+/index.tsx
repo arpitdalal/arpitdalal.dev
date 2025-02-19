@@ -38,7 +38,7 @@ export default function Index() {
 			<HeroHighlight className="pt-24">
 				<div className="flex flex-col items-center justify-between gap-6">
 					<HeroHighlightH1 subtitle="Hello there, I'm">
-						<span className="flex flex-wrap space-x-5 font-bold">
+						<span className="flex flex-wrap justify-center space-x-5 font-bold">
 							<span className="first-letter:text-primary">Arpit</span>
 							<span className="first-letter:text-primary">Dalal</span>
 						</span>

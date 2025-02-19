@@ -14,17 +14,13 @@ export function SocialLinks({
 	return (
 		<div className={cn('flex gap-5', className)}>
 			{socialLinks.map(({ href, name, icon }) => (
-				<Button
-					key={href}
-					variant="outline"
-					size="icon"
-					className="rounded-full"
-					asChild
-				>
+				<Button key={href} variant="outline" size="icon" asChild>
 					<ExternalLink
 						href={href}
 						aria-label={name}
 						showIcon={false}
+						applyUnderlineClassName={false}
+						className="rounded-full"
 						data-umami-event="social-link"
 						data-umami-event-url={href}
 					>

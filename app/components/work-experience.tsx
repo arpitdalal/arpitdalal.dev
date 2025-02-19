@@ -184,6 +184,7 @@ export function WorkExperienceCard({
 							href={link}
 							className="hover:text-primary focus-visible:text-primary items-baseline leading-tight font-medium"
 							aria-label={`${title} at ${company} (opens in a new tab)`}
+							applyUnderlineClassName={false}
 						>
 							{/* This is for making the link clickable on the whole card */}
 							<span
