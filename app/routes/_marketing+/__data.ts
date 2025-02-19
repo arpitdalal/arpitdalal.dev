@@ -163,3 +163,219 @@ export const projectsData = [
 		tags: ['Open Source'],
 	},
 ] satisfies Project[]
+
+export type Use = {
+	title: string
+	useCard: UseCard[]
+}
+export type UseCard = {
+	title: string
+	titleLink?: string
+	description: string
+	subDescription?: string
+}
+export const usesData = [
+	{
+		title: 'Workstation',
+		useCard: [
+			{
+				title: 'MacBook Pro 14',
+				titleLink: 'https://www.apple.com/macbook-pro/',
+				description: 'M2 Pro 2023, 32 GB, 512 SSD',
+				subDescription:
+					'Upgraded chip and memory to live stream and edit photos, videos.',
+			},
+			{
+				title: 'Autonomous SmartDesk 2',
+				titleLink:
+					'https://www.autonomous.ai/en-CA/standing-desks/autonomous-desk-eureka',
+				description: 'Matte black desk top - 53" x 29" - black frame',
+				subDescription: 'A sit-stand desk with 4 memory positions.',
+			},
+			{
+				title: 'ErgoChair Pro',
+				titleLink:
+					'https://www.autonomous.ai/en-CA/office-chairs/ergonomic-chair',
+				description: 'Great lumbar and neck support.',
+				subDescription: 'Helps me avoid back and neck pain.',
+			},
+			{
+				title: 'Keychron K4 Wireless Mechanical Keyboard',
+				titleLink: 'https://amzn.to/3EAOisP',
+				description:
+					'96% layout, aluminum frame, version 2, Gateron Brown switches',
+				subDescription: 'I love the tactile feel of the switches.',
+			},
+			{
+				title: 'Apple Magic Trackpad',
+				titleLink:
+					'https://www.apple.com/ca/shop/product/MXKA3AM/A/magic-trackpad-usb%E2%80%91c-black-multi-touch-surface',
+				description: 'Black multi-touch surface',
+				subDescription: 'I love the gesture controls.',
+			},
+		],
+	},
+	{
+		title: 'Accessories',
+		useCard: [
+			{
+				title: 'Apple Airpods Pro 2nd Generation',
+				titleLink: 'https://www.apple.com/ca/airpods-pro/',
+				description: 'Lightning charging case',
+				subDescription:
+					'Amazing sound quality, easy to carry, and works awesome within the ecosystem.',
+			},
+			{
+				title: 'SOJITAS Non-Slip Desk Pad',
+				titleLink: 'https://amzn.to/42YF4AM',
+				description: 'Waterproof PU leather desk mat, 31.5" x 15.7"',
+				subDescription: 'Easy to clean and waterproof leather desk pad.',
+			},
+			{
+				title: 'RioRand Portable Laptop Desk Stand',
+				titleLink: 'https://amzn.to/4hWSqSf',
+				description: 'Foldable ergonomic computer stand',
+				subDescription: 'Keeps my laptop at eye level reducing neck strain.',
+			},
+			{
+				title: 'Gimars Memory Foam Mouse Pad',
+				titleLink: 'https://amzn.to/3WWgI6z',
+				description:
+					'Non slip mouse pad with comfortable memory foam hand rest',
+				subDescription: 'Helps me avoid wrist pain and rashes.',
+			},
+			{
+				title: 'Everlasting Comfort Memory Foam Foot Rest',
+				titleLink: 'https://amzn.to/4hDvwQ7',
+				description: 'Under desk memory foam foot rest',
+				subDescription: 'Keeps my legs from falling asleep.',
+			},
+		],
+	},
+	{
+		title: 'Applications',
+		useCard: [
+			{
+				title: 'Arc',
+				titleLink: 'https://arc.net/gift/5fe6aaa/',
+				description: 'Daily driver',
+				subDescription:
+					'I love its spaces feature. Very convenient to switch between work and personal tabs.',
+			},
+			{
+				title: 'Cursor',
+				titleLink: 'https://www.cursor.com/refer-a-friend?code=0WBM5A44721602',
+				description: 'Code editor',
+				subDescription: 'Makes coding open source stuff a breeze.',
+			},
+			{
+				title: 'Vscode',
+				titleLink: 'https://code.visualstudio.com/',
+				description: 'Code editor',
+				subDescription: 'All things work related.',
+			},
+			{
+				title: 'Ghostty',
+				titleLink: 'https://ghostty.org/',
+				description: 'Platform-native, fast, and feature-rich terminal',
+				subDescription:
+					'Very customizable with native features. Blazingly fast.',
+			},
+			{
+				title: 'Raycast',
+				titleLink: 'https://www.raycast.com/',
+				description: 'Bread and butter',
+				subDescription: "Can't imagine being productive without it.",
+			},
+			{
+				title: 'Apple Notes',
+				titleLink: 'https://www.icloud.com/notes/',
+				description: 'Note taking',
+				subDescription: 'Quickly jot down ideas, thoughts, and important info.',
+			},
+			{
+				title: 'Notion',
+				titleLink: 'https://www.notion.so/',
+				description: 'Managing projects',
+				subDescription: 'Create databases, pages, and more to manage projects.',
+			},
+		],
+	},
+	{
+		title: 'Services',
+		useCard: [
+			{
+				title: 'Umami',
+				titleLink: 'https://umami.is/',
+				description: 'Self-hosted analytics',
+				subDescription:
+					'My preferred anonymous and GDPR compliant web analytics.',
+			},
+			{
+				title: 'PostHog',
+				titleLink: 'https://posthog.com/',
+				description: 'Product analytics, feature flags, and more',
+				subDescription:
+					'Advanced use-case for tracking user journey, adding feature flags, etc.',
+			},
+			{
+				title: 'Fly.io',
+				titleLink: 'https://fly.io/',
+				description: 'Cloud hosting platform',
+				subDescription: 'Amazing for deploying anything!',
+			},
+			{
+				title: 'Cloudinary',
+				titleLink: 'https://cloudinary.com/',
+				description: 'Image hosting platform',
+				subDescription: 'Amazing for hosting images and videos.',
+			},
+			{
+				title: 'GitHub',
+				titleLink: 'https://github.com/',
+				description: 'Code hosting platform',
+				subDescription:
+					'I host all open/closed source code on GitHub and run CI/CD using GitHub Actions.',
+			},
+			{
+				title: 'Porkbun',
+				titleLink: 'https://porkbun.com/',
+				description: 'Domain registrar',
+				subDescription: 'My go-to for registering domains.',
+			},
+			{
+				title: 'iCloud+',
+				titleLink: 'https://www.icloud.com/',
+				description: 'Family sharing',
+				subDescription:
+					'Sync and backup my devices. Also has a lot of other features.',
+			},
+		],
+	},
+	{
+		title: 'Configuration',
+		useCard: [
+			{
+				title: 'Night Owl',
+				titleLink:
+					'https://marketplace.visualstudio.com/items?itemName=sdras.night-owl',
+				description: 'VSCode theme',
+				subDescription: 'Love the colors.',
+			},
+			{
+				title: 'VSCode Icons',
+				titleLink:
+					'https://marketplace.cursorapi.com/items?itemName=vscode-icons-team.vscode-icons',
+				description: 'VSCode sidebar icons',
+				subDescription: 'Makes it easier to identify files and folders.',
+			},
+			{
+				title: 'Fira Code',
+				titleLink: 'https://github.com/tonsky/FiraCode',
+				description: 'Preferred coding font',
+				subDescription:
+					'Makes reading code easy and enjoyable with its ligatures.',
+			},
+		],
+	},
+] satisfies Use[]

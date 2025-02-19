@@ -13,12 +13,14 @@ import { LineGlow } from './line-glow'
 type SectionProps = {
 	jsEnabled: boolean
 	sectionTitle: string
+	reduceOpacity?: boolean
 } & React.HTMLAttributes<HTMLElement>
 
 export function Section({
 	jsEnabled,
 	sectionTitle,
 	children,
+	reduceOpacity = true,
 	...props
 }: SectionProps) {
 	const sectionRef = useRef<HTMLElement>(null)
@@ -62,7 +64,9 @@ export function Section({
 				>
 					<HighlightUnderline>{sectionTitle}</HighlightUnderline>
 				</motion.h2>
-				<ol className="group/ol relative mt-8">{children}</ol>
+				<ol className={cn('relative mt-8', reduceOpacity && 'group/ol')}>
+					{children}
+				</ol>
 			</div>
 		</section>
 	)

@@ -175,6 +175,7 @@ export default AppWithProviders
 
 export const headerAndFooterCommonLinks = {
 	contact: 'contact',
+	uses: 'uses',
 }
 const legalLinks = {
 	terms: 'terms',
