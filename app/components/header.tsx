@@ -7,7 +7,7 @@ import {
 	transform,
 } from 'motion/react'
 import { useRef, useState } from 'react'
-import { Link, NavLink } from 'react-router'
+import { href, Link, NavLink } from 'react-router'
 import { ExternalLink } from '#app/components/external-link'
 import { Logo, LogoCircle, LogoImage, LogoSpinner } from '#app/components/logo'
 import { headerAndFooterCommonLinks } from '#app/root'
@@ -245,7 +245,7 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
 							Skip Navigation
 						</Link>
 						<Link
-							to="/"
+							to={href('/')}
 							className="group ring-ring ring-offset-background z-10 flex items-center gap-4 overflow-clip ring-offset-2 outline-hidden transition-colors focus-within:ring-2 focus-visible:ring-2"
 						>
 							<Logo className="z-10">

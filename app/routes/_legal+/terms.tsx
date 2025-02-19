@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import { href, Link } from 'react-router'
 import { ExternalLink } from '#app/components/external-link'
 import {
 	HeroHighlight,
@@ -37,8 +37,8 @@ export default function PrivacyPolicy() {
 						<p>
 							By accessing and using arpitdalal.dev (“the Site”), you agree to
 							be bound by these Terms of Service (“Terms”) and{' '}
-							<Link to="/privacy">Privacy Policy</Link>. If you do not agree to
-							these Terms, please do not use the Site.
+							<Link to={href('/privacy')}>Privacy Policy</Link>. If you do not
+							agree to these Terms, please do not use the Site.
 						</p>
 						<h2>2. Website Purpose</h2>
 						<p>

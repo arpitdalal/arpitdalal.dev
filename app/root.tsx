@@ -1,4 +1,5 @@
 import {
+	href,
 	Link,
 	Links,
 	Meta,
@@ -174,8 +175,8 @@ function AppWithProviders() {
 export default AppWithProviders
 
 export const headerAndFooterCommonLinks = {
-	contact: 'contact',
-	uses: 'uses',
+	contact: href('/contact'),
+	uses: href('/uses'),
 }
 const legalLinks = {
 	terms: 'terms',
@@ -194,7 +195,7 @@ function Footer() {
 			<div className="container flex flex-wrap items-start justify-between gap-10 py-5">
 				<div className="grid gap-4">
 					<Link
-						to="/"
+						to={href('/')}
 						className="group ring-ring ring-offset-background z-10 flex items-center gap-4 ring-offset-2 outline-hidden transition-colors focus-within:ring-2 focus-visible:ring-2"
 					>
 						<Logo>
@@ -218,7 +219,7 @@ function Footer() {
 							<li>
 								<Link
 									className="underlined text-foreground/70"
-									to="/"
+									to={href('/')}
 									data-content="Home"
 								>
 									Home

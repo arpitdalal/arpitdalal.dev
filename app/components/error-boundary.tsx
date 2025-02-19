@@ -10,6 +10,7 @@ import {
 	useRouteError,
 	Link,
 	type LinksFunction,
+	href,
 } from 'react-router'
 import { getErrorMessage } from '#app/utils/misc'
 import { Icon } from './ui/icon'
@@ -73,7 +74,7 @@ export function NotFound() {
 				<div className="flex flex-col gap-3">
 					<h1 className="text-h1">Lost, but not forgotten</h1>
 				</div>
-				<Link to="/" className="text-body-md underline">
+				<Link to={href('/')} className="text-body-md underline">
 					<Icon name="arrow-left-outline">Let's find your way back</Icon>
 				</Link>
 				<div className="text-body-md hidden w-full lg:block">

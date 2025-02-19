@@ -1,4 +1,4 @@
-import { Link, useLoaderData } from 'react-router'
+import { href, Link, useLoaderData } from 'react-router'
 import { ClientOnly } from 'remix-utils/client-only'
 import { BlogPosts, fetchBlogPosts } from '#app/components/blog-posts'
 import {
@@ -52,7 +52,7 @@ export default function Index() {
 					</HeroHighlightDescription>
 					<div className="motion-safe:animate-slidein flex gap-5 [--slidein-delay:500ms] motion-safe:opacity-0">
 						<Button variant="outline" asChild>
-							<Link to="contact" data-umami-event="hero-contact-link">
+							<Link to={href('/contact')} data-umami-event="hero-contact-link">
 								Contact me
 							</Link>
 						</Button>
