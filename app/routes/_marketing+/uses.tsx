@@ -54,7 +54,7 @@ function UseSection({ use }: { use: Use }) {
 		<ClientOnly
 			fallback={
 				<Section
-					id={use.title}
+					id={use.title.toLowerCase()}
 					sectionTitle={use.title}
 					reduceOpacity={false}
 					jsEnabled={false}
@@ -65,7 +65,7 @@ function UseSection({ use }: { use: Use }) {
 		>
 			{() => (
 				<Section
-					id={use.title}
+					id={use.title.toLowerCase()}
 					sectionTitle={use.title}
 					reduceOpacity={false}
 					jsEnabled

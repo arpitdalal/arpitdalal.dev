@@ -20,7 +20,7 @@ export default function PrivacyPolicy() {
 					</HeroHighlightDescription>
 				</div>
 			</HeroHighlight>
-			<section id="contact">
+			<section id="privacy">
 				<LineGlow />
 				<div className="container">
 					<div className="prose dark:prose-invert mx-auto">
