@@ -70,23 +70,27 @@ export function NotFound() {
 	})
 
 	return (
-		<div className="container flex items-center justify-center p-20">
-			<div className="flex flex-col gap-6 pt-10">
-				<div className="flex flex-col gap-3">
-					<h1 className="text-h3 md:text-h2">Lost, but not forgotten</h1>
-				</div>
-				<div>
-					<Link
-						to={href('/')}
-						className="underlined"
-						data-content="Te Let's find your way back"
-					>
-						<Icon name="arrow-left-outline">Let's find your way back</Icon>
-					</Link>
-				</div>
-				<div className="text-body-md w-full">
+		<>
+			<div className="container pt-20">
+				<div className="mx-auto flex max-w-max flex-col gap-6 pt-10">
+					<div className="flex flex-col gap-3">
+						<h1 className="text-h3 md:text-h2">Lost, but not forgotten</h1>
+					</div>
+					<div>
+						<Link
+							to={href('/')}
+							className="underlined"
+							data-content="Te Let's find your way back"
+						>
+							<Icon name="arrow-left-outline">Let's find your way back</Icon>
+						</Link>
+					</div>
 					<h2>Feel free to play a game while you're here</h2>
-					<DinoGame hideInstructions />
+				</div>
+			</div>
+			<DinoGame hideInstructions />
+			<div className="container">
+				<div className="flex flex-col gap-6 pt-10">
 					<p className="text-foreground/70 mt-6 hidden text-center text-base lg:block">
 						Press space to start the game and jump.
 					</p>
@@ -113,6 +117,6 @@ export function NotFound() {
 					</div>
 				</div>
 			</div>
-		</div>
+		</>
 	)
 }
