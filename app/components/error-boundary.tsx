@@ -13,6 +13,7 @@ import {
 	href,
 } from 'react-router'
 import { getErrorMessage } from '#app/utils/misc'
+import { Button } from './ui/button'
 import { Icon } from './ui/icon'
 
 type StatusHandler = (info: {
@@ -69,20 +70,47 @@ export function NotFound() {
 	})
 
 	return (
-		<div className="text-h2 container flex items-center justify-center p-20">
+		<div className="container flex items-center justify-center p-20">
 			<div className="flex flex-col gap-6 pt-10">
 				<div className="flex flex-col gap-3">
-					<h1 className="text-h1">Lost, but not forgotten</h1>
+					<h1 className="text-h3 md:text-h2">Lost, but not forgotten</h1>
 				</div>
-				<Link to={href('/')} className="text-body-md underline">
-					<Icon name="arrow-left-outline">Let's find your way back</Icon>
-				</Link>
-				<div className="text-body-md hidden w-full lg:block">
+				<div>
+					<Link
+						to={href('/')}
+						className="underlined"
+						data-content="Te Let's find your way back"
+					>
+						<Icon name="arrow-left-outline">Let's find your way back</Icon>
+					</Link>
+				</div>
+				<div className="text-body-md w-full">
 					<h2>Feel free to play a game while you're here</h2>
 					<DinoGame hideInstructions />
-					<p className="text-foreground/70 mt-6 text-center text-base">
-						Press space to start the game.
+					<p className="text-foreground/70 mt-6 hidden text-center text-base lg:block">
+						Press space to start the game and jump.
 					</p>
+					<div className="flex flex-col items-center gap-3 lg:hidden">
+						<p className="text-foreground/70 mt-6 text-center text-base">
+							Tap the button below to start/jump
+						</p>
+						<Button
+							variant="secondary"
+							onClickCapture={() => {
+								const spaceEvent = new KeyboardEvent('keydown', {
+									code: 'Space',
+									key: ' ',
+									keyCode: 32,
+									which: 32,
+									bubbles: true,
+									cancelable: true,
+								})
+								document.dispatchEvent(spaceEvent)
+							}}
+						>
+							Jump
+						</Button>
+					</div>
 				</div>
 			</div>
 		</div>
