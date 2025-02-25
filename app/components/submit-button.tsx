@@ -106,7 +106,7 @@ export function SubmitButton({
 				>
 					{size === 'full' && <span>{text.loading}</span>}
 					<Icon
-						name="refresh-outline"
+						name="loader-outline"
 						className="size-4 motion-safe:animate-spin"
 					/>
 				</motion.div>
