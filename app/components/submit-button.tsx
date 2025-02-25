@@ -20,6 +20,7 @@ interface SubmitButtonProps {
 	size?: 'icon' | 'full'
 	className?: string
 	dataProps?: Record<string, string>
+	ariaProps?: Record<string, string>
 }
 
 export function SubmitButton({
@@ -34,6 +35,7 @@ export function SubmitButton({
 	size = 'full',
 	className = '',
 	dataProps = {},
+	ariaProps = {},
 }: SubmitButtonProps) {
 	const [showStatus, setShowStatus] = useState<Status | null>(null)
 	const isSubmitting = state !== 'idle'
@@ -74,6 +76,7 @@ export function SubmitButton({
 				}
 			}}
 			{...dataProps}
+			{...ariaProps}
 		>
 			<div className="relative flex h-7 w-full items-center justify-center">
 				<motion.div
