@@ -5,13 +5,13 @@ const API_HOST = 'us.i.posthog.com'
 const ASSET_HOST = 'us-assets.i.posthog.com'
 
 type RequestInitWithDuplex = RequestInit & {
-	duplex?: 'half'
+	duplex?: 'half' // needed for larger POST bodies - https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1483
 }
 
-const posthogProxy = async (request: Request) => {
+async function posthogProxy(request: Request) {
 	const url = new URL(request.url)
 
-	const hostname = url.pathname.startsWith('/ingest/static/')
+	const hostname = url.pathname.startsWith('/resources/ingest/static')
 		? ASSET_HOST
 		: API_HOST
 
