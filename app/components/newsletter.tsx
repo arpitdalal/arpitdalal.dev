@@ -61,6 +61,7 @@ export function Newsletter({
 					size="icon"
 					dataProps={{
 						'data-umami-event': 'newsletter-form-submit',
+						'data-umami-event-email': fields.email.value ?? '',
 					}}
 					ariaProps={{
 						'aria-label': 'Subscribe',
