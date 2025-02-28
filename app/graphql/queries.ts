@@ -4,6 +4,7 @@ export const GET_BLOG_POSTS = `
       posts(first: 10) {
         edges {
           node {
+            id
             title
             brief
             url
