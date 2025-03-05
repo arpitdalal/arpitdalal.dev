@@ -323,7 +323,7 @@ export const usesData = [
 			},
 			{
 				title: 'Raycast',
-				titleLink: 'https://www.raycast.com/',
+				titleLink: 'https://raycast.com/?via=arpit-dalal',
 				description: 'Bread and butter',
 				subDescription: "Can't imagine being productive without it.",
 			},
