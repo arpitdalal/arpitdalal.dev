@@ -4,10 +4,10 @@ import { useRef, useState } from 'react'
 import { ExternalLink } from '#app/components/external-link'
 import { HighlightUnderline } from '#app/components/highlight'
 import { Badge } from '#app/components/ui/badge'
-import { Icon } from '#app/components/ui/icon'
 import { type WorkExperience } from '#app/routes/_marketing+/__data'
 import { useHints } from '#app/utils/client-hints'
 import { cn } from '#app/utils/misc'
+import { useFormatDistance } from '#app/utils/use-format-distance'
 import {
 	HEADING_STYLES,
 	HEADING_STYLES_NO_JS_OR_MOTION_SAFE,
@@ -107,7 +107,6 @@ export function WorkExperience({
 
 export function WorkExperienceCard({
 	title,
-	previousTitles,
 	link,
 	company,
 	location,
@@ -121,6 +120,7 @@ export function WorkExperienceCard({
 	const isReducedMotion = reducedMotion === 'reduce'
 	const { width } = useWindowSize()
 	const isMdScreen = width < 1024
+	const formatDistance = useFormatDistance(startDate, endDate)
 
 	const [offsetX, setOffsetX] = useState(0)
 	const [offsetY, setOffsetY] = useState(0)
@@ -175,14 +175,14 @@ export function WorkExperienceCard({
 					aria-label={`${startDate} ${endDate.toLowerCase() === 'present' ? 'till' : 'to'} ${endDate}`}
 				>
 					<time>
-						{startDate} - {endDate}
+						{startDate} - {endDate} · {formatDistance}
 					</time>
 				</header>
 				<div className="z-10 pl-5 sm:col-span-6 sm:pl-3">
 					<h3 className="font-medium">
 						<ExternalLink
 							href={link}
-							className="hover:text-primary focus-visible:text-primary items-baseline leading-tight font-medium"
+							className="hover:text-primary focus-visible:text-primary text-foreground items-baseline leading-tight font-medium"
 							aria-label={`${title} at ${company} (opens in a new tab)`}
 							applyUnderlineClassName={false}
 						>
@@ -196,22 +196,10 @@ export function WorkExperienceCard({
 							</span>
 						</ExternalLink>
 					</h3>
-					{previousTitles && previousTitles.length > 0 && (
-						<ol aria-label="Previous titles">
-							{previousTitles.map((previousTitle) => (
-								<li key={previousTitle} className="text-foreground/90 text-sm">
-									<Icon
-										name="arrow-up-outline"
-										arial-label={`Previous title: ${previousTitle}`}
-									>
-										{previousTitle}
-									</Icon>
-								</li>
-							))}
-						</ol>
-					)}
 					<p className="text-foreground/70 mt-1">{location}</p>
-					<p className="mt-2 leading-normal">{description}</p>
+					<p className="text-foreground/70 mt-2 leading-normal">
+						{description}
+					</p>
 					<ul className="mt-4 flex flex-wrap gap-2" aria-label="Tags">
 						{tags.map((tag) => (
 							<Badge key={tag}>{tag}</Badge>

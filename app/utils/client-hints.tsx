@@ -8,10 +8,15 @@ import {
 	subscribeToSchemeChange,
 } from '@epic-web/client-hints/color-scheme'
 import { clientHint as reducedMotionHint } from '@epic-web/client-hints/reduced-motion'
-import { clientHint as timeZoneHint } from '@epic-web/client-hints/time-zone'
 import * as React from 'react'
 import { useRevalidator } from 'react-router'
 import { useRequestInfo } from './request-info'
+
+const timeZoneHint = {
+	cookieName: 'CH-time-zone',
+	getValueCode: 'Intl.DateTimeFormat().resolvedOptions().timeZone',
+	fallback: 'America/Toronto',
+} as const
 
 const hintsUtils = getHintUtils({
 	theme: colorSchemeHint,

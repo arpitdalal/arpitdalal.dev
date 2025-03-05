@@ -35,7 +35,6 @@ export const socialLinksData = [
 
 export type WorkExperience = {
 	title: string
-	previousTitles?: string[]
 	link: string
 	company: string
 	location: string
@@ -46,15 +45,46 @@ export type WorkExperience = {
 }
 export const workExperienceData = [
 	{
+		title: 'Software Engineer',
+		link: 'https://plusgrade.com',
+		company: 'Plusgrade',
+		location: 'ON, Canada',
+		description:
+			'Develop a line of e-commerce products for ancillary revenue in the airline, hotel, rail, and cruise industries.',
+		startDate: 'Mar 2025',
+		endDate: 'Present',
+		tags: [
+			'React',
+			'Typescript',
+			'Node',
+			'Test Automation',
+			'Bitbucket',
+			'Docker',
+			'AWS',
+			'Datadog',
+			'Jira',
+		],
+	},
+	{
 		title: 'Web Developer Product Specialist',
 		link: 'https://points.com',
-		company: 'Points',
+		company: 'Points (a Plusgrade company)',
 		location: 'ON, Canada',
 		description:
 			'Develop production-ready storefronts for millions of users, collaborating with multiple stakeholders to formulate comprehensive plans for product development, testing, and launch.',
 		startDate: 'Aug 2021',
-		endDate: 'Present',
-		tags: ['React', 'JavaScript', 'Typescript', 'Node', 'PHP'],
+		endDate: 'Mar 2025',
+		tags: [
+			'Node',
+			'PHP',
+			'React',
+			'Typescript',
+			'JavaScript',
+			'Remix',
+			'GitLab',
+			'Jira',
+			'Docker',
+		],
 	},
 	{
 		title: 'Web Developer',
@@ -64,8 +94,16 @@ export const workExperienceData = [
 		description:
 			'Work collaboratively with clients and in-house teams to provide fast, secure, responsive and client-acclaimed full-stack web applications for user-optimized experiences.',
 		startDate: 'Aug 2020',
-		endDate: 'Jul 2021',
-		tags: ['React', 'Typescript', 'Bootstrap', 'Node', 'PHP', 'WordPress'],
+		endDate: 'Aug 2021',
+		tags: [
+			'React',
+			'Typescript',
+			'Bootstrap',
+			'Node',
+			'PHP',
+			'WordPress',
+			'Bitbucket',
+		],
 	},
 	{
 		title: 'Full Stack Web Developer',
@@ -75,7 +113,7 @@ export const workExperienceData = [
 		description:
 			'Create robust full-stack web solutions tailored to client needs, leveraging the most suitable technology stack for optimal performance and accessibility.',
 		startDate: 'Jul 2019',
-		endDate: 'Apr 2020',
+		endDate: 'May 2020',
 		tags: [
 			'React',
 			'Typescript',
@@ -84,6 +122,8 @@ export const workExperienceData = [
 			'Node',
 			'PHP',
 			'WordPress',
+			'Digital Ocean',
+			'Bitbucket',
 		],
 	},
 	{
@@ -94,8 +134,8 @@ export const workExperienceData = [
 		description:
 			'Collaborate within a dynamic team, contributing to multiple codebases in a fast-paced startup. Utilize React, Next, Redux, and TypeScript to craft highly responsive user interfaces.',
 		startDate: 'Feb 2019',
-		endDate: 'Jun 2019',
-		tags: ['React', 'Next.js', 'JavaScript', 'Node'],
+		endDate: 'Jul 2019',
+		tags: ['React', 'Next.js', 'JavaScript', 'Node', 'Bitbucket'],
 	},
 	{
 		title: 'Junior Developer',
@@ -105,8 +145,8 @@ export const workExperienceData = [
 		description:
 			'Gained valuable experience and proficiency in HTML, CSS, React, JavaScript, and Node, contributing actively to projects and accelerating learning curve.',
 		startDate: 'Feb 2017',
-		endDate: 'May 2018',
-		tags: ['JavaScript', 'Node', 'React', 'HTML', 'CSS'],
+		endDate: 'Jun 2018',
+		tags: ['JavaScript', 'Node', 'React', 'HTML', 'CSS', 'Bitbucket'],
 	},
 ] satisfies WorkExperience[]
 
