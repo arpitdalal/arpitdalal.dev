@@ -240,6 +240,12 @@ export const usesData = [
 				subDescription: 'Helps me avoid back and neck pain.',
 			},
 			{
+				title: 'INFIEVO 27" Monitor',
+				titleLink: 'https://amzn.to/3DnzEoi',
+				description: '165Hz 1440p, ultra thin, 1ms response time.',
+				subDescription: 'Complements Pro Motion with crisp colors.',
+			},
+			{
 				title: 'Keychron K4 Wireless Mechanical Keyboard',
 				titleLink: 'https://amzn.to/3EAOisP',
 				description:
