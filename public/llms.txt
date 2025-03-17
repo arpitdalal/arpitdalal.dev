@@ -1,0 +1,11 @@
+# https://arpitdalal.dev llms.txt
+
+- [Arpit Dalal's Portfolio](https://arpitdalal.dev/): Arpit Dalal: Full-stack developer sharing projects and insights.
+- [Find Your Way Back](https://arpitdalal.dev/*): Explore games and find your way back home.
+- [Privacy Policy Overview](https://arpitdalal.dev/privacy): Transparent data practices and user rights explained clearly.
+- [Terms of Service](https://arpitdalal.dev/terms): Terms of service for using arpitdalal.dev website freely.
+- [Contact Arpit](https://arpitdalal.dev/contact): Reach out to Arpit for inquiries or collaboration.
+- [Newsletter Subscription](https://arpitdalal.dev/subscribe): Subscribe for updates directly to your inbox, no spam.
+- [Tools I Use Daily](https://arpitdalal.dev/uses): Explore the tools and technologies I use daily.
+- [Thank You Page](https://arpitdalal.dev/thank-you): A thank you page with a fun game to play.
+- [Full-Stack Web Developer](https://arpitdalal.dev/resume.pdf): Experienced full-stack developer with expertise in modern web technologies.

@@ -1,0 +1,818 @@
+# https://arpitdalal.dev llms-full.txt
+
+## Arpit Dalal's Portfolio
+# Hello there, I'mArpitDalal
+
+I'm a software engineer and a full-stack developerliving in the Greater Toronto Area, Canada. I have a passion for building web applications and have a strong background infront-end development.
+
+[Contact me](https://arpitdalal.dev/contact) [Resume](https://arpitdalal.dev/resume.pdf)
+
+[GitHub](https://arpit.im/gh)[Twitter](https://arpit.im/x)[Bluesky](https://arpit.im/bsky)[LinkedIn](https://arpit.im/in)[Youtube](https://arpit.im/yt)
+
+## Work Experience
+
+3. ### [Software Engineer · Plusgrade](https://plusgrade.com/)
+
+ON, Canada
+
+Develop a line of e-commerce products for ancillary revenue in the airline, hotel, rail, and cruise industries.
+
+React
+
+Typescript
+
+Node
+
+Test Automation
+
+Bitbucket
+
+Docker
+
+AWS
+
+Datadog
+
+Jira
+
+4. ### [Web Developer Product Specialist · Points (a Plusgrade company)](https://points.com/)
+
+ON, Canada
+
+Develop production-ready storefronts for millions of users, collaborating with multiple stakeholders to formulate comprehensive plans for product development, testing, and launch.
+
+Node
+
+PHP
+
+React
+
+Typescript
+
+JavaScript
+
+Remix
+
+GitLab
+
+Jira
+
+Docker
+
+5. ### [Web Developer · Redding Designs](https://reddingdesigns.com/)
+
+ON, Canada
+
+Work collaboratively with clients and in-house teams to provide fast, secure, responsive and client-acclaimed full-stack web applications for user-optimized experiences.
+
+React
+
+Typescript
+
+Bootstrap
+
+Node
+
+PHP
+
+WordPress
+
+Bitbucket
+
+6. ### [Full Stack Web Developer · Revolution Media](https://revolution.ca/)
+
+PE, Canada
+
+Create robust full-stack web solutions tailored to client needs, leveraging the most suitable technology stack for optimal performance and accessibility.
+
+React
+
+Typescript
+
+jQuery
+
+Tailwind CSS
+
+Node
+
+PHP
+
+WordPress
+
+Digital Ocean
+
+Bitbucket
+
+7. ### [Full Stack Developer · Big Surge](https://bigsurge.ca/)
+
+PE, Canada
+
+Collaborate within a dynamic team, contributing to multiple codebases in a fast-paced startup. Utilize React, Next, Redux, and TypeScript to craft highly responsive user interfaces.
+
+React
+
+Next.js
+
+JavaScript
+
+Node
+
+Bitbucket
+
+8. ### [Junior Developer · Auberon](https://www.linkedin.com/company/auberon-canada-inc/)
+
+Remote, Canada
+
+Gained valuable experience and proficiency in HTML, CSS, React, JavaScript, and Node, contributing actively to projects and accelerating learning curve.
+
+JavaScript
+
+Node
+
+React
+
+HTML
+
+CSS
+
+Bitbucket
+
+## Articles
+
+1. ![Cover image for My Cloudflare Workers Migration: The Good, The Bad, and The Confusing](https://cdn.hashnode.com/res/hashnode/image/stock/unsplash/4yqWYpNfDCU/upload/b2d6753963a10057cb27913d1f2519a7.jpeg)
+
+
+
+
+
+### [My Cloudflare Workers Migration: The Good, The Bad, and The Confusing](https://blog.arpitdalal.dev/my-cloudflare-workers-migration-the-good-the-bad-and-the-confusing)
+
+
+
+Introduction
+I built this little URL shortener for myself. Think of it as a personal version of something like dub.co, which lets me share short, memorable links instead of full URLs. For example, when I want to share my Linkedin profile, I can share...
+
+
+
+
+
+cloudflare-worker
+
+
+
+Bun
+
+
+
+hono
+
+
+
+TypeScript
+
+
+
+migration
+
+
+
+cloudflare
+
+2. ![Cover image for Setup PostHog reverse proxy with Remix/React Router](https://cdn.hashnode.com/res/hashnode/image/stock/unsplash/JKUTrJ4vK00/upload/04b5ea0d6baccf9c816ef22a5dc9f223.jpeg)
+
+
+
+
+
+### [Setup PostHog reverse proxy with Remix/React Router](https://blog.arpitdalal.dev/setup-posthog-reverse-proxy-with-remix-react-router)
+
+
+
+💡
+This is not a sponsored or feature post. I genuinely like PostHog and its products.
+
+
+Introduction
+Analytics are crucial for understanding user behavior resulting in better products and higher user satisfaction. But, sometimes these analytics tool...
+
+
+
+
+
+posthog
+
+
+
+analytics
+
+
+
+Remix
+
+
+
+react router
+
+
+
+Reverse Proxy
+
+3. ![Cover image for The AI Developer Divide: Autonomous Agents vs Coding Companions](https://cdn.hashnode.com/res/hashnode/image/upload/v1734280882459/bc90147b-c0f7-4d3c-a54d-e8d188f0bf4a.png)
+
+
+
+
+
+### [The AI Developer Divide: Autonomous Agents vs Coding Companions](https://blog.arpitdalal.dev/the-ai-developer-divide-autonomous-agents-vs-coding-companions)
+
+
+
+Introduction
+At this point, you've likely heard of AI products like GitHub Copilot, Cursor, and Devin. If not, it's worth understanding what these different products offer, especially as Devin has just launched publicly for USD 500 per month for a se...
+
+
+
+
+
+AI
+
+
+
+copilot
+
+
+
+cursor
+
+
+
+devinai
+
+
+
+software development
+
+
+
+#agent
+
+4. ![Cover image for Enhancing User Experience with Notion-Style URL Architecture](https://cdn.hashnode.com/res/hashnode/image/stock/unsplash/YPMFARhHxxw/upload/b67f069566026ef017d486a6452e13b3.jpeg)
+
+
+
+
+
+### [Enhancing User Experience with Notion-Style URL Architecture](https://blog.arpitdalal.dev/enhancing-user-experience-with-notion-style-url-architecture)
+
+
+
+URL is the web's user interface. While most users today rely on search engines to find websites, URLs remain the core mechanism for accessing any resource on the internet. Understanding URLs—especially their structure and design—is crucial for creati...
+
+
+
+
+
+url-architecture
+
+
+
+user experience
+
+
+
+#Web Architecture
+
+
+
+UX
+
+
+
+software architecture
+
+
+## Projects
+
+1. ![X Man home page](https://res.cloudinary.com/arpitdalal-dev/image/upload/w_500/v1715629303/arpitdalal-dev/XMAN-home-page_tq33fw.png)
+
+
+
+
+
+### [X Man](https://arpit.im/xman)
+
+
+
+A minimal finance management app for individuals. Built with productivity in mind.
+
+
+
+
+
+React
+
+
+
+Typescript
+
+
+
+Remix
+
+
+
+Tailwind CSS
+
+
+
+Node
+
+
+
+Express
+
+
+
+Prisma
+
+
+
+SQLite
+
+2. ![Epic Content Stack GitHub page](https://res.cloudinary.com/arpitdalal-dev/image/upload/w_500/v1715634672/arpitdalal-dev/epic-gh_cuncf0.png)
+
+
+
+
+
+### [Epic Content Stack](https://arpit.im/ecs)
+
+
+
+Stripped down Epic Stack for content sites, no DB and Auth Code.
+
+
+
+
+
+Open Source
+
+## Find Your Way Back
+# Lost, but not forgotten
+
+[Let's find your way back](https://arpitdalal.dev/)
+
+## Feel free to play a game while you're here
+
+![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)
+
+![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)
+
+Press space to start the game and jump.
+
+Tap the button below to start/jump
+
+Jump
+
+## Privacy Policy Overview
+# PrivacyPolicy
+
+I am transparent about the data I collect and how it is used.
+
+Last updated: 2025-02-06
+
+This website is completely open-source, you can read the code on [GitHub](https://github.com/arpitdalal/arpitdalal.dev).
+
+## 1\. Introduction
+
+This Privacy Policy explains how Arpit Dalal (“me”, “I”, or “my”) handles information related to my website, arpitdalal.dev (the “Site”). By using the Site, you consent to the practices described herein. Importantly, the Site does not store any personal information on its own servers.
+
+## 2\. Information Collection and Storage
+
+I collect non-personal information automatically when you visit the Site. This information may include:
+
+### Contact Form:
+
+When you use the contact form, the information you provide (such as your name, email address, and message) is transmitted directly to my designated email address (or another processing mechanism) and is not stored on the Site.
+
+### Newsletter Signup:
+
+When you subscribe to my newsletter, your email address is forwarded directly to my third-party service (Hashnode) for the purpose of managing my blog and newsletter. This information is not stored on the Site itself. You can visit the [Hashnode Privacy Policy](https://hashnode.com/privacy) to learn more about how Hashnode handles your data.
+
+### Analytics:
+
+I use PostHog and Umami for website analytics. These services collect non-personally identifying data to help me analyze and improve the Site. The data collected by PostHog is not stored by me on my servers. I self-host Umami so I do store data on my servers. Both services are privacy-focused and collect only anonymous data.Umami enables me to make analytics data publicly accessible. You can review [all the data it collects](https://stats.arpitdalal.dev/share/OzZPGxjmA4C1nlzZ/arpitdalal.dev).
+
+### 3\. How I Use Your Information
+
+Since the Site does not store any user-submitted information, I do not maintain or process personal data on my own servers. Third-party systems manage the respective data flows:
+
+- Contact Form: Data is used solely to forward your inquiry to my email; no storage occurs.
+- Newsletter Subscription: Data is used to manage and send you my newsletter; Hashnode stores this data.
+- Analytics: Data is used to understand visitor trends and improve the Site's performance; PostHog and Umami store this data in an anonymous format.
+
+### 4\. Third-Party Services
+
+I do not sell or share your personal information. Any personal data that may be processed (e.g., your email address when subscribing to my newsletter) is handled by third-party service providers, such as Hashnode for email management and PostHog for analytics. Please review their privacy policies for more details on their practices.
+
+### 5\. Data Security
+
+While the Site itself does not store personal information, any data transmitted via our forms is sent through secure channels (e.g., HTTPS). I take reasonable technical measures to ensure that transmissions are secure; however, no method of transmission over the Internet is completely secure.
+
+### 6\. Data Retention
+
+Because the Site does not store personal data, I do not maintain records of user submissions. Data provided via forms is used in real-time (e.g., sent directly to an email) and is not retained on our Site.
+
+### 7\. Your Rights
+
+Under Canadian privacy law (such as PIPEDA), you have the right to inquire about or request changes to any personal data held by third-party service providers. Since the Site itself does not store your data, any such requests should be directed to the appropriate third party. For questions, please contact me using the information below.
+
+### 8\. Cookies and Tracking Technologies
+
+My Site uses cookies and similar technologies to facilitate its operation and analytics. Cookies help in understanding visitor behavior; however, they do not identify you personally. You may adjust your browser settings to refuse cookies, but this might affect your ability to use certain features of the Site such as using system theme.
+
+### 9\. Changes to This Privacy Policy
+
+I may update this Privacy Policy periodically to reflect changes in my practices or applicable law. The updated policy will be posted on this page with a new “Last Updated” date. I encourage you to review this policy periodically.
+
+### 10\. Contact Me
+
+If you have any questions or concerns about this Privacy Policy or my data practices, please contact me at: [arpit@arpitdalal.dev](mailto:arpit@arpitdalal.dev)
+
+## Terms of Service
+# Termsof Service
+
+Everything here is provided for free of charge.
+
+Last updated: 2025-02-06
+
+This website is completely open-source, you can read the code on [GitHub](https://github.com/arpitdalal/arpitdalal.dev).
+
+## 1\. Acceptance of Terms
+
+By accessing and using arpitdalal.dev (“the Site”), you agree to be bound by these Terms of Service (“Terms”) and [Privacy Policy](https://arpitdalal.dev/privacy). If you do not agree to these Terms, please do not use the Site.
+
+## 2\. Website Purpose
+
+The Site is a personal developer portfolio maintained by Arpit Dalal (“me,” “I,” or “my”). The Site is provided for informational and demonstration purposes. I reserve the right to modify or discontinue the Site (or any part of it) at any time without notice.
+
+## 3\. User Conduct
+
+You agree to use the Site only for lawful purposes. You shall not:
+
+- Use the Site in any way that could damage, disable, or impair the Site’s operation.
+- Attempt to gain unauthorized access to any part of the Site or related systems.
+- Submit any malicious content or engage in activities that may compromise security.
+
+## 4\. Intellectual Property
+
+All content on the Site—including text, graphics, logos, images, and code—is the property of Arpit Dalal or used with permission. You may view and share content for your personal, non-commercial use only. Any other use is prohibited unless expressly authorized in writing.
+
+## 5\. No Data Storage Commitment
+
+Please note that although the Site includes interactive elements such as a contact form and newsletter subscription, I do not store any information submitted via these forms on my servers. For instance, contact form submissions are sent directly to my email and are not retained on the Site.
+
+## 6\. Disclaimers and Limitation of Liability
+
+The Site is provided “as is” and “as available.” I make no warranties regarding the accuracy, reliability, or suitability of the Site for any purpose. In no event shall I be liable for any direct, indirect, or incidental damages arising from your use of the Site. Your use is at your sole risk.
+
+## 7\. Modifications
+
+I may update these Terms from time to time. Any changes will be posted on the Site with a new effective date. Your continued use of the Site following any modifications signifies your acceptance of the new terms.
+
+## 8\. Governing Law
+
+These Terms are governed by and construed in accordance with the laws of Ontario, Canada. Any disputes arising from these Terms shall be resolved exclusively in the courts of Ontario.
+
+## 9\. Contact Information
+
+If you have any questions about these Terms, please contact me at: [arpit@arpitdalal.dev](mailto:arpit@arpitdalal.dev)
+
+## Contact Arpit
+# ContactArpit
+
+Have a question or want to work together? Send me a message and I will get back to you as soon as possible.
+
+Please leave this field blankPlease leave this field blank
+
+Name\*Required
+
+Email\*Required
+
+Message\*Required
+
+Send Message
+
+Sending
+
+Sending
+
+## Newsletter Subscription
+# Subscribeto my newsletter
+
+Get the latest updates from me directly to your inbox, no spam.
+
+Please leave this field blankPlease leave this field blank
+
+Email\*Required
+
+## Tools I Use Daily
+# WhatArpituses
+
+The tools and technologies I use daily.
+
+## Workstation
+
+### [MacBook Pro 14](https://www.apple.com/macbook-pro/)
+
+M2 Pro 2023, 32 GB, 512 SSD
+
+Upgraded chip and memory to live stream and edit photos, videos.
+
+### [Autonomous SmartDesk 2](https://www.autonomous.ai/en-CA/standing-desks/autonomous-desk-eureka)
+
+Matte black desk top - 53" x 29" - black frame
+
+A sit-stand desk with 4 memory positions.
+
+### [ErgoChair Pro](https://www.autonomous.ai/en-CA/office-chairs/ergonomic-chair)
+
+Great lumbar and neck support.
+
+Helps me avoid back and neck pain.
+
+### [Keychron K4 Wireless Mechanical Keyboard](https://amzn.to/3EAOisP)
+
+96% layout, aluminum frame, version 2, Gateron Brown switches
+
+I love the tactile feel of the switches.
+
+### [Apple Magic Trackpad](https://www.apple.com/ca/shop/product/MXKA3AM/A/magic-trackpad-usb%E2%80%91c-black-multi-touch-surface)
+
+Black multi-touch surface
+
+I love the gesture controls.
+
+## Accessories
+
+### [Apple Airpods Pro 2nd Generation](https://www.apple.com/ca/airpods-pro/)
+
+Lightning charging case
+
+Amazing sound quality, easy to carry, and works awesome within the ecosystem.
+
+### [SOJITAS Non-Slip Desk Pad](https://amzn.to/42YF4AM)
+
+Waterproof PU leather desk mat, 31.5" x 15.7"
+
+Easy to clean and waterproof leather desk pad.
+
+### [RioRand Portable Laptop Desk Stand](https://amzn.to/4hWSqSf)
+
+Foldable ergonomic computer stand
+
+Keeps my laptop at eye level reducing neck strain.
+
+### [Gimars Memory Foam Mouse Pad](https://amzn.to/3WWgI6z)
+
+Non slip mouse pad with comfortable memory foam hand rest
+
+Helps me avoid wrist pain and rashes.
+
+### [Everlasting Comfort Memory Foam Foot Rest](https://amzn.to/4hDvwQ7)
+
+Under desk memory foam foot rest
+
+Keeps my legs from falling asleep.
+
+## Applications
+
+### [Arc](https://arc.net/gift/5fe6aaa/)
+
+Daily driver
+
+I love its spaces feature. Very convenient to switch between work and personal tabs.
+
+### [Cursor](https://www.cursor.com/refer-a-friend?code=0WBM5A44721602)
+
+Code editor
+
+Makes coding open source stuff a breeze.
+
+### [Vscode](https://code.visualstudio.com/)
+
+Code editor
+
+All things work related.
+
+### [Ghostty](https://ghostty.org/)
+
+Platform-native, fast, and feature-rich terminal
+
+Very customizable with native features. Blazingly fast.
+
+### [Raycast](https://raycast.com/?via=arpit-dalal)
+
+Bread and butter
+
+Can't imagine being productive without it.
+
+### [Apple Notes](https://www.icloud.com/notes/)
+
+Note taking
+
+Quickly jot down ideas, thoughts, and important info.
+
+### [Notion](https://www.notion.so/)
+
+Managing projects
+
+Create databases, pages, and more to manage projects.
+
+## Services
+
+### [Umami](https://umami.is/)
+
+Self-hosted analytics
+
+My preferred anonymous and GDPR compliant web analytics.
+
+### [PostHog](https://posthog.com/)
+
+Product analytics, feature flags, and more
+
+Advanced use-case for tracking user journey, adding feature flags, etc.
+
+### [Fly.io](https://fly.io/)
+
+Cloud hosting platform
+
+Amazing for deploying anything!
+
+### [Cloudinary](https://cloudinary.com/)
+
+Image hosting platform
+
+Amazing for hosting images and videos.
+
+### [GitHub](https://github.com/)
+
+Code hosting platform
+
+I host all open/closed source code on GitHub and run CI/CD using GitHub Actions.
+
+### [Porkbun](https://porkbun.com/)
+
+Domain registrar
+
+My go-to for registering domains.
+
+### [iCloud+](https://www.icloud.com/)
+
+Family sharing
+
+Sync and backup my devices. Also has a lot of other features.
+
+## Configuration
+
+### [Night Owl](https://marketplace.visualstudio.com/items?itemName=sdras.night-owl)
+
+VSCode theme
+
+Love the colors.
+
+### [VSCode Icons](https://marketplace.cursorapi.com/items?itemName=vscode-icons-team.vscode-icons)
+
+VSCode sidebar icons
+
+Makes it easier to identify files and folders.
+
+### [Fira Code](https://github.com/tonsky/FiraCode)
+
+Preferred coding font
+
+Makes reading code easy and enjoyable with its ligatures.
+
+## Thank You Page
+# Lost, but not forgotten
+
+[Let's find your way back](https://arpitdalal.dev/)
+
+## Feel free to play a game while you're here
+
+![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)
+
+![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)
+
+Press space to start the game and jump.
+
+Tap the button below to start/jump
+
+Jump
+
+## Full-Stack Web Developer
+# Arpit Dalal
+
+# Summary of Qualifications
+
+•Accomplished full-stack web developer with $^{6+}$ years of experience working with React, Redux, JavaScript, Typescript, Node.js, PHP, REST and GraphQL APIs, and databases.
+
+•Actively engaged in the development of scalable and responsive full-stack applications using technologies such as Typescript, React, Node.js, PHP, Styled-components, and TailwindCSS.
+
+•Established track record in constructing robust APIs with Express.js and PHP/WordPress.
+
+•Applied agile principles to develop fast and secure software within a team environment.
+
+# Professional Experience
+
+Web Developer Product Specialist -
+
+Aug 2021 – Present
+
+Develop production-ready storefronts for millions of users, collaborating with multiple stakeholders to formulate comprehensive plans for product development, testing, and launch.
+
+# Above and Beyond Achievements:
+
+# •BugHerd automation tool:
+
+oEngineered a tool automating BugHerd board creation, optimizing with preset columns and tags, resulting in hundreds of hours saved for multiple teams. oUtilized Express.js to build a server to serve an app to configure the BugHerd board.
+
+oDeveloped an automated testing framework that conducts multiple end-to-end tests on major browsers, instilling team confidence and reducing thousands of hours annually. oUsed Remix and React for the web application and Playwright for automated tests.
+
+Web Developer -
+
+Aug 2020 – July 2021
+
+Work collaboratively with clients and in-house teams to provide fast, secure, responsive and client-acclaimed full-stack web applications for user-optimized experiences.
+
+# Above and Beyond Achievements:
+
+•Product visualizer and customizer: oEngineered a visual builder with React and Zustand for a WordPress powered ecommerce, enhancing product customization and boosting sales by $45%$ .
+
+Full Stack Web Developer - Revolution Media, PE
+
+July 2019 – Apr 2020
+
+Create robust full-stack web solutions tailored to client needs, leveraging the most suitable technology stack for optimal performance and accessibility.
+
+# Above and Beyond Achievements:
+
+•ADL Search algorithm: oBuilt a search algorithm using Node.js and a React frontend to provide results in submilliseconds from a vast products database; that also automated personalized favorite list based on user search behavior, which in-turn increased sales by $\\pmb{65%}$ .
+
+Full Stack Developer - Feb 2019 – June 2019
+
+Collaborate within a dynamic team, contributing to multiple codebases in a fast-paced startup.
+
+Utilize React.js ,Next.js ,Redux , and TypeScript to craft highly responsive user interfaces.
+
+Please scan QR code to learn more about me.
+
+# Above and Beyond Achievements:
+
+•Codebase migration: oPlayed a key role in migrating multiple codebases from React.js class-based components to hooks , implementing memorization strategies to enhance application speed .
+
+# Junior Developer -
+
+Feb 2017 – May 2018
+
+Gained valuable experience and proficiency in HTML, CSS, React.js, JavaScript, and Node.js, contributing actively to projects and accelerating learning curve.
+
+# Above and Beyond Achievements:
+
+# •Testing suite:
+
+oImplemented a comprehensive automated testing suite using enzyme and react-shallow rendering for a critical project, catching significant bugs and enhancing overall product stability, demonstrating a commitment to excellence and continuous improvement beyond typical expectations for a junior developer.
+
+# Projects
+
+# X Man (Expense Manager)
+
+Designed and implemented a full-stack application using Remix ,React , and SQLite , entirely built with Typescript . Utilized TailwindCSS for styling and Git along with GitHub for version control.
+
+# Project Highlights:
+
+•Developed a robust authentication flow with browser cookies ,sessions , and SQLite database.
+
+•Implemented automated testing strategies, utilizing Playwright for end-to-end tests and Vitest for unit and integration tests, fostering codebase confidence.
+
+•Implemented internationalization of currency and date format using the date-fns library.
+
+•Developed a dynamic dashboard featuring interactive charts to showcase diverse data.
+
+# Volunteer
+
+# React Native Developer
+
+Aug 2023 – Present
+
+Yogi Divine Society Canada, Mississauga, Ontario
+
+# Education
+
+Internet Application and Web Development – Advanced Diploma
+
+Jan 2017 – Apr 2018
+
+Fanshawe college, London, Ontario
+
+
