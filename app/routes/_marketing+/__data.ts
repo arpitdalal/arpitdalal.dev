@@ -73,7 +73,7 @@ export const workExperienceData = [
 		description:
 			'Develop production-ready storefronts for millions of users, collaborating with multiple stakeholders to formulate comprehensive plans for product development, testing, and launch.',
 		startDate: 'Aug 2021',
-		endDate: 'Mar 2025',
+		endDate: 'Feb 2025',
 		tags: [
 			'Node',
 			'PHP',
@@ -94,7 +94,7 @@ export const workExperienceData = [
 		description:
 			'Work collaboratively with clients and in-house teams to provide fast, secure, responsive and client-acclaimed full-stack web applications for user-optimized experiences.',
 		startDate: 'Aug 2020',
-		endDate: 'Aug 2021',
+		endDate: 'Jul 2021',
 		tags: [
 			'React',
 			'Typescript',
@@ -113,7 +113,7 @@ export const workExperienceData = [
 		description:
 			'Create robust full-stack web solutions tailored to client needs, leveraging the most suitable technology stack for optimal performance and accessibility.',
 		startDate: 'Jul 2019',
-		endDate: 'May 2020',
+		endDate: 'Apr 2020',
 		tags: [
 			'React',
 			'Typescript',
@@ -134,7 +134,7 @@ export const workExperienceData = [
 		description:
 			'Collaborate within a dynamic team, contributing to multiple codebases in a fast-paced startup. Utilize React, Next, Redux, and TypeScript to craft highly responsive user interfaces.',
 		startDate: 'Feb 2019',
-		endDate: 'Jul 2019',
+		endDate: 'Jun 2019',
 		tags: ['React', 'Next.js', 'JavaScript', 'Node', 'Bitbucket'],
 	},
 	{
@@ -145,7 +145,7 @@ export const workExperienceData = [
 		description:
 			'Gained valuable experience and proficiency in HTML, CSS, React, JavaScript, and Node, contributing actively to projects and accelerating learning curve.',
 		startDate: 'Feb 2017',
-		endDate: 'Jun 2018',
+		endDate: 'May 2018',
 		tags: ['JavaScript', 'Node', 'React', 'HTML', 'CSS', 'Bitbucket'],
 	},
 ] satisfies WorkExperience[]

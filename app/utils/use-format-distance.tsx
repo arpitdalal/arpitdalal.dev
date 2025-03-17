@@ -1,5 +1,5 @@
 import { TZDate } from '@date-fns/tz'
-import { differenceInMonths, differenceInYears } from 'date-fns'
+import { differenceInMonths, differenceInYears, addMonths } from 'date-fns'
 import { useMemo } from 'react'
 import { useHints } from './client-hints'
 
@@ -20,6 +20,7 @@ export function useFormatDistance(startDate: string, endDate: string) {
 		} else {
 			end = new TZDate(endDate, timeZone)
 		}
+		end = addMonths(end, 1)
 
 		const monthsDiff = differenceInMonths(end, start)
 		const yearsDiff = differenceInYears(end, start)
