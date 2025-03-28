@@ -56,7 +56,7 @@ export default function Index() {
 								Contact me
 							</Link>
 						</Button>
-						<Button asChild>
+						{/* <Button asChild>
 							<Link
 								to="/resume.pdf"
 								data-umami-event="hero-resume-download-link"
@@ -70,7 +70,7 @@ export default function Index() {
 									className="motion-safe:group-hover/resume:animate-bounce-down size-4"
 								/>
 							</Link>
-						</Button>
+						</Button> */}
 					</div>
 					<SocialLinks
 						socialLinks={socialLinks}
