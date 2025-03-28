@@ -7,7 +7,9 @@ import {
 	CardTags,
 	CardTitle,
 } from './card'
+import { ExternalLink } from './external-link'
 import { Section } from './section'
+import { Button } from './ui/button'
 
 export type BlogPost = {
 	title: string
@@ -70,6 +72,16 @@ export function BlogPosts({
 					</CardContent>
 				</Card>
 			))}
+			<div className="mt-8 text-center">
+				<Button variant="outline" size="lg" asChild>
+					<ExternalLink
+						href="https://arpit.im/b"
+						applyUnderlineClassName={false}
+					>
+						View all articles
+					</ExternalLink>
+				</Button>
+			</div>
 		</Section>
 	)
 }

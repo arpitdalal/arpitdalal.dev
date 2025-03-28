@@ -10,7 +10,7 @@ import {
 import { Projects } from '#app/components/projects'
 import { SocialLinks } from '#app/components/social-links'
 import { Button } from '#app/components/ui/button'
-import { Icon } from '#app/components/ui/icon'
+// import { Icon } from '#app/components/ui/icon'
 import { WorkExperience } from '#app/components/work-experience'
 import {
 	projectsData,

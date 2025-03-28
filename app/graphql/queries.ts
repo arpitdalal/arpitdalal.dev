@@ -1,7 +1,7 @@
 export const GET_BLOG_POSTS = `
   query GetBlogPosts {
     publication(host: "${process.env.HASHNODE_PUBLICATION_HOST}") {
-      posts(first: 10) {
+      posts(first: 2) {
         edges {
           node {
             id
