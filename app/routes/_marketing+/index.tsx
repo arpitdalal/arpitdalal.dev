@@ -7,6 +7,7 @@ import {
 	HighlightUnderline,
 	HeroHighlightH1,
 } from '#app/components/highlight'
+import { Notes, fetchNotes } from '#app/components/notes'
 import { Projects } from '#app/components/projects'
 import { SocialLinks } from '#app/components/social-links'
 import { Button } from '#app/components/ui/button'
@@ -20,9 +21,11 @@ import {
 
 export async function loader() {
 	const blogPosts = await fetchBlogPosts()
+	const notes = await fetchNotes()
 
 	return {
 		blogPosts,
+		notes,
 		projects: projectsData,
 		workExperience: workExperienceData,
 		socialLinks: socialLinksData,
@@ -30,7 +33,7 @@ export async function loader() {
 }
 
 export default function Index() {
-	const { blogPosts, projects, workExperience, socialLinks } =
+	const { blogPosts, notes, projects, workExperience, socialLinks } =
 		useLoaderData<typeof loader>()
 
 	return (
@@ -89,6 +92,9 @@ export default function Index() {
 				fallback={<BlogPosts blogPosts={blogPosts} jsEnabled={false} />}
 			>
 				{() => <BlogPosts blogPosts={blogPosts} jsEnabled />}
+			</ClientOnly>
+			<ClientOnly fallback={<Notes notes={notes} jsEnabled={false} />}>
+				{() => <Notes notes={notes} jsEnabled />}
 			</ClientOnly>
 			<ClientOnly fallback={<Projects projects={projects} jsEnabled={false} />}>
 				{() => <Projects projects={projects} jsEnabled />}

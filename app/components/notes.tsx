@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { GET_BLOG_POSTS } from '#app/graphql/queries'
+import { GET_NOTES } from '#app/graphql/queries'
 import {
 	Card,
 	CardContent,
@@ -12,7 +12,7 @@ import { ExternalLink } from './external-link'
 import { Section } from './section'
 import { Button } from './ui/button'
 
-export type BlogPost = {
+export type Note = {
 	title: string
 	url: string
 	coverImage: {
@@ -22,33 +22,32 @@ export type BlogPost = {
 	tags: Array<{
 		name: string
 	}>
-	series?: {
-		slug: string
-	}
 }
 
 const HashnodeResponseSchema = z.object({
 	data: z.object({
 		publication: z.object({
-			posts: z.object({
-				edges: z.array(
-					z.object({
-						node: z.custom<BlogPost>(),
-					}),
-				),
+			series: z.object({
+				posts: z.object({
+					edges: z.array(
+						z.object({
+							node: z.custom<Note>(),
+						}),
+					),
+				}),
 			}),
 		}),
 	}),
 })
 
-export async function fetchBlogPosts() {
+export async function fetchNotes() {
 	const response = await fetch('https://gql.hashnode.com', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify({
-			query: GET_BLOG_POSTS,
+			query: GET_NOTES,
 		}),
 	})
 	const posts = await response.json()
@@ -58,22 +57,20 @@ export async function fetchBlogPosts() {
 		return []
 	}
 
-	const blogPosts = parsedPosts.data.data.publication.posts.edges.filter(
-		(post) => post.node?.series?.slug !== 'notes',
-	)
-	return blogPosts.slice(0, 2).map((post) => post.node)
+	const notes = parsedPosts.data.data.publication.series.posts.edges
+	return notes.slice(0, 2).map((post) => post.node)
 }
 
-export function BlogPosts({
+export function Notes({
 	jsEnabled,
-	blogPosts,
+	notes,
 }: {
 	jsEnabled: boolean
-	blogPosts: BlogPost[]
+	notes: Note[]
 }) {
 	return (
-		<Section id="blog" jsEnabled={jsEnabled} sectionTitle="Articles">
-			{blogPosts.map(({ title, url, coverImage, brief, tags }) => (
+		<Section id="notes" jsEnabled={jsEnabled} sectionTitle="Notes">
+			{notes.map(({ title, url, coverImage, brief, tags }) => (
 				<Card key={title}>
 					<CardImage
 						imageUrl={coverImage.url}
@@ -89,10 +86,10 @@ export function BlogPosts({
 			<div className="mt-8 text-center">
 				<Button variant="outline" size="lg" asChild>
 					<ExternalLink
-						href="https://arpit.im/b"
+						href="https://arpit.im/b/notes"
 						applyUnderlineClassName={false}
 					>
-						View all articles
+						View all notes
 					</ExternalLink>
 				</Button>
 			</div>
