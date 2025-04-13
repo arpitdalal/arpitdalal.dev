@@ -10,9 +10,12 @@ import { useRef, useState } from 'react'
 import { href, Link, NavLink } from 'react-router'
 import { ExternalLink } from '#app/components/external-link'
 import { Logo, LogoCircle, LogoImage, LogoSpinner } from '#app/components/logo'
-import { headerAndFooterCommonLinks } from '#app/root'
+import {
+	headerAndFooterCommonInternalLinks,
+	headerAndFooterCommonExternalLinks,
+} from '#app/root'
 import { useHints } from '#app/utils/client-hints'
-import { capitalize, cn } from '#app/utils/misc'
+import { cn } from '#app/utils/misc'
 import { useIsScrollable } from '#app/utils/use-is-scrollable'
 
 const SCROLL_THRESHOLD_PX = 300
@@ -266,27 +269,24 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
 							</motion.span>
 						</Link>
 						<ul className="hidden items-center gap-4 md:flex md:gap-8">
-							<li>
-								<ExternalLink
-									href="https://blog.arpitdalal.dev"
-									applyRingClassName={false}
-								>
-									Blog
-								</ExternalLink>
-							</li>
-							{Object.entries(headerAndFooterCommonLinks).map(
-								([key, value]) => (
-									<li key={key}>
-										<NavLink
-											to={value}
-											className="underlined text-foreground/70"
-											data-content={capitalize(key)}
-										>
-											{capitalize(key)}
-										</NavLink>
-									</li>
-								),
-							)}
+							{headerAndFooterCommonExternalLinks.map((link) => (
+								<li key={link.title}>
+									<ExternalLink href={link.link} applyRingClassName={false}>
+										{link.title}
+									</ExternalLink>
+								</li>
+							))}
+							{headerAndFooterCommonInternalLinks.map((link) => (
+								<li key={link.title}>
+									<NavLink
+										to={link.link}
+										className="underlined text-foreground/70"
+										data-content={link.title}
+									>
+										{link.title}
+									</NavLink>
+								</li>
+							))}
 						</ul>
 						<div className="md:hidden">
 							<motion.button
@@ -348,31 +348,34 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
 								exit={{ height: 0 }}
 								transition={transition}
 							>
-								<li className="pt-4 last:pb-3">
-									<ExternalLink
-										href="https://blog.arpitdalal.dev?utm_source=arpitdalal.dev&utm_medium=header&utm_campaign=portfolio"
-										className="text-foreground/70 hover:text-foreground block w-full py-4"
-									>
-										Blog
-									</ExternalLink>
-								</li>
-								{Object.entries(headerAndFooterCommonLinks).map(
-									([key, value]) => (
-										<li key={key} className="last:pb-3">
-											<NavLink
-												to={value}
-												className={({ isActive }) =>
-													cn(
-														`text-foreground/70 hover:text-foreground block w-full py-4`,
-														isActive && 'text-foreground',
-													)
-												}
-											>
-												{capitalize(key)}
-											</NavLink>
-										</li>
-									),
-								)}
+								{headerAndFooterCommonExternalLinks.map((link) => (
+									<li className="first:pt-4 last:pb-3" key={link.title}>
+										<ExternalLink
+											href={link.link}
+											className="text-foreground/70 hover:text-foreground block w-full py-4"
+											data-content={link.title}
+											applyUnderlineClassName={false}
+										>
+											{link.title}
+										</ExternalLink>
+									</li>
+								))}
+								{headerAndFooterCommonInternalLinks.map((link) => (
+									<li key={link.title} className="last:pb-3">
+										<NavLink
+											to={link.link}
+											className={({ isActive }) =>
+												cn(
+													`text-foreground/70 hover:text-foreground block w-full py-4`,
+													isActive && 'text-foreground',
+												)
+											}
+											data-content={link.title}
+										>
+											{link.title}
+										</NavLink>
+									</li>
+								))}
 							</motion.ul>
 						)}
 					</AnimatePresence>

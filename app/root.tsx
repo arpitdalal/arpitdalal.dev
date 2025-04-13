@@ -26,7 +26,7 @@ import { usePosthogPageView } from '#app/utils/analytics'
 import { ClientHintCheck, getHints, useHints } from '#app/utils/client-hints'
 import { getEnv } from '#app/utils/env.server'
 import { honeypot } from '#app/utils/honeypot.server'
-import { capitalize, getDomainUrl, getUrl } from '#app/utils/misc'
+import { getDomainUrl, getUrl } from '#app/utils/misc'
 import { useNonce } from '#app/utils/nonce-provider'
 import { getSocialMetas } from '#app/utils/seo'
 import { type Theme } from '#types/index'
@@ -174,20 +174,30 @@ function AppWithProviders() {
 
 export default AppWithProviders
 
-export const headerAndFooterCommonLinks = {
-	contact: href('/contact'),
-	uses: href('/uses'),
-}
-const legalLinks = {
-	terms: 'terms',
-	privacy: 'privacy',
-}
-const externalLinks = {
-	blog: 'https://blog.arpitdalal.dev',
-	analytics: ENV?.UMAMI_PUBLIC_ANALYTICS_URL
-		? ENV.UMAMI_PUBLIC_ANALYTICS_URL
-		: undefined,
-}
+export const headerAndFooterCommonInternalLinks = [
+	{ title: 'Contact', link: href('/contact') },
+	{ title: 'Uses', link: href('/uses') },
+]
+export const headerAndFooterCommonExternalLinks = [
+	{ title: 'Blog', link: 'https://arpit.im/b' },
+	{ title: 'Notes', link: 'https://arpit.im/b/notes' },
+]
+const footerOnlyLegalLinks = [
+	{ title: 'Terms', link: href('/terms') },
+	{ title: 'Privacy', link: href('/privacy') },
+]
+const footerOnlyResourcesLinks = [
+	{ title: 'Subscribe', link: href('/subscribe') },
+	{ title: 'RSS', link: 'https://arpit.im/b/rss.xml' },
+]
+const footerOnlyExternalLinks = [
+	{
+		title: 'Analytics',
+		link: ENV?.UMAMI_PUBLIC_ANALYTICS_URL
+			? ENV.UMAMI_PUBLIC_ANALYTICS_URL
+			: undefined,
+	},
+]
 
 function Footer() {
 	return (
@@ -225,44 +235,50 @@ function Footer() {
 									Home
 								</Link>
 							</li>
-							{Object.entries(headerAndFooterCommonLinks).map(
-								([key, value]) => (
-									<li key={key}>
-										<Link
-											to={value}
-											className="underlined text-foreground/70"
-											data-content={capitalize(key)}
-										>
-											{capitalize(key)}
-										</Link>
-									</li>
-								),
-							)}
-							{Object.entries(externalLinks)
-								.filter(Boolean)
-								.map(([key, value]) => (
-									<li key={key}>
-										<ExternalLink
-											href={`${value}?utm_source=arpitdalal.dev&utm_medium=footer&utm_campaign=portfolio`}
-											applyRingClassName={false}
-										>
-											{capitalize(key)}
-										</ExternalLink>
-									</li>
-								))}
+							{headerAndFooterCommonInternalLinks.map((link) => (
+								<li key={link.title}>
+									<Link
+										to={link.link}
+										className="underlined text-foreground/70"
+										data-content={link.title}
+									>
+										{link.title}
+									</Link>
+								</li>
+							))}
+							{headerAndFooterCommonExternalLinks.map((link) => (
+								<li key={link.title}>
+									<ExternalLink
+										href={`${link.link}?utm_source=arpitdalal.dev&utm_medium=footer&utm_campaign=portfolio`}
+										applyRingClassName={false}
+									>
+										{link.title}
+									</ExternalLink>
+								</li>
+							))}
+							{footerOnlyExternalLinks.map((link) => (
+								<li key={link.title}>
+									<ExternalLink
+										href={`${link.link}?utm_source=arpitdalal.dev&utm_medium=footer&utm_campaign=portfolio`}
+										applyRingClassName={false}
+									>
+										{link.title}
+									</ExternalLink>
+								</li>
+							))}
 						</ul>
 					</div>
 					<div>
 						<strong className="text-lg">Legal</strong>
 						<ul className="mt-3 flex flex-col gap-1">
-							{Object.entries(legalLinks).map(([key, value]) => (
-								<li key={key}>
+							{footerOnlyLegalLinks.map((link) => (
+								<li key={link.title}>
 									<Link
-										to={value}
+										to={link.link}
 										className="underlined text-foreground/70"
-										data-content={capitalize(key)}
+										data-content={link.title}
 									>
-										{capitalize(key)}
+										{link.title}
 									</Link>
 								</li>
 							))}
@@ -271,23 +287,17 @@ function Footer() {
 					<div>
 						<strong className="text-lg">Resources</strong>
 						<ul className="mt-3 flex flex-col gap-1">
-							<li>
-								<Link
-									to="/subscribe"
-									className="underlined text-foreground/70"
-									data-content="Subscribe"
-								>
-									Subscribe
-								</Link>
-							</li>
-							<li>
-								<ExternalLink
-									href="https://blog.arpitdalal.dev/rss.xml"
-									applyRingClassName={false}
-								>
-									RSS
-								</ExternalLink>
-							</li>
+							{footerOnlyResourcesLinks.map((link) => (
+								<li key={link.title}>
+									<Link
+										to={link.link}
+										className="underlined text-foreground/70"
+										data-content={link.title}
+									>
+										{link.title}
+									</Link>
+								</li>
+							))}
 						</ul>
 					</div>
 				</nav>

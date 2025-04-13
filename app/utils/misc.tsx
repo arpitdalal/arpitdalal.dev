@@ -73,7 +73,3 @@ export function getUrl(requestInfo?: { origin: string; path: string }) {
 		`${getOrigin(requestInfo)}${requestInfo?.path ?? ''}`,
 	)
 }
-
-export function capitalize(s: string) {
-	return s.charAt(0).toUpperCase() + s.slice(1)
-}
