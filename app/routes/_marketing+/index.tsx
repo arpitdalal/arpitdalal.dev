@@ -20,8 +20,7 @@ import {
 } from '#app/routes/_marketing+/__data'
 
 export async function loader() {
-	const blogPosts = await fetchBlogPosts()
-	const notes = await fetchNotes()
+	const [blogPosts, notes] = await Promise.all([fetchBlogPosts(), fetchNotes()])
 
 	return {
 		blogPosts,
