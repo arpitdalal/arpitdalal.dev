@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { GET_NOTES } from '#app/graphql/queries'
+import { tryCatch } from '#app/utils/misc'
 import {
 	Card,
 	CardContent,
@@ -41,24 +42,35 @@ const HashnodeResponseSchema = z.object({
 })
 
 export async function fetchNotes() {
-	const response = await fetch('https://gql.hashnode.com', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({
-			query: GET_NOTES,
-		}),
-	})
-	const posts = await response.json()
-	const parsedPosts = HashnodeResponseSchema.safeParse(posts)
-	if (!parsedPosts.success) {
-		console.error('Failed to parse Hashnode response: ', parsedPosts.error)
+	try {
+		const result = await tryCatch(
+			fetch('https://gql.hashnode.com', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					query: GET_NOTES,
+				}),
+			}),
+		)
+		if (result.error) {
+			console.error('Failed to fetch notes:', result.error)
+			return []
+		}
+		const posts = await result.data.json()
+		const parsedPosts = HashnodeResponseSchema.safeParse(posts)
+		if (!parsedPosts.success) {
+			console.error('Failed to parse Hashnode response: ', parsedPosts.error)
+			return []
+		}
+
+		const notes = parsedPosts.data.data.publication.series.posts.edges
+		return notes.slice(0, 2).map((post) => post.node)
+	} catch (error) {
+		console.error('Error fetching notes:', error)
 		return []
 	}
-
-	const notes = parsedPosts.data.data.publication.series.posts.edges
-	return notes.slice(0, 2).map((post) => post.node)
 }
 
 export function Notes({
@@ -68,6 +80,10 @@ export function Notes({
 	jsEnabled: boolean
 	notes: Note[]
 }) {
+	if (notes.length === 0) {
+		return null
+	}
+
 	return (
 		<Section id="notes" jsEnabled={jsEnabled} sectionTitle="Notes">
 			{notes.map(({ title, url, coverImage, brief, tags }) => (

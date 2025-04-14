@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { GET_BLOG_POSTS } from '#app/graphql/queries'
+import { tryCatch } from '#app/utils/misc'
 import {
 	Card,
 	CardContent,
@@ -42,26 +43,37 @@ const HashnodeResponseSchema = z.object({
 })
 
 export async function fetchBlogPosts() {
-	const response = await fetch('https://gql.hashnode.com', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({
-			query: GET_BLOG_POSTS,
-		}),
-	})
-	const posts = await response.json()
-	const parsedPosts = HashnodeResponseSchema.safeParse(posts)
-	if (!parsedPosts.success) {
-		console.error('Failed to parse Hashnode response: ', parsedPosts.error)
+	try {
+		const result = await tryCatch(
+			fetch('https://gql.hashnode.com', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					query: GET_BLOG_POSTS,
+				}),
+			}),
+		)
+		if (result.error) {
+			console.error('Failed to fetch blog posts:', result.error)
+			return []
+		}
+		const posts = await result.data.json()
+		const parsedPosts = HashnodeResponseSchema.safeParse(posts)
+		if (!parsedPosts.success) {
+			console.error('Failed to parse Hashnode response: ', parsedPosts.error)
+			return []
+		}
+
+		const blogPosts = parsedPosts.data.data.publication.posts.edges.filter(
+			(post) => post.node?.series?.slug !== 'notes',
+		)
+		return blogPosts.slice(0, 2).map((post) => post.node)
+	} catch (error) {
+		console.error('Error fetching blog posts:', error)
 		return []
 	}
-
-	const blogPosts = parsedPosts.data.data.publication.posts.edges.filter(
-		(post) => post.node?.series?.slug !== 'notes',
-	)
-	return blogPosts.slice(0, 2).map((post) => post.node)
 }
 
 export function BlogPosts({
@@ -71,6 +83,10 @@ export function BlogPosts({
 	jsEnabled: boolean
 	blogPosts: BlogPost[]
 }) {
+	if (blogPosts.length === 0) {
+		return null
+	}
+
 	return (
 		<Section id="blog" jsEnabled={jsEnabled} sectionTitle="Articles">
 			{blogPosts.map(({ title, url, coverImage, brief, tags }) => (
