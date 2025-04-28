@@ -246,11 +246,12 @@ export const usesData = [
 				subDescription: 'Complements Pro Motion with crisp colors.',
 			},
 			{
-				title: 'Keychron K4 Wireless Mechanical Keyboard',
-				titleLink: 'https://amzn.to/3EAOisP',
-				description:
-					'96% layout, aluminum frame, version 2, Gateron Brown switches',
-				subDescription: 'I love the tactile feel of the switches.',
+				title: 'Apple Magic Keyboard',
+				titleLink:
+					'https://www.apple.com/shop/product/MXK83LL/A/magic-keyboard-with-touch-id-and-numeric-keypad-for-mac-models-with-apple-silicon-usb-c-us-english-black-keys',
+				description: 'Black keyboard with touch ID and numeric keypad.',
+				subDescription:
+					'I grew weary of the long key-travel on mechanical keyboards.',
 			},
 			{
 				title: 'Apple Magic Trackpad',
