@@ -50,13 +50,15 @@ export const workExperienceData = [
 		company: 'Plusgrade',
 		location: 'ON, Canada',
 		description:
-			'Develop a line of e-commerce products for ancillary revenue in the airline, hotel, rail, and cruise industries.',
+			'Engineer a line of e-commerce products for ancillary revenue in the airline, hotel, rail, and cruise industries.',
 		startDate: 'Mar 2025',
 		endDate: 'Present',
 		tags: [
 			'React',
 			'Typescript',
 			'Node',
+			'Java',
+			'Spring Boot',
 			'Test Automation',
 			'Bitbucket',
 			'Docker',
@@ -71,7 +73,7 @@ export const workExperienceData = [
 		company: 'Points (a Plusgrade company)',
 		location: 'ON, Canada',
 		description:
-			'Develop production-ready storefronts for millions of users, collaborating with multiple stakeholders to formulate comprehensive plans for product development, testing, and launch.',
+			'Develop production-ready storefronts for millions of users, collaborating with multiple stakeholders to formulate comprehensive plans for product configuration, testing, and launch.',
 		startDate: 'Aug 2021',
 		endDate: 'Feb 2025',
 		tags: [
