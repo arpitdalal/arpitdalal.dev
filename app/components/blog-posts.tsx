@@ -1,6 +1,5 @@
 import { z } from 'zod'
-import { GET_BLOG_POSTS } from '#app/graphql/queries'
-import { tryCatch } from '#app/utils/misc'
+import { gql, GET_BLOG_POSTS } from '#app/graphql'
 import {
 	Card,
 	CardContent,
@@ -44,17 +43,7 @@ const HashnodeResponseSchema = z.object({
 
 export async function fetchBlogPosts() {
 	try {
-		const result = await tryCatch(
-			fetch('https://gql.hashnode.com', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					query: GET_BLOG_POSTS,
-				}),
-			}),
-		)
+		const result = await gql(GET_BLOG_POSTS)
 		if (result.error) {
 			console.error('Failed to fetch blog posts:', result.error)
 			return []

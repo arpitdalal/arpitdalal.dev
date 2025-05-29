@@ -1,6 +1,5 @@
 import { z } from 'zod'
-import { GET_NOTES } from '#app/graphql/queries'
-import { tryCatch } from '#app/utils/misc'
+import { gql, GET_NOTES } from '#app/graphql'
 import {
 	Card,
 	CardContent,
@@ -21,6 +20,7 @@ export type Note = {
 	}
 	brief: string
 	tags: Array<{
+		id: string
 		name: string
 	}>
 }
@@ -43,17 +43,7 @@ const HashnodeResponseSchema = z.object({
 
 export async function fetchNotes() {
 	try {
-		const result = await tryCatch(
-			fetch('https://gql.hashnode.com', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					query: GET_NOTES,
-				}),
-			}),
-		)
+		const result = await gql(GET_NOTES)
 		if (result.error) {
 			console.error('Failed to fetch notes:', result.error)
 			return []
