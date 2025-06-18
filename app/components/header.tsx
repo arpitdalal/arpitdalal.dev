@@ -217,7 +217,7 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
 
 	return (
 		<motion.header
-			className="fixed right-0 left-0 z-30 mx-auto w-full"
+			className="fixed right-0 left-0 z-50 mx-auto w-full"
 			style={{
 				paddingInline: headerPaddingInline,
 				top: headerTop,
