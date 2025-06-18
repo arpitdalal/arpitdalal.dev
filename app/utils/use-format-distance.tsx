@@ -1,5 +1,10 @@
 import { TZDate } from '@date-fns/tz'
-import { differenceInMonths, differenceInYears, addMonths } from 'date-fns'
+import {
+	differenceInMonths,
+	differenceInYears,
+	addMonths,
+	parse,
+} from 'date-fns'
 import { useMemo } from 'react'
 import { useHints } from './client-hints'
 
@@ -12,13 +17,16 @@ export function useFormatDistance(startDate: string, endDate: string) {
 	const { timeZone } = useHints()
 
 	return useMemo(() => {
-		const start = new TZDate(startDate, timeZone)
+		// Parse the dates using a more explicit format
+		const parsedStart = parse(startDate, 'MMM yyyy', new Date())
+		const start = new TZDate(parsedStart, timeZone)
 		let end: TZDate
 
 		if (endDate === 'Present') {
 			end = TZDate.tz(timeZone)
 		} else {
-			end = new TZDate(endDate, timeZone)
+			const parsedEnd = parse(endDate, 'MMM yyyy', new Date())
+			end = new TZDate(parsedEnd, timeZone)
 		}
 		end = addMonths(end, 1)
 
