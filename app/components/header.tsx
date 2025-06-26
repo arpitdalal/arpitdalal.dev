@@ -217,7 +217,10 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
 
 	return (
 		<motion.header
-			className="fixed right-0 left-0 z-50 mx-auto w-full"
+			className={cn(
+				'fixed right-0 left-0 z-30 mx-auto w-full',
+				isMobileNavOpen && 'z-50',
+			)}
 			style={{
 				paddingInline: headerPaddingInline,
 				top: headerTop,
