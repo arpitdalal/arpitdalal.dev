@@ -45,9 +45,28 @@ export function CardContent({ children }: { children: React.ReactNode }) {
 	return <div className="z-10 max-sm:mt-4 sm:col-span-6">{children}</div>
 }
 
-export function CardTitle({ title, link }: { title: string; link?: string }) {
+export function CardTitle({
+	title,
+	link,
+	isNew,
+}: {
+	title: string
+	link?: string
+	isNew?: boolean
+}) {
 	return (
-		<h3 className="font-medium">
+		<h3 className="relative font-medium">
+			{isNew ? (
+				<Badge
+					variant="outline"
+					className="bg-primary text-primary-foreground absolute -top-6"
+				>
+					New
+				</Badge>
+			) : // <span className="bg-primary text-primary-foreground inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium">
+			// 	New
+			// </span>
+			null}
 			{link ? (
 				<ExternalLink
 					href={link}

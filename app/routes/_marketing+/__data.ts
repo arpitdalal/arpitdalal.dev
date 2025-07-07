@@ -208,13 +208,12 @@ export const projectsData = [
 
 export type Use = {
 	title: string
-	useCard: UseCard[]
-}
-export type UseCard = {
-	title: string
-	titleLink?: string
-	description: string
-	subDescription?: string
+	useCard: Array<{
+		title: string
+		titleLink?: string
+		description: string
+		subDescription?: string
+	}>
 }
 export const usesData = [
 	{
@@ -428,3 +427,39 @@ export const usesData = [
 		],
 	},
 ] satisfies Use[]
+
+export type SatsangToolType = 'calendar' | 'shortcut'
+export type SatsangTool = {
+	type: SatsangToolType
+	title: string
+	link: string
+	isNew?: boolean
+}
+export const satsangToolsData = [
+	{
+		type: 'calendar',
+		isNew: true,
+		title: 'Guruhari Canada Vicharan Calendar',
+		link: 'https://calendar.google.com/calendar/ical/f540dc8515f2ee62e9a17fa6cddd74d374ad05841ed3e99950db22edfcb00977%40group.calendar.google.com/public/basic.ics',
+	},
+	{
+		type: 'calendar',
+		title: 'Ekadashi Calendar',
+		link: 'https://calendar.google.com/calendar/ical/4ad3afa94bf893655fdf5d796de8a9f6a78981e404ea3e5aa328f9ef66cab279%40group.calendar.google.com/public/basic.ics',
+	},
+	{
+		type: 'shortcut',
+		title: 'Bhajan',
+		link: 'https://www.icloud.com/shortcuts/3d9a99a58a2f4c8b999311aeb6ca96ac',
+	},
+	{
+		type: 'shortcut',
+		title: 'Thal',
+		link: 'https://www.icloud.com/shortcuts/2697c71de7d74ad9b4e1b3bdb168c1cd',
+	},
+	{
+		type: 'shortcut',
+		title: 'Aarti',
+		link: 'https://www.icloud.com/shortcuts/1f0d4d0483a44d8a90383c53e1cccf90',
+	},
+] satisfies SatsangTool[]
