@@ -1,22 +1,22 @@
-import { type VariantProps } from 'class-variance-authority'
+import posthog from 'posthog-js'
 import { useState } from 'react'
-import { Button, type buttonVariants } from '#app/components/ui/button'
+import { Button, type ButtonProps } from '#app/components/ui/button'
 import { Icon } from '#app/components/ui/icon'
 import { cn } from '#app/utils/misc'
-
-type ButtonVariant = NonNullable<VariantProps<typeof buttonVariants>['variant']>
 
 interface CopyButtonProps {
 	textToCopy: string
 	text?: string
+	title?: string
 	className?: string
-	startVariant?: ButtonVariant
-	endVariant?: ButtonVariant
+	startVariant?: ButtonProps['variant']
+	endVariant?: ButtonProps['variant']
 }
 
 export function CopyButton({
 	textToCopy,
 	text,
+	title,
 	className,
 	startVariant = 'secondary',
 	endVariant = 'success',
@@ -27,6 +27,7 @@ export function CopyButton({
 		try {
 			await navigator.clipboard.writeText(textToCopy)
 			setIsCopied(true)
+			posthog.capture('copy_button_clicked', { event: `Copy ${title} URL` })
 
 			setTimeout(() => {
 				setIsCopied(false)

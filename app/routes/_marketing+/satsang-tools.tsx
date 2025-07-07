@@ -106,7 +106,11 @@ function CalendarSatsangTool(
 						</ExternalLink>
 					</div>
 					<div className="mt-4 flex gap-2">
-						<CopyButton textToCopy={calendarSatsangToolProps.link} text="URL" />
+						<CopyButton
+							textToCopy={calendarSatsangToolProps.link}
+							text="URL"
+							data-umami-event={`Copy ${calendarSatsangToolProps.title} URL`}
+						/>
 					</div>
 				</CardDescription>
 				<CardTags tags={['Calendar']} />
