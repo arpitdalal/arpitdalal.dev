@@ -109,7 +109,8 @@ function CalendarSatsangTool(
 						<CopyButton
 							textToCopy={calendarSatsangToolProps.link}
 							text="URL"
-							data-umami-event={`Copy ${calendarSatsangToolProps.title} URL`}
+							data-umami-event="copy-button-clicked"
+							data-umami-event-title={calendarSatsangToolProps.title}
 						/>
 					</div>
 				</CardDescription>
