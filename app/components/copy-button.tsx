@@ -42,6 +42,8 @@ export function CopyButton({
 			variant={isCopied ? endVariant : startVariant}
 			className={cn('transition-all duration-400', className)}
 			onClick={handleCopy}
+			data-umami-event="copy-button-clicked"
+			data-umami-event-title={title}
 		>
 			<Icon
 				name={isCopied ? 'check-outline' : 'copy-outline'}
