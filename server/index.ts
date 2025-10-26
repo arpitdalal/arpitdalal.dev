@@ -153,7 +153,7 @@ const rateLimitDefault = {
 		if (flyClientIp) {
 			return flyClientIp
 		}
-		return ipKeyGenerator(req)
+		return ipKeyGenerator(req.ip || 'unknown')
 	},
 }
 
