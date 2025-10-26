@@ -1,5 +1,5 @@
 import { getFormProps, getInputProps, useForm } from '@conform-to/react'
-import { getZodConstraint, parseWithZod } from '@conform-to/zod'
+import { getZodConstraint, parseWithZod } from '@conform-to/zod/v4'
 import { useFetcher } from 'react-router'
 import { HoneypotInputs } from 'remix-utils/honeypot/react'
 import { z } from 'zod'
@@ -10,7 +10,7 @@ import { type action } from '../routes/resources+/newsletter'
 
 const NewsletterSchema = z.object({
 	email: z
-		.string({ required_error: 'Email is required' })
+		.string({ message: 'Email is required' })
 		.email('Invalid email address')
 		.trim()
 		.min(1, 'Email is required'),

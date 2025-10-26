@@ -4,7 +4,7 @@ import {
 	getTextareaProps,
 	useForm,
 } from '@conform-to/react'
-import { getZodConstraint, parseWithZod } from '@conform-to/zod'
+import { getZodConstraint, parseWithZod } from '@conform-to/zod/v4'
 import { useFetcher } from 'react-router'
 import { HoneypotInputs } from 'remix-utils/honeypot/react'
 import { z } from 'zod'
@@ -30,16 +30,16 @@ export const meta: Route.MetaFunction = () => [
 
 export const ContactSchema = z.object({
 	name: z
-		.string({ required_error: 'Name is required' })
+		.string({ message: 'Name is required' })
 		.trim()
 		.min(1, 'Name is required'),
 	email: z
-		.string({ required_error: 'Email is required' })
+		.string({ message: 'Email is required' })
 		.email('Invalid email address')
 		.trim()
 		.min(1, 'Email is required'),
 	message: z
-		.string({ required_error: 'Message is required' })
+		.string({ message: 'Message is required' })
 		.trim()
 		.min(1, 'Message is required'),
 })

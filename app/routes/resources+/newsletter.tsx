@@ -1,4 +1,4 @@
-import { parseWithZod } from '@conform-to/zod'
+import { parseWithZod } from '@conform-to/zod/v4'
 import { z } from 'zod'
 import { ADD_SUBSCRIBER } from '#app/graphql/queries'
 import { checkHoneypot } from '#app/utils/honeypot.server'
@@ -6,7 +6,7 @@ import { type Route } from './+types/newsletter'
 
 const NewsletterSchema = z.object({
 	email: z
-		.string({ required_error: 'Email is required' })
+		.string({ message: 'Email is required' })
 		.email('Invalid email address')
 		.trim()
 		.min(1, 'Email is required'),
