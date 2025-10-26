@@ -8,7 +8,7 @@ export default [
 		plugins: {
 			'react-compiler': reactCompiler,
 		},
-		files: ['**/tests/**/*.ts'],
+		files: ['**/*.{ts,tsx,js,jsx}'],
 		rules: {
 			'react-compiler/react-compiler': 'error',
 		},
