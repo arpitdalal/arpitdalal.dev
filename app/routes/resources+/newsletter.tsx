@@ -1,16 +1,8 @@
 import { parseWithZod } from '@conform-to/zod/v4'
-import { z } from 'zod'
 import { ADD_SUBSCRIBER } from '#app/graphql/queries'
 import { checkHoneypot } from '#app/utils/honeypot.server'
+import { NewsletterSchema, SubscribeResponseSchema } from '#app/utils/schemas'
 import { type Route } from './+types/newsletter'
-
-const NewsletterSchema = z.object({
-	email: z
-		.string({ message: 'Email is required' })
-		.email('Invalid email address')
-		.trim()
-		.min(1, 'Email is required'),
-})
 
 export async function action({ request }: Route.ActionArgs) {
 	const formData = await request.formData()
@@ -23,7 +15,7 @@ export async function action({ request }: Route.ActionArgs) {
 
 	try {
 		await subscribeToNewsletter(
-			submission.value.email,
+			submission.value.newsletterEmail,
 			process.env.HASHNODE_PUBLICATION_ID,
 		)
 		return {
@@ -42,23 +34,6 @@ export async function action({ request }: Route.ActionArgs) {
 		}
 	}
 }
-
-const SubscribeResponseSchema = z.object({
-	data: z
-		.object({
-			subscribeToNewsletter: z.object({
-				status: z.string(),
-			}),
-		})
-		.optional(),
-	errors: z
-		.array(
-			z.object({
-				message: z.string(),
-			}),
-		)
-		.optional(),
-})
 
 async function subscribeToNewsletter(email: string, publicationId: string) {
 	const response = await fetch('https://gql.hashnode.com', {

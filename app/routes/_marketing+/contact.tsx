@@ -7,7 +7,6 @@ import {
 import { getZodConstraint, parseWithZod } from '@conform-to/zod/v4'
 import { useFetcher } from 'react-router'
 import { HoneypotInputs } from 'remix-utils/honeypot/react'
-import { z } from 'zod'
 import { ErrorList } from '#app/components/error-list'
 import { Field } from '#app/components/field'
 import {
@@ -20,6 +19,7 @@ import { SubmitButton } from '#app/components/submit-button'
 import { TextareaField } from '#app/components/textarea-field'
 import { sendEmail } from '#app/utils/email'
 import { checkHoneypot } from '#app/utils/honeypot.server'
+import { ContactSchema } from '#app/utils/schemas'
 import { type Route } from './+types/contact'
 
 export const meta: Route.MetaFunction = () => [
@@ -27,22 +27,6 @@ export const meta: Route.MetaFunction = () => [
 		title: 'Contact Arpit | Arpit Dalal',
 	},
 ]
-
-export const ContactSchema = z.object({
-	name: z
-		.string({ message: 'Name is required' })
-		.trim()
-		.min(1, 'Name is required'),
-	email: z
-		.string({ message: 'Email is required' })
-		.email('Invalid email address')
-		.trim()
-		.min(1, 'Email is required'),
-	message: z
-		.string({ message: 'Message is required' })
-		.trim()
-		.min(1, 'Message is required'),
-})
 
 export const action = async ({ request }: Route.ActionArgs) => {
 	const formData = await request.formData()
@@ -113,6 +97,7 @@ export default function Contact() {
 									autoFocus: true,
 									...getInputProps(fields.name, { type: 'text' }),
 									placeholder: 'Enter your name',
+									autoComplete: 'name',
 								}}
 								className="flex-1"
 								errors={fields.name.errors}
@@ -122,6 +107,7 @@ export default function Contact() {
 								inputProps={{
 									...getInputProps(fields.email, { type: 'email' }),
 									placeholder: 'Enter your email',
+									autoComplete: 'email',
 								}}
 								className="flex-1"
 								errors={fields.email.errors}
@@ -134,6 +120,7 @@ export default function Contact() {
 								...getTextareaProps(fields.message),
 								placeholder: 'Enter your message',
 								className: 'min-h-[100px]',
+								autoComplete: 'off',
 							}}
 							errors={fields.message.errors}
 						/>

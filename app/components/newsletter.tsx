@@ -2,19 +2,11 @@ import { getFormProps, getInputProps, useForm } from '@conform-to/react'
 import { getZodConstraint, parseWithZod } from '@conform-to/zod/v4'
 import { useFetcher } from 'react-router'
 import { HoneypotInputs } from 'remix-utils/honeypot/react'
-import { z } from 'zod'
 import { ErrorList } from '#app/components/error-list'
 import { Field } from '#app/components/field'
 import { SubmitButton } from '#app/components/submit-button'
+import { NewsletterSchema } from '#app/utils/schemas'
 import { type action } from '../routes/resources+/newsletter'
-
-const NewsletterSchema = z.object({
-	email: z
-		.string({ message: 'Email is required' })
-		.email('Invalid email address')
-		.trim()
-		.min(1, 'Email is required'),
-})
 
 export function Newsletter({
 	autoFocusInput = false,
@@ -48,12 +40,13 @@ export function Newsletter({
 				<Field
 					labelProps={{ children: 'Email' }}
 					inputProps={{
-						...getInputProps(fields.email, { type: 'email' }),
+						...getInputProps(fields.newsletterEmail, { type: 'email' }),
 						placeholder: 'Enter your email',
 						autoFocus: autoFocusInput,
 						className: 'rounded-r-none',
+						autoComplete: 'email',
 					}}
-					errors={fields.email.errors}
+					errors={fields.newsletterEmail.errors}
 				/>
 				<SubmitButton
 					state={newsletterFetcher.state}
@@ -61,7 +54,7 @@ export function Newsletter({
 					size="icon"
 					dataProps={{
 						'data-umami-event': 'newsletter-form-submit',
-						'data-umami-event-email': fields.email.value ?? '',
+						'data-umami-event-email': fields.newsletterEmail.value ?? '',
 					}}
 					ariaProps={{
 						'aria-label': 'Subscribe',

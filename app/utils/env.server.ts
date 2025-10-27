@@ -1,38 +1,24 @@
-import { z } from 'zod'
-
-const schema = z.object({
-	NODE_ENV: z.enum(['production', 'development', 'test'] as const),
-	SESSION_SECRET: z.string(),
-	INTERNAL_COMMAND_TOKEN: z.string(),
-	HONEYPOT_SECRET: z.string(),
-	SENTRY_DSN: z.string(),
-	NODEMAILER_HOST: z.string(),
-	NODEMAILER_USER: z.string(),
-	NODEMAILER_PASSWORD: z.string(),
-	HASHNODE_PUBLICATION_ID: z.string(),
-	POSTHOG_API_KEY: z.string(),
-	UMAMI_WEBSITE_ID: z.string(),
-	UMAMI_DOMAIN: z.string(),
-	UMAMI_DOMAINS: z.string(),
-	UMAMI_SCRIPT_NAME: z.string(),
-	UMAMI_PUBLIC_ANALYTICS_URL: z.string().optional(),
-})
+import { type z } from 'zod'
+import { envSchema } from './schemas'
 
 declare global {
 	namespace NodeJS {
-		interface ProcessEnv extends z.infer<typeof schema> {}
+		interface ProcessEnv extends z.infer<typeof envSchema> {}
 	}
 }
 
 export function init() {
-	const parsed = schema.safeParse(process.env)
+	const parsed = envSchema.safeParse(process.env)
 
 	if (parsed.success === false) {
 		console.error(
 			'❌ Invalid environment variables:',
 			parsed.error.flatten().fieldErrors,
 		)
-
+		console.error(
+			'Missing or invalid environment variables:',
+			Object.keys(parsed.error.flatten().fieldErrors),
+		)
 		throw new Error('Invalid environment variables')
 	}
 }
