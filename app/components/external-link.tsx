@@ -46,7 +46,7 @@ export function ExternalLink({
 			{showIcon && (
 				<Icon
 					name="arrow-up-right-outline"
-					className="ml-1 ease-in-out motion-safe:translate-y-px motion-safe:transition-transform motion-safe:group-hover/link:-translate-y-1 motion-safe:group-hover/link:translate-x-1 motion-safe:group-focus-visible/link:-translate-y-1 motion-safe:group-focus-visible/link:translate-x-1"
+					className="ml-1 ease-in-out motion-safe:translate-y-px motion-safe:transition-transform motion-safe:group-hover/link:translate-x-1 motion-safe:group-hover/link:-translate-y-1 motion-safe:group-focus-visible/link:translate-x-1 motion-safe:group-focus-visible/link:-translate-y-1"
 					aria-hidden
 				/>
 			)}
