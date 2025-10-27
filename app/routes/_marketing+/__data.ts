@@ -208,7 +208,7 @@ export const projectsData = [
 
 export type Use = {
 	title: string
-	useCard: Array<{
+	toolCards: Array<{
 		title: string
 		titleLink?: string
 		description: string
@@ -218,7 +218,7 @@ export type Use = {
 export const usesData = [
 	{
 		title: 'Workstation',
-		useCard: [
+		toolCards: [
 			{
 				title: 'MacBook Pro 14',
 				titleLink: 'https://www.apple.com/macbook-pro/',
@@ -265,7 +265,7 @@ export const usesData = [
 	},
 	{
 		title: 'Accessories',
-		useCard: [
+		toolCards: [
 			{
 				title: 'Apple Airpods Pro 2nd Generation',
 				titleLink: 'https://www.apple.com/ca/airpods-pro/',
@@ -302,7 +302,7 @@ export const usesData = [
 	},
 	{
 		title: 'Applications',
-		useCard: [
+		toolCards: [
 			{
 				title: 'Arc',
 				titleLink: 'https://arc.net/gift/5fe6aaa/',
@@ -351,7 +351,7 @@ export const usesData = [
 	},
 	{
 		title: 'Services',
-		useCard: [
+		toolCards: [
 			{
 				title: 'Umami',
 				titleLink: 'https://umami.is/',
@@ -402,7 +402,7 @@ export const usesData = [
 	},
 	{
 		title: 'Configuration',
-		useCard: [
+		toolCards: [
 			{
 				title: 'Night Owl',
 				titleLink:

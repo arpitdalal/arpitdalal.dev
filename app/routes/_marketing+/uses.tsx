@@ -21,12 +21,12 @@ export const meta: Route.MetaFunction = () => [
 
 export async function loader() {
 	return {
-		uses: usesData,
+		toolsData: usesData,
 	}
 }
 
 export default function Uses() {
-	const { uses } = useLoaderData<typeof loader>()
+	const { toolsData } = useLoaderData<typeof loader>()
 
 	return (
 		<>
@@ -42,52 +42,52 @@ export default function Uses() {
 					</HeroHighlightDescription>
 				</div>
 			</HeroHighlight>
-			{uses.map((use) => (
-				<UseSection key={use.title} use={use} />
+			{toolsData.map((toolContent) => (
+				<UseSection key={toolContent.title} toolContent={toolContent} />
 			))}
 		</>
 	)
 }
 
-function UseSection({ use }: { use: Use }) {
+function UseSection({ toolContent }: { toolContent: Use }) {
 	return (
 		<ClientOnly
 			fallback={
 				<Section
-					id={use.title.toLowerCase()}
-					sectionTitle={use.title}
+					id={toolContent.title.toLowerCase()}
+					sectionTitle={toolContent.title}
 					reduceOpacity={false}
 					jsEnabled={false}
 				>
-					<UseSectionContent use={use} />
+					<UseSectionContent toolContent={toolContent} />
 				</Section>
 			}
 		>
 			{() => (
 				<Section
-					id={use.title.toLowerCase()}
-					sectionTitle={use.title}
+					id={toolContent.title.toLowerCase()}
+					sectionTitle={toolContent.title}
 					reduceOpacity={false}
 					jsEnabled
 				>
-					<UseSectionContent use={use} />
+					<UseSectionContent toolContent={toolContent} />
 				</Section>
 			)}
 		</ClientOnly>
 	)
 }
 
-function UseSectionContent({ use }: { use: Use }) {
+function UseSectionContent({ toolContent }: { toolContent: Use }) {
 	return (
 		<div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-8">
-			{use.useCard.map((card) => (
-				<Card key={card.title}>
+			{toolContent.toolCards.map((toolCard) => (
+				<Card key={toolCard.title}>
 					<CardContent>
-						<CardTitle title={card.title} link={card.titleLink} />
-						<CardDescription>{card.description}</CardDescription>
-						{card.subDescription ? (
+						<CardTitle title={toolCard.title} link={toolCard.titleLink} />
+						<CardDescription>{toolCard.description}</CardDescription>
+						{toolCard.subDescription ? (
 							<CardDescription className="mt-1 text-sm">
-								{card.subDescription}
+								{toolCard.subDescription}
 							</CardDescription>
 						) : null}
 					</CardContent>
