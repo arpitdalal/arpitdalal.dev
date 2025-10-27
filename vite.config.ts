@@ -30,7 +30,11 @@ export default {
 	plugins: [
 		envOnlyMacros(),
 		reactRouter(),
-		react(),
+		react({
+			babel: {
+				plugins: ['babel-plugin-react-compiler'],
+			},
+		}),
 		process.env.SENTRY_AUTH_TOKEN
 			? sentryVitePlugin({
 					disable: MODE !== 'production',
