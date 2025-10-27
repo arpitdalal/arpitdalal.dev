@@ -57,10 +57,31 @@ jobs:
       - name: 🔎 Type check
         run: npm run typecheck --if-present
 
+  test:
+    name: 🧪 Tests
+    runs-on: ubuntu-22.04
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 📥 Download deps
+        uses: bahmutov/npm-install@v1
+
+      - name: 🖼 Build icons
+        run: npm run build:icons
+
+      - name: 🧪 Run tests
+        run: npm run test:run
+
   deploy:
     name: 🚀 Deploy
     runs-on: ubuntu-22.04
-    needs: [lint, typecheck]
+    needs: [lint, typecheck, test]
     # only build/deploy branches on pushes
     if: ${{ github.event_name == 'push' }}
 
