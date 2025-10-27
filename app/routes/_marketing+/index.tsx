@@ -52,7 +52,7 @@ export default function Index() {
 						building web applications and have a strong background in{' '}
 						<HighlightUnderline>front-end development</HighlightUnderline>.
 					</HeroHighlightDescription>
-					<div className="motion-safe:animate-slidein flex gap-5 [--slidein-delay:500ms] motion-safe:opacity-0">
+					<div className="motion-safe:animate-slide-down flex gap-5 [--slide-down-delay:500ms] motion-safe:opacity-0">
 						<Button variant="outline" asChild>
 							<Link to={href('/contact')} data-umami-event="hero-contact-link">
 								Contact me
@@ -76,7 +76,7 @@ export default function Index() {
 					</div>
 					<SocialLinks
 						socialLinks={socialLinks}
-						className="motion-safe:animate-slidein mt-2 [--slidein-delay:700ms] motion-safe:opacity-0"
+						className="motion-safe:animate-slide-down mt-2 [--slide-down-delay:700ms] motion-safe:opacity-0"
 					/>
 				</div>
 			</HeroHighlight>

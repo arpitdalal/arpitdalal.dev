@@ -155,14 +155,16 @@ export const extendedTheme = {
 			'0%, 100%': { transform: 'translateX(0)' },
 			'50%': { transform: 'translateX(25%)' },
 		},
-		slidein: {
+		'slide-down': {
 			from: {
 				opacity: '0',
 				transform: 'translateY(-10px)',
+				filter: 'blur(4px)',
 			},
 			to: {
 				opacity: '1',
 				transform: 'translateY(0)',
+				filter: 'blur(0px)',
 			},
 		},
 	},
@@ -190,7 +192,7 @@ export const extendedTheme = {
 		bounce: 'bounce 0.4s var(--ease-in-out-quad)',
 		'bounce-down': 'bounce-down 0.4s var(--ease-in-out-quad)',
 		'bounce-right': 'bounce-right 0.4s var(--ease-in-out-quad)',
-		slidein:
-			'slidein 0.4s var(--ease-in-out-quad) var(--slidein-delay, 0) forwards',
+		'slide-down':
+			'slide-down 0.4s var(--ease-in-out-quad) var(--slide-down-delay, 0) forwards',
 	},
 } satisfies Config['theme']

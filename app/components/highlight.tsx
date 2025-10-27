@@ -124,7 +124,7 @@ export function HeroHighlightH1({
 	subtitle?: React.ReactNode
 }) {
 	return (
-		<h1 className="motion-safe:animate-slidein max-w-[15ch] text-center text-6xl [--slidein-delay:100ms] motion-safe:opacity-0 sm:text-7xl lg:text-8xl">
+		<h1 className="motion-safe:animate-slide-down max-w-[15ch] text-center text-6xl [--slide-down-delay:100ms] motion-safe:opacity-0 sm:text-7xl lg:text-8xl">
 			{subtitle ? (
 				<span className="text-foreground/70 block text-sm uppercase">
 					{subtitle}
@@ -143,7 +143,7 @@ export function HeroHighlightDescription({
 	children: React.ReactNode
 }) {
 	return (
-		<p className="motion-safe:animate-slidein max-w-[60ch] px-8 text-center text-lg [--slidein-delay:300ms] motion-safe:opacity-0 sm:text-xl">
+		<p className="motion-safe:animate-slide-down max-w-[60ch] px-8 text-center text-lg [--slide-down-delay:300ms] motion-safe:opacity-0 sm:text-xl">
 			{children}
 		</p>
 	)
