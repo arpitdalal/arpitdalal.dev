@@ -15,7 +15,7 @@ export async function action({ request }: Route.ActionArgs) {
 
 	try {
 		await subscribeToNewsletter(
-			submission.value.newsletterEmail,
+			submission.value.email,
 			process.env.HASHNODE_PUBLICATION_ID,
 		)
 		return {

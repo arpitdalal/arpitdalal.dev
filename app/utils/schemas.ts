@@ -28,7 +28,7 @@ export const ContactSchema = z.object({
 })
 
 export const NewsletterSchema = z.object({
-	newsletterEmail: emailField,
+	email: emailField,
 })
 
 // API response schemas

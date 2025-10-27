@@ -40,13 +40,13 @@ export function Newsletter({
 				<Field
 					labelProps={{ children: 'Email' }}
 					inputProps={{
-						...getInputProps(fields.newsletterEmail, { type: 'email' }),
+						...getInputProps(fields.email, { type: 'email' }),
 						placeholder: 'Enter your email',
 						autoFocus: autoFocusInput,
 						className: 'rounded-r-none',
 						autoComplete: 'email',
 					}}
-					errors={fields.newsletterEmail.errors}
+					errors={fields.email.errors}
 				/>
 				<SubmitButton
 					state={newsletterFetcher.state}
@@ -54,7 +54,7 @@ export function Newsletter({
 					size="icon"
 					dataProps={{
 						'data-umami-event': 'newsletter-form-submit',
-						'data-umami-event-email': fields.newsletterEmail.value ?? '',
+						'data-umami-event-email': fields.email.value ?? '',
 					}}
 					ariaProps={{
 						'aria-label': 'Subscribe',
