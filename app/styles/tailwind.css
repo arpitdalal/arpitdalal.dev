@@ -175,4 +175,12 @@
 			opacity: 1;
 		}
 	}
+
+	.glass {
+		width: 100%;
+
+		> div {
+			width: 100%;
+		}
+	}
 }
