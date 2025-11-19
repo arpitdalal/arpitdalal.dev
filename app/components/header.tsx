@@ -308,6 +308,9 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
 									<motion.rect
 										variants={mobileButtonVariants.topLine}
 										transition={transition}
+										style={{
+											transformBox: 'view-box', // Needed to fix the mobile menu's x icon animation.
+										}}
 										x="6"
 										y="9"
 										width="20"
@@ -328,6 +331,9 @@ export function Header({ jsEnabled }: { jsEnabled: boolean }) {
 									<motion.rect
 										variants={mobileButtonVariants.bottomLine}
 										transition={transition}
+										style={{
+											transformBox: 'view-box', // Needed to fix the mobile menu's x icon animation.
+										}}
 										x="6"
 										y="21"
 										width="20"
