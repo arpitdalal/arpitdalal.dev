@@ -64,6 +64,13 @@ export default function SatsangTools() {
 											{...satsangTool}
 										/>
 									)
+								case 'telegram-channel':
+									return (
+										<TelegramChannelSatsangTool
+											key={satsangTool.title}
+											{...satsangTool}
+										/>
+									)
 								default:
 									captureException(
 										new Error(
@@ -124,9 +131,30 @@ function ShortcutSatsangTool(
 				<CardTitle
 					title={shortcutSatsangToolProps.title}
 					link={shortcutSatsangToolProps.link}
+					isNew={shortcutSatsangToolProps.isNew}
 				/>
 				<CardDescription>Click to install the shortcut</CardDescription>
 				<CardTags tags={['Apple Shortcut']} />
+			</CardContent>
+		</Card>
+	)
+}
+
+function TelegramChannelSatsangTool(
+	telegramChannelSatsangToolProps: Omit<SatsangTool, 'type'>,
+) {
+	return (
+		<Card>
+			<CardContent>
+				<CardTitle
+					title={telegramChannelSatsangToolProps.title}
+					link={telegramChannelSatsangToolProps.link}
+					isNew={telegramChannelSatsangToolProps.isNew}
+				/>
+				<CardDescription>
+					Click to join the Telegram channel to get reminders for Ekadashis
+				</CardDescription>
+				<CardTags tags={['Telegram Channel']} />
 			</CardContent>
 		</Card>
 	)

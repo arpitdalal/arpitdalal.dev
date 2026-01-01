@@ -428,7 +428,7 @@ export const usesData = [
 	},
 ] satisfies Use[]
 
-export type SatsangToolType = 'calendar' | 'shortcut'
+export type SatsangToolType = 'calendar' | 'shortcut' | 'telegram-channel'
 export type SatsangTool = {
 	type: SatsangToolType
 	title: string
@@ -437,9 +437,14 @@ export type SatsangTool = {
 }
 export const satsangToolsData = [
 	{
-		type: 'calendar',
 		isNew: true,
-		title: 'Guruhari Canada Vicharan Calendar',
+		type: 'telegram-channel',
+		title: 'Ekadashi Reminders',
+		link: 'https://t.me/EkadashiReminders',
+	},
+	{
+		type: 'calendar',
+		title: 'Guruhari Canada Vicharan Calendar 2025',
 		link: 'https://calendar.google.com/calendar/ical/f540dc8515f2ee62e9a17fa6cddd74d374ad05841ed3e99950db22edfcb00977%40group.calendar.google.com/public/basic.ics',
 	},
 	{
