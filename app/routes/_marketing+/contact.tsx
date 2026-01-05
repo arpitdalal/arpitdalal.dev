@@ -39,6 +39,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
 	try {
 		await sendEmail({
+			email: submission.value.email,
 			subject: 'Contact Form Submission - arpitdalal.dev',
 			message: `${submission.value.name} (${submission.value.email}) says:\n\n${submission.value.message}`,
 		})

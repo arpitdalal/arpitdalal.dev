@@ -11,15 +11,18 @@ const transporter = nodemailer.createTransport({
 })
 
 export function sendEmail({
+	email,
 	subject,
 	message,
 }: {
+	email: string
 	subject: string
 	message: string
 }) {
 	return transporter.sendMail({
 		from: process.env.NODEMAILER_USER,
 		to: process.env.NODEMAILER_USER,
+		replyTo: email,
 		subject,
 		text: message,
 	})
