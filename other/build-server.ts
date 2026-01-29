@@ -38,7 +38,7 @@ esbuild
 	.build({
 		entryPoints: entries,
 		outdir: here('../server-build'),
-		target: [`node${pkg.engines.node}`],
+		target: [`node${pkg.engines.node.replace(/[^\d.]/g, '')}`],
 		platform: 'node',
 		sourcemap: true,
 		format: 'esm',
