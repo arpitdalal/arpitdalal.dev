@@ -7,6 +7,11 @@ import { envOnlyMacros } from 'vite-env-only'
 const MODE = process.env.NODE_ENV
 
 export default {
+	resolve: {
+		alias: {
+			'@liquidglass/react': '@liquidglass/react/dist/index.esm.js',
+		},
+	},
 	build: {
 		target: 'es2022',
 		cssMinify: MODE === 'production',
