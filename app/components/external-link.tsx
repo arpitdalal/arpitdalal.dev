@@ -1,8 +1,7 @@
 import { cn } from '#app/utils/misc'
 import { Icon } from './ui/icon'
 
-interface ExternalLinkProps
-	extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+interface ExternalLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
 	href: string
 	children: React.ReactNode
 	className?: string
