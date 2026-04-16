@@ -164,25 +164,25 @@ export type Project = {
 	hightLightLinks?: Array<{ name: string; href: string }>
 }
 export const projectsData = [
-	{
-		title: 'X Man',
-		link: 'https://arpit.im/xman',
-		imageUrl:
-			'https://res.cloudinary.com/arpitdalal-dev/image/upload/w_500/v1715629303/arpitdalal-dev/XMAN-home-page_tq33fw.png',
-		imageAlt: 'X Man home page',
-		description:
-			'A minimal finance management app for individuals. Built with productivity in mind.',
-		tags: [
-			'React',
-			'Typescript',
-			'Remix',
-			'Tailwind CSS',
-			'Node',
-			'Express',
-			'Prisma',
-			'SQLite',
-		],
-	},
+	// {
+	// 	title: 'X Man',
+	// 	link: 'https://arpit.im/xman',
+	// 	imageUrl:
+	// 		'https://res.cloudinary.com/arpitdalal-dev/image/upload/w_500/v1715629303/arpitdalal-dev/XMAN-home-page_tq33fw.png',
+	// 	imageAlt: 'X Man home page',
+	// 	description:
+	// 		'A minimal finance management app for individuals. Built with productivity in mind.',
+	// 	tags: [
+	// 		'React',
+	// 		'Typescript',
+	// 		'Remix',
+	// 		'Tailwind CSS',
+	// 		'Node',
+	// 		'Express',
+	// 		'Prisma',
+	// 		'SQLite',
+	// 	],
+	// },
 	{
 		title: 'Epic Content Stack',
 		openSource: true,
