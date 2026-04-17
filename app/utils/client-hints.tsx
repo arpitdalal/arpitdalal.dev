@@ -27,6 +27,46 @@ const hintsUtils = getHintUtils({
 
 export const { getHints } = hintsUtils
 
+function getPreferredLocale(request: Request): string {
+	const header = request.headers.get('accept-language')
+	if (!header) return 'en'
+	return header.split(',')[0]?.split(';')[0]?.trim() || 'en'
+}
+
+const ISO_DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/
+
+/**
+ * Formats a date string for display.
+ *
+ * **`YYYY-MM-DD` (date-only):** treated as a civil calendar day, not a clock
+ * instant in the viewer's zone. Parsed as UTC midnight and formatted with
+ * `timeZone: 'UTC'` so the day does not shift (e.g. the 18th stays the 18th).
+ * Locale still comes from `Accept-Language` for month/day wording.
+ *
+ * **Full ISO datetimes:** formatted in the viewer's time zone from client hints
+ * (see {@link getHints}).
+ */
+export function formatDateWithHints(isoDate: string, request: Request) {
+	const locale = getPreferredLocale(request)
+	const trimmed = isoDate.trim()
+	if (ISO_DATE_ONLY.test(trimmed)) {
+		const parts = trimmed.split('-')
+		const y = Number(parts[0])
+		const mo = Number(parts[1])
+		const day = Number(parts[2])
+		const utcMidnight = new Date(Date.UTC(y, mo - 1, day))
+		return new Intl.DateTimeFormat(locale, {
+			dateStyle: 'long',
+			timeZone: 'UTC',
+		}).format(utcMidnight)
+	}
+	const hints = getHints(request)
+	return new Intl.DateTimeFormat(locale, {
+		dateStyle: 'long',
+		timeZone: hints.timeZone,
+	}).format(new Date(isoDate))
+}
+
 /**
  * @returns an object with the client hints and their values
  */

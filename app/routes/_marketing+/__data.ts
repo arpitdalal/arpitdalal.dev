@@ -206,6 +206,43 @@ export const projectsData = [
 	},
 ] satisfies Project[]
 
+export type TalkLink = {
+	label: string
+	href: string
+}
+
+export type Talk = {
+	slug: string
+	title: string
+	description: string
+	venue?: string
+	/** ISO 8601 date (YYYY-MM-DD) */
+	date: string
+	tags: string[]
+	links: TalkLink[]
+}
+
+export const talksData = [
+	{
+		slug: 'steering',
+		title: 'Steering AI Coding Agents',
+		description: 'Difference between a steered and unsteered AI coding agent.',
+		venue: 'RiseUp AI Bootcamp',
+		date: '2026-04-18',
+		tags: ['AI', 'Coding', 'Agents'],
+		links: [
+			{
+				label: 'Slides',
+				href: 'https://arpit.im/talks/steering/slides',
+			},
+			{
+				label: 'GitHub Repository',
+				href: 'https://arpit.im/talks/steering/repo',
+			},
+		],
+	},
+] satisfies Talk[]
+
 export type Use = {
 	title: string
 	toolCards: Array<{
