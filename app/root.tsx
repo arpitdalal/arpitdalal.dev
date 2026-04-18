@@ -176,6 +176,7 @@ export default AppWithProviders
 
 export const headerAndFooterCommonInternalLinks = [
 	{ title: 'Contact', link: href('/contact') },
+	{ title: 'Talks', link: href('/talks') },
 	{ title: 'Uses', link: href('/uses') },
 ]
 export const headerAndFooterCommonExternalLinks = [

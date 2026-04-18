@@ -1,4 +1,4 @@
-import { href, Link, useLoaderData } from 'react-router'
+import { href, Link, useLoaderData, type LoaderFunctionArgs } from 'react-router'
 import { ClientOnly } from 'remix-utils/client-only'
 import { BlogPosts, fetchBlogPosts } from '#app/components/blog-posts'
 import {
@@ -10,21 +10,33 @@ import {
 import { Notes, fetchNotes } from '#app/components/notes'
 import { Projects } from '#app/components/projects'
 import { SocialLinks } from '#app/components/social-links'
+import { TalksSection } from '#app/components/talks-section'
 import { Button } from '#app/components/ui/button'
 // import { Icon } from '#app/components/ui/icon'
 import { WorkExperience } from '#app/components/work-experience'
+import { formatDateWithHints } from '#app/utils/client-hints'
 import {
 	projectsData,
 	socialLinksData,
+	talksData,
 	workExperienceData,
 } from '#app/routes/_marketing+/__data'
 
-export async function loader() {
+export async function loader({ request }: LoaderFunctionArgs) {
 	const [blogPosts, notes] = await Promise.all([fetchBlogPosts(), fetchNotes()])
+
+	const sortedTalks = [...talksData].sort(
+		(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+	)
+	const talks = sortedTalks.slice(0, 2).map((talk) => ({
+		...talk,
+		formattedDate: formatDateWithHints(talk.date, request),
+	}))
 
 	return {
 		blogPosts,
 		notes,
+		talks,
 		projects: projectsData,
 		workExperience: workExperienceData,
 		socialLinks: socialLinksData,
@@ -32,7 +44,7 @@ export async function loader() {
 }
 
 export default function Index() {
-	const { blogPosts, notes, projects, workExperience, socialLinks } =
+	const { blogPosts, notes, talks, projects, workExperience, socialLinks } =
 		useLoaderData<typeof loader>()
 
 	return (
@@ -94,6 +106,11 @@ export default function Index() {
 			</ClientOnly>
 			<ClientOnly fallback={<Notes notes={notes} jsEnabled={false} />}>
 				{() => <Notes notes={notes} jsEnabled />}
+			</ClientOnly>
+			<ClientOnly
+				fallback={<TalksSection talks={talks} jsEnabled={false} />}
+			>
+				{() => <TalksSection talks={talks} jsEnabled />}
 			</ClientOnly>
 			<ClientOnly fallback={<Projects projects={projects} jsEnabled={false} />}>
 				{() => <Projects projects={projects} jsEnabled />}
