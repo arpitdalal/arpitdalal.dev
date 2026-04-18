@@ -14,13 +14,13 @@ import { TalksSection } from '#app/components/talks-section'
 import { Button } from '#app/components/ui/button'
 // import { Icon } from '#app/components/ui/icon'
 import { WorkExperience } from '#app/components/work-experience'
-import { formatDateWithHints } from '#app/utils/client-hints'
 import {
 	projectsData,
 	socialLinksData,
 	talksData,
 	workExperienceData,
 } from '#app/routes/_marketing+/__data'
+import { formatDateWithHints } from '#app/utils/client-hints'
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const [blogPosts, notes] = await Promise.all([fetchBlogPosts(), fetchNotes()])

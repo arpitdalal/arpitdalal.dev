@@ -1,6 +1,6 @@
 import { href, Link } from 'react-router'
-import { TalkCard } from '#app/components/talk-card'
 import { Section } from '#app/components/section'
+import { TalkCard } from '#app/components/talk-card'
 import { Button } from '#app/components/ui/button'
 import { type Talk } from '#app/routes/_marketing+/__data'
 
