@@ -30,10 +30,35 @@ export const { getHints } = hintsUtils
 function getPreferredLocale(request: Request): string {
 	const header = request.headers.get('accept-language')
 	if (!header) return 'en'
-	return header.split(',')[0]?.split(';')[0]?.trim() || 'en'
+	const raw = header.split(',')[0]?.split(';')[0]?.trim() || 'en'
+	try {
+		return Intl.getCanonicalLocales(raw)[0] ?? 'en'
+	} catch {
+		// Malformed tags (proxies, bots, internal healthchecks) must not 500 the app.
+		return 'en'
+	}
 }
 
 const ISO_DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/
+
+function formatDateSafe(
+	locale: string,
+	options: Intl.DateTimeFormatOptions,
+	date: Date,
+): string {
+	try {
+		return new Intl.DateTimeFormat(locale, options).format(date)
+	} catch {
+		try {
+			return new Intl.DateTimeFormat('en', options).format(date)
+		} catch {
+			return new Intl.DateTimeFormat('en', {
+				dateStyle: options.dateStyle,
+				timeZone: 'UTC',
+			}).format(date)
+		}
+	}
+}
 
 /**
  * Formats a date string for display.
@@ -55,16 +80,14 @@ export function formatDateWithHints(isoDate: string, request: Request) {
 		const mo = Number(parts[1])
 		const day = Number(parts[2])
 		const utcMidnight = new Date(Date.UTC(y, mo - 1, day))
-		return new Intl.DateTimeFormat(locale, {
-			dateStyle: 'long',
-			timeZone: 'UTC',
-		}).format(utcMidnight)
+		return formatDateSafe(locale, { dateStyle: 'long', timeZone: 'UTC' }, utcMidnight)
 	}
 	const hints = getHints(request)
-	return new Intl.DateTimeFormat(locale, {
-		dateStyle: 'long',
-		timeZone: hints.timeZone,
-	}).format(new Date(isoDate))
+	return formatDateSafe(
+		locale,
+		{ dateStyle: 'long', timeZone: hints.timeZone },
+		new Date(isoDate),
+	)
 }
 
 /**
