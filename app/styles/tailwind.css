@@ -2,6 +2,17 @@
 
 @config '../../tailwind.config.ts';
 
+@theme {
+	/* Pinned to the pre-4.3 value. Tailwind 4.3.3 swapped the default
+	   --font-sans from the `ui-sans-serif, system-ui` pair to an explicit
+	   -apple-system-first stack so CJK text respects the page `lang`
+	   attribute on Windows. That is a real typography change, so it is
+	   opted into here rather than absorbed silently by a version bump. */
+	--font-sans:
+		ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+		'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
 @layer base {
 	/* START - Tailwind v3 compatibility styles. */
 	*,
