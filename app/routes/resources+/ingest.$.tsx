@@ -39,6 +39,19 @@ async function posthogProxy(request: Request) {
 	try {
 		const response = await fetch(newUrl, fetchOptions)
 
+		// A 5xx from the relay means analytics data is being dropped. It is
+		// passed through to the browser below either way, so report it here
+		// rather than letting it disappear. 4xx is deliberately ignored: the
+		// SDK sends legitimately rejectable payloads and flagging those would
+		// bury the signal.
+		if (response.status >= 500) {
+			void Sentry.captureMessage('PostHog proxy upstream failure', {
+				level: 'error',
+				tags: { posthog_path: newUrl.pathname },
+				extra: { status: response.status, statusText: response.statusText },
+			})
+		}
+
 		const responseHeaders = new Headers(response.headers)
 		responseHeaders.delete('content-encoding')
 		responseHeaders.delete('content-length')

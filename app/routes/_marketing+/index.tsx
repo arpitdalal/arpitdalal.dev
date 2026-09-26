@@ -1,4 +1,9 @@
-import { href, Link, useLoaderData, type LoaderFunctionArgs } from 'react-router'
+import {
+	href,
+	Link,
+	useLoaderData,
+	type LoaderFunctionArgs,
+} from 'react-router'
 import { ClientOnly } from 'remix-utils/client-only'
 import { BlogPosts, fetchBlogPosts } from '#app/components/blog-posts'
 import {
@@ -107,9 +112,7 @@ export default function Index() {
 			<ClientOnly fallback={<Notes notes={notes} jsEnabled={false} />}>
 				{() => <Notes notes={notes} jsEnabled />}
 			</ClientOnly>
-			<ClientOnly
-				fallback={<TalksSection talks={talks} jsEnabled={false} />}
-			>
+			<ClientOnly fallback={<TalksSection talks={talks} jsEnabled={false} />}>
 				{() => <TalksSection talks={talks} jsEnabled />}
 			</ClientOnly>
 			<ClientOnly fallback={<Projects projects={projects} jsEnabled={false} />}>

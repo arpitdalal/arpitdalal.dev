@@ -80,7 +80,11 @@ export function formatDateWithHints(isoDate: string, request: Request) {
 		const mo = Number(parts[1])
 		const day = Number(parts[2])
 		const utcMidnight = new Date(Date.UTC(y, mo - 1, day))
-		return formatDateSafe(locale, { dateStyle: 'long', timeZone: 'UTC' }, utcMidnight)
+		return formatDateSafe(
+			locale,
+			{ dateStyle: 'long', timeZone: 'UTC' },
+			utcMidnight,
+		)
 	}
 	const hints = getHints(request)
 	return formatDateSafe(

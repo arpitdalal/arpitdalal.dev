@@ -181,3 +181,163 @@ describe('Form Schemas', () => {
 		})
 	})
 })
+
+/**
+ * The messages below are rendered directly to users by
+ * app/routes/_marketing+/contact.tsx and app/components/newsletter.tsx,
+ * which read `fields.<name>.errors` and `formErrors` off the submission.
+ * Asserting only `.success` cannot catch a zod upgrade that changes a
+ * message or an issue path, because the parse still fails either way.
+ */
+describe('Form Schema error messages', () => {
+	const issuesOf = (
+		result:
+			| ReturnType<typeof ContactSchema.safeParse>
+			| ReturnType<typeof NewsletterSchema.safeParse>,
+	) => {
+		expect(result.success).toBe(false)
+		if (result.success) throw new Error('expected the parse to fail')
+		return result.error.issues.map((issue) => ({
+			path: issue.path,
+			code: issue.code,
+			message: issue.message,
+		}))
+	}
+
+	const validRest = {
+		name: 'John Doe',
+		email: 'john@example.com',
+		message: 'Hello, this is a test message.',
+	}
+
+	describe('ContactSchema', () => {
+		it('reports a required name against the name field', () => {
+			expect(
+				issuesOf(ContactSchema.safeParse({ ...validRest, name: '' })),
+			).toEqual([
+				{ path: ['name'], code: 'too_small', message: 'Name is required' },
+			])
+		})
+
+		it('treats a whitespace-only name as missing', () => {
+			expect(
+				issuesOf(ContactSchema.safeParse({ ...validRest, name: '   ' })),
+			).toEqual([
+				{ path: ['name'], code: 'too_small', message: 'Name is required' },
+			])
+		})
+
+		it('enforces the 100 character name limit', () => {
+			expect(
+				issuesOf(
+					ContactSchema.safeParse({ ...validRest, name: 'a'.repeat(101) }),
+				),
+			).toEqual([
+				{
+					path: ['name'],
+					code: 'too_big',
+					message: 'Name must be less than 100 characters',
+				},
+			])
+		})
+
+		it('reports a malformed email as an invalid format', () => {
+			expect(
+				issuesOf(
+					ContactSchema.safeParse({ ...validRest, email: 'invalid-email' }),
+				),
+			).toEqual([
+				{
+					path: ['email'],
+					code: 'invalid_format',
+					message: 'Invalid email address',
+				},
+			])
+		})
+
+		it('distinguishes a missing email from a malformed one', () => {
+			const { email: _omitted, ...withoutEmail } = validRest
+			expect(issuesOf(ContactSchema.safeParse(withoutEmail))).toEqual([
+				{ path: ['email'], code: 'invalid_type', message: 'Email is required' },
+			])
+		})
+
+		it('reports a required message against the message field', () => {
+			expect(
+				issuesOf(ContactSchema.safeParse({ ...validRest, message: '' })),
+			).toEqual([
+				{
+					path: ['message'],
+					code: 'too_small',
+					message: 'Message is required',
+				},
+			])
+		})
+
+		it('enforces the 1000 character message limit', () => {
+			expect(
+				issuesOf(
+					ContactSchema.safeParse({ ...validRest, message: 'a'.repeat(1001) }),
+				),
+			).toEqual([
+				{
+					path: ['message'],
+					code: 'too_big',
+					message: 'Message must be less than 1000 characters',
+				},
+			])
+		})
+
+		it('reports every invalid field at once', () => {
+			expect(
+				issuesOf(
+					ContactSchema.safeParse({ name: '', email: 'nope', message: '' }),
+				),
+			).toEqual([
+				{ path: ['name'], code: 'too_small', message: 'Name is required' },
+				{
+					path: ['email'],
+					code: 'invalid_format',
+					message: 'Invalid email address',
+				},
+				{
+					path: ['message'],
+					code: 'too_small',
+					message: 'Message is required',
+				},
+			])
+		})
+	})
+
+	describe('NewsletterSchema', () => {
+		it('reports a malformed email as an invalid format', () => {
+			expect(
+				issuesOf(NewsletterSchema.safeParse({ email: 'not-an-email' })),
+			).toEqual([
+				{
+					path: ['email'],
+					code: 'invalid_format',
+					message: 'Invalid email address',
+				},
+			])
+		})
+
+		it('reports an empty email as an invalid format, not a missing value', () => {
+			// emailField has no .min(1), so '' fails z.email() rather than a
+			// length check. Pinned because the two produce different copy.
+			expect(issuesOf(NewsletterSchema.safeParse({ email: '' }))).toEqual([
+				{
+					path: ['email'],
+					code: 'invalid_format',
+					message: 'Invalid email address',
+				},
+			])
+		})
+
+		it('reports a missing email as required', () => {
+			expect(issuesOf(NewsletterSchema.safeParse({}))).toEqual([
+				{ path: ['email'], code: 'invalid_type', message: 'Email is required' },
+			])
+		})
+	})
+})

@@ -34,11 +34,33 @@ for (const file of allFiles) {
 console.log()
 console.log('building...')
 
+// esbuild's node target must be a single X[.Y[.Z]] version, but engines.node
+// is a semver range. Take the lowest version the range admits so the output
+// still runs on the oldest supported runtime.
+function lowestSupportedNode(range: string) {
+	const parts = [...range.matchAll(/(\d+)(?:\.(\d+))?(?:\.(\d+))?/g)]
+		.map(([, major, minor, patch]) => ({
+			major: Number(major),
+			minor: minor === undefined ? 0 : Number(minor),
+			patch: patch === undefined ? 0 : Number(patch),
+		}))
+		.sort((a, b) => a.major - b.major || a.minor - b.minor || a.patch - b.patch)
+
+	const lowest = parts[0]
+	if (!lowest) {
+		throw new Error(`Could not read a version out of engines.node: ${range}`)
+	}
+	return `${lowest.major}.${lowest.minor}.${lowest.patch}`
+}
+
+const nodeTarget = `node${lowestSupportedNode(pkg.engines.node)}`
+console.log(`target: ${nodeTarget}`)
+
 esbuild
 	.build({
 		entryPoints: entries,
 		outdir: here('../server-build'),
-		target: [`node${pkg.engines.node.replace(/[^\d.]/g, '')}`],
+		target: [nodeTarget],
 		platform: 'node',
 		sourcemap: true,
 		format: 'esm',

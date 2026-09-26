@@ -27,7 +27,7 @@ export function init() {
 		integrations: [
 			Sentry.replayIntegration(),
 			Sentry.browserProfilingIntegration(),
-			Sentry.reactRouterV7BrowserTracingIntegration({
+			Sentry.reactRouterBrowserTracingIntegration({
 				useEffect: React.useEffect,
 				useLocation,
 				useNavigationType,

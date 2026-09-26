@@ -21,8 +21,7 @@ const PAGE_DESCRIPTION =
 export const meta: Route.MetaFunction = ({ matches }) => {
 	const rootMatch = matches.find((m) => m?.id === 'root')
 	const rootData = rootMatch?.loaderData as
-		| Awaited<ReturnType<typeof rootLoader>>
-		| undefined
+		Awaited<ReturnType<typeof rootLoader>> | undefined
 	const requestInfo = rootData?.requestInfo
 	return [
 		{ title: PAGE_TITLE },
