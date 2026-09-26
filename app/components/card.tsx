@@ -69,9 +69,9 @@ export function CardTitle({
 					New
 				</Badge>
 			) : // <span className="bg-primary text-primary-foreground inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium">
-				// 	New
-				// </span>
-				null}
+			// 	New
+			// </span>
+			null}
 			{link ? (
 				<ExternalLink
 					href={link}
