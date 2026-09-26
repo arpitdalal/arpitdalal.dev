@@ -1,7 +1,9 @@
 # This file is moved to the root directory before building the image
 
 # base node image
-FROM node:22-bookworm-slim as base
+# Keep in sync with .nvmrc and the `node-version` in .github/workflows/deploy.yml.
+# jsdom 30 and its @asamuzakjp/* deps require ^22.22.2 || ^24.15.0 || >=26.0.0.
+FROM node:22.23.3-bookworm-slim as base
 
 # set for base and all layer that inherit from it
 ENV NODE_ENV production
