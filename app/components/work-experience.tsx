@@ -11,6 +11,7 @@ import { useFormatDistance } from '#app/utils/use-format-distance'
 import {
 	HEADING_STYLES,
 	HEADING_STYLES_NO_JS_OR_MOTION_SAFE,
+	headingOffsetFor,
 } from './animated-heading-styles'
 import { LineGlow } from './line-glow'
 
@@ -44,16 +45,7 @@ export function WorkExperience({
 	const h2Left = useTransform(() => {
 		if (isReducedMotion || !jsEnabled) return HEADING_STYLES.LEFT_START
 
-		return transform(
-			scrollYProgressOfSection.get(),
-			[0, 1],
-			[
-				HEADING_STYLES.LEFT_START,
-				isXSScreen
-					? HEADING_STYLES.LEFT_END_SMALL_SCREEN
-					: HEADING_STYLES.LEFT_END,
-			],
-		)
+		return headingOffsetFor(scrollYProgressOfSection.get(), isXSScreen)
 	})
 	const divHeight = useTransform(() => {
 		if (isReducedMotion || !jsEnabled) return DIV_STYLES.HEIGHT_START

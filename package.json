@@ -81,7 +81,7 @@
     "isbot": "^5.2.2",
     "mini-svg-data-uri": "^1.4.4",
     "morgan": "^1.12.1",
-    "motion": "^12.29.2",
+    "motion": "^13.4.4",
     "nodemailer": "^7.0.13",
     "posthog-js": "^1.434.15",
     "react": "^19.3.0",

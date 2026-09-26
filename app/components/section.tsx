@@ -1,5 +1,5 @@
 import { useWindowSize } from '@reactuses/core'
-import { motion, transform, useScroll, useTransform } from 'motion/react'
+import { motion, useScroll, useTransform } from 'motion/react'
 import { useRef } from 'react'
 import { HighlightUnderline } from '#app/components/highlight'
 import { useHints } from '#app/utils/client-hints'
@@ -7,6 +7,7 @@ import { cn } from '#app/utils/misc'
 import {
 	HEADING_STYLES,
 	HEADING_STYLES_NO_JS_OR_MOTION_SAFE,
+	headingOffsetFor,
 } from './animated-heading-styles'
 import { LineGlow } from './line-glow'
 
@@ -36,16 +37,7 @@ export function Section({
 	const h2Left = useTransform(() => {
 		if (isReducedMotion || !jsEnabled) return HEADING_STYLES.LEFT_START
 
-		return transform(
-			scrollYProgressOfSection.get(),
-			[0, 1],
-			[
-				HEADING_STYLES.LEFT_START,
-				isXSScreen
-					? HEADING_STYLES.LEFT_END_SMALL_SCREEN
-					: HEADING_STYLES.LEFT_END,
-			],
-		)
+		return headingOffsetFor(scrollYProgressOfSection.get(), isXSScreen)
 	})
 
 	return (
