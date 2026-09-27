@@ -14,12 +14,12 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
  * The flag is read once at process start, so each state needs its own process.
  */
 
-// Node runs index.ts and the server graph straight from source, so the
-// entry is the one in the repository root. The React Router server build it
-// imports on demand is the only build output worth checking for existence,
-// because that is what is missing on a tree that never built.
-const REACT_ROUTER_BUILD = 'build/server/index.js'
+// Node runs index.ts and the server graph straight from source, so that is
+// the entry. The SSR build it imports on demand is the only build output worth
+// checking for existence, because that is what is missing on a tree that never
+// built.
 const SERVER_ENTRY = 'index.ts'
+const SERVER_BUILD = 'build/server/index.js'
 const BOOT_TIMEOUT_MS = 30_000
 
 /**
@@ -51,9 +51,9 @@ const servers: ChildProcess[] = []
 
 /** Boots a server with `ALLOW_INDEXING` forced to `value` (or unset). */
 async function bootServer(allowIndexing: string | undefined) {
-	if (!existsSync(REACT_ROUTER_BUILD)) {
+	if (!existsSync(SERVER_BUILD)) {
 		throw new Error(
-			`${REACT_ROUTER_BUILD} is missing. Run \`npm run build\` before this test; the deploy workflow's test job does this.`,
+			`${SERVER_BUILD} is missing. Run \`npm run build\` before this test; the deploy workflow's test job does this.`,
 		)
 	}
 

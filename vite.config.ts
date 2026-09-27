@@ -40,12 +40,18 @@ export default defineConfig({
 			external: [/node:.*/, 'fsevents'],
 		},
 
-		// The plugin already returns false for the spritesheet it generates, so
-		// the sprite stays a single immutable-cached request that
-		// app/root.tsx preloads rather than ~5 KB of data URI inlined into
-		// every document. Only the one remaining case is left here.
+		// The sprite stays a single immutable-cached request that app/root.tsx
+		// preloads rather than ~5 KB of data URI inlined into every document.
+		// The plugin also returns false for the spritesheet it generates, but it
+		// matches it on a path built from cwd, which its own issues report as
+		// having silently failed to match (notably on Windows). If that ever
+		// regresses, the sprite inlines itself and the preload becomes a no-op
+		// with nothing failing, so keep the case here.
 		assetsInlineLimit: (source: string) => {
-			if (source.endsWith('apple-touch-icon.png')) {
+			if (
+				source.endsWith('sprite.svg') ||
+				source.endsWith('apple-touch-icon.png')
+			) {
 				return false
 			}
 		},
@@ -67,9 +73,6 @@ export default defineConfig({
 			// the plugin's default camelCase transform, so the existing
 			// <Icon name="..."> call sites keep working.
 			iconNameTransformer: (name) => name,
-			// app/components/ui/icons is generated but not gitignored from
-			// prettier, so `npm run format:check` reads these files.
-			formatter: 'prettier',
 		}),
 		reactRouter(),
 		react({

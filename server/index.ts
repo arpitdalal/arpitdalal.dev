@@ -16,8 +16,10 @@ const IS_PROD = MODE === 'production'
 const IS_DEV = MODE === 'development'
 const ALLOW_INDEXING = process.env.ALLOW_INDEXING !== 'false'
 const SENTRY_ENABLED = IS_PROD && process.env.SENTRY_DSN
-// Relative to this file. Written by `vite build`, which bundles server/app.ts
-// into it — see the comment on the `app` export there.
+// Relative to this file. `vite build` bundles server/app.ts into this entry
+// and the React Router server build into a hashed sibling chunk beside it under
+// build/server/assets, so the whole build/server tree has to travel together —
+// see the comment on the `app` export in server/app.ts.
 const BUILD_PATH = '../build/server/index.js'
 
 if (SENTRY_ENABLED) {
@@ -116,8 +118,9 @@ app.use(
 app.use((req, _res, next) => {
 	// The CSP nonce is generated here but consumed by app/entry.server.tsx.
 	// It travels as a request header rather than through a React context
-	// because this server bundle and the app bundle do not share module
-	// instances. See the note on getLoadContext below.
+	// because this file is loaded by Node and the app is bundled by Vite, so
+	// the two do not share module instances. See `getLoadContext` in
+	// server/app.ts.
 	req.headers['x-csp-nonce'] = crypto.randomBytes(16).toString('hex')
 	next()
 })

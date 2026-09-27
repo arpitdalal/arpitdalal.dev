@@ -18,7 +18,7 @@
   },
   "scripts": {
     "build": "react-router build",
-    "dev": "cross-env NODE_ENV=development tsx watch --clear-screen=false --inspect --ignore \".cache/**\" --ignore \"app/**\" --ignore \"vite.config.ts.timestamp-*\" --ignore \"build/**\" --ignore \"node_modules/**\" ./index.ts",
+    "dev": "cross-env NODE_ENV=development FORCE_COLOR=true tsx watch --clear-screen=false --inspect --ignore \".cache/**\" --ignore \"app/**\" --ignore \"vite.config.ts.timestamp-*\" --ignore \"build/**\" --ignore \"node_modules/**\" ./index.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . --max-warnings 0",
@@ -53,6 +53,7 @@
     "@react-router/node": "^8.4.0",
     "@reactuses/core": "^6.5.9",
     "@sentry/profiling-node": "^11.0.0",
+    "@sentry/node": "^11.0.0",
     "@sentry/react": "^11.0.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@tailwindcss/typography": "^0.5.20",
