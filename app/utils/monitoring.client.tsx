@@ -6,8 +6,18 @@ import {
 	useLocation,
 	useNavigationType,
 } from 'react-router'
+import { ensureCSSStyleDeclaration } from './cssom.client'
 
 export function init() {
+	// rrweb reads `CSSStyleDeclaration.prototype` unguarded while setting up
+	// Replay, and that happens inside `Sentry.init()`. Repair the global first so
+	// the read cannot throw and take the integrations behind it down with it.
+	if (!ensureCSSStyleDeclaration()) {
+		console.warn(
+			'Sentry Replay will not start: CSSStyleDeclaration is unavailable and could not be restored.',
+		)
+	}
+
 	Sentry.init({
 		dsn: ENV.SENTRY_DSN,
 		environment: ENV.MODE,
@@ -24,8 +34,11 @@ export function init() {
 			}
 			return event
 		},
+		// Replay goes last on purpose. It is the optional integration, rrweb does a
+		// lot of unguarded global reads while setting up, and Sentry runs
+		// `afterAllSetup` in array order and aborts on the first throw — so an
+		// earlier Replay would cost us profiling and tracing too, not just replay.
 		integrations: [
-			Sentry.replayIntegration(),
 			Sentry.browserProfilingIntegration(),
 			Sentry.reactRouterBrowserTracingIntegration({
 				useEffect: React.useEffect,
@@ -34,6 +47,7 @@ export function init() {
 				createRoutesFromChildren,
 				matchRoutes,
 			}),
+			Sentry.replayIntegration(),
 		],
 
 		// Set tracesSampleRate to 1.0 to capture 100%
