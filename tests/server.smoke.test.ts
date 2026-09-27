@@ -270,6 +270,25 @@ describe('production server', () => {
 		expect(csp).toMatch(/img-src[^;]*\*\.hashnode\.com/)
 	})
 
+	it('ships the CSP capture script first in the head, nonced', async () => {
+		// Parse-time violations fire before entry.client.tsx dynamically
+		// imports monitoring, so the listener has to be inline in <head>. If
+		// this regresses, CSP violations go back to being console-only.
+		const response = await fetch(`${base}/talks`)
+		const body = await response.text()
+		const csp =
+			response.headers.get('content-security-policy-report-only') ?? ''
+		const nonce = csp.match(/'nonce-([^']+)'/)?.[1]
+
+		expect(nonce, 'server should issue a nonce').toBeTruthy()
+
+		const head = body.match(/<head>([\s\S]*?)<\/head>/)?.[1] ?? ''
+		const firstScript = head.match(/<script[^>]*>/)?.[0] ?? ''
+
+		expect(firstScript, 'first element in <head>').toContain('nonce=')
+		expect(body).toContain('securitypolicyviolation')
+	})
+
 	it('ignores a client-supplied CSP nonce', async () => {
 		// The nonce now travels as a request header, which means a client can
 		// send one. The middleware must overwrite it before Helmet and the

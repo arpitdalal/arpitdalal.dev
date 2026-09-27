@@ -150,30 +150,25 @@ describe('monitoring init', () => {
 		})
 	})
 
-	it('forwards CSP violations to Sentry so reportOnly holes are visible', () => {
+	it('forwards buffered parse-time CSP violations to Sentry', () => {
 		withMonitoring(() => {
-			const listeners = new Map<string, EventListener>()
-			const addEventListener = vi
-				.spyOn(window, 'addEventListener')
-				.mockImplementation((type, listener) => {
-					listeners.set(type, listener as EventListener)
-				})
-
-			try {
-				init()
-
-				const handler = listeners.get('securitypolicyviolation')
-				expect(handler, 'CSP violation listener').toBeTruthy()
-
-				handler?.({
-					blockedURI: 'https://evil.example/x.js',
+			// The inline script in root.tsx fills this during parsing, which is
+			// long before this module is dynamically imported.
+			window.__cspViolations = [
+				{
+					blockedURI: 'https://stats.example.com/script.js',
 					violatedDirective: 'script-src',
 					effectiveDirective: 'script-src',
-					originalPolicy: "script-src 'nonce-abc'",
 					disposition: 'report',
 					sourceFile: 'https://arpitdalal.dev/',
 					lineNumber: 1,
-				} as SecurityPolicyViolationEvent)
+					columnNumber: 1,
+					statusCode: 0,
+				},
+			]
+
+			try {
+				init()
 
 				expect(sentry.captureMessage).toHaveBeenCalledWith(
 					'CSP: script-src',
@@ -185,8 +180,40 @@ describe('monitoring init', () => {
 						}),
 					}),
 				)
+				expect(window.__cspViolations).toBeUndefined()
 			} finally {
-				addEventListener.mockRestore()
+				window.__cspViolations = undefined
+			}
+		})
+	})
+
+	it('forwards CSP violations that fire after init', () => {
+		withMonitoring(() => {
+			try {
+				init()
+				sentry.captureMessage.mockClear()
+
+				// jsdom has no SecurityPolicyViolationEvent constructor, so
+				// build the event the browser would have produced.
+				const event = new Event('securitypolicyviolation')
+				Object.defineProperties(event, {
+					blockedURI: { value: 'https://cdn.hashnode.com/x.jpeg' },
+					violatedDirective: { value: 'img-src' },
+					effectiveDirective: { value: 'img-src' },
+					disposition: { value: 'report' },
+					sourceFile: { value: '' },
+					lineNumber: { value: 0 },
+					columnNumber: { value: 0 },
+					statusCode: { value: 0 },
+				})
+				window.dispatchEvent(event)
+
+				expect(sentry.captureMessage).toHaveBeenCalledWith(
+					'CSP: img-src',
+					expect.objectContaining({ level: 'warning' }),
+				)
+			} finally {
+				window.__cspViolations = undefined
 			}
 		})
 	})

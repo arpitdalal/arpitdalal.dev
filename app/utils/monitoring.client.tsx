@@ -6,6 +6,7 @@ import {
 	useLocation,
 	useNavigationType,
 } from 'react-router'
+import { drainCspViolations } from './csp'
 import { ensureCSSStyleDeclaration } from './cssom.client'
 
 export function init() {
@@ -47,26 +48,17 @@ export function init() {
 		replaysOnErrorSampleRate: 1.0,
 	})
 
-	// reportOnly CSP violations never hit a report-uri here, so without this
-	// listener they only exist in the browser console — which is how Umami's
-	// missing nonce stayed invisible. Forward them so the next CSP hole is
-	// visible in Sentry before reportOnly is flipped off.
-	window.addEventListener('securitypolicyviolation', (event) => {
-		Sentry.captureMessage(`CSP: ${event.violatedDirective}`, {
+	// The policy is reportOnly with no report-uri, so violations used to exist
+	// only in the devtools console. The parse-time ones were captured by the
+	// inline script in root.tsx; this drains that buffer and covers the rest.
+	drainCspViolations((violation) => {
+		Sentry.captureMessage(`CSP: ${violation.violatedDirective}`, {
 			level: 'warning',
 			tags: {
-				csp_directive: event.effectiveDirective,
-				csp_disposition: event.disposition,
+				csp_directive: violation.effectiveDirective,
+				csp_disposition: violation.disposition,
 			},
-			extra: {
-				blockedURI: event.blockedURI,
-				violatedDirective: event.violatedDirective,
-				effectiveDirective: event.effectiveDirective,
-				originalPolicy: event.originalPolicy,
-				disposition: event.disposition,
-				sourceFile: event.sourceFile,
-				lineNumber: event.lineNumber,
-			},
+			extra: violation,
 		})
 	})
 
