@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { Honeypot, SpamError } from 'remix-utils/honeypot/server'
 
 export const honeypot = new Honeypot({
@@ -71,4 +72,36 @@ export async function checkHoneypot(formData: FormData) {
 		}
 		throw error
 	}
+}
+
+/**
+ * Log a short fingerprint of the encryption seed, once, at boot.
+ *
+ * `checkHoneypot` answers 400 for a `from__confirm` it cannot decrypt. That is
+ * right for junk, and it is also true — silently, with nothing in Sentry —
+ * for a token this server issued before `HONEYPOT_SECRET` changed, because a
+ * failed authentication tag and a ciphertext too short to authenticate are the
+ * same `OperationError`. The two are indistinguishable where the failure
+ * happens, so the boot log is the only place a rotation is visible: two
+ * consecutive deploys printing different fingerprints is the signal.
+ *
+ * Eight hex characters is enough to tell two secrets apart and useless for
+ * recovering either. Called after `init()`, so the seed is known good by then;
+ * the unset branch is only here because `Honeypot` falls back to a random
+ * per-process seed, which would break every token the moment a second process
+ * existed.
+ */
+export function logHoneypotSeedFingerprint() {
+	const seed = process.env.HONEYPOT_SECRET
+	if (!seed) {
+		console.warn(
+			'⚠️ HONEYPOT_SECRET is unset. The honeypot is using a per-process random seed, so a from__confirm issued by one process will not verify in another.',
+		)
+		return
+	}
+	const fingerprint = createHash('sha256')
+		.update(seed)
+		.digest('hex')
+		.slice(0, 8)
+	console.info(`honeypot seed fingerprint: ${fingerprint}`)
 }

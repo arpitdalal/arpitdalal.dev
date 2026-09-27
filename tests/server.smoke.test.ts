@@ -359,6 +359,63 @@ describe('production server', () => {
 		expect(await response.text()).not.toContain('name="robots"')
 	})
 
+	// The acceptance criteria for the honeypot fix are phrased at this
+	// boundary, not at `checkHoneypot`, and tests/honeypot.test.ts can only
+	// reach them by reasoning about how React Router turns a thrown Response
+	// into a status code. Three shapes of the `from__confirm` field, because a
+	// bot that fills it with junk reaches the same code by three routes: not
+	// base64, a base64 length that cannot exist, and base64 that decodes to too
+	// few bytes for AES-GCM's IV and tag.
+	//
+	// `name__confirm` has to be present and blank, or `check` rejects the form
+	// as a missing honeypot before it decrypts anything and the test would pass
+	// without touching the crypto path. No other field is needed: both actions
+	// run the honeypot check before validating.
+	//
+	// Four requests here plus the page load above stay well inside the 10/min
+	// limit on /contact and the 100/min one on /resources/newsletter.
+	const HONEYPOT_POSTS: Array<[path: string, validFrom: string]> = [
+		['/contact', '!!!not base64!!!'],
+		['/contact', 'a'],
+		['/contact', 'aa'],
+		['/resources/newsletter', '!!!not base64!!!'],
+	]
+
+	it('logs a honeypot seed fingerprint at boot', async () => {
+		// The 400 above is deliberately silent: a `from__confirm` this server
+		// issued that no longer decrypts is answered the same way as junk, with
+		// nothing in Sentry. The fingerprint is the only place a rotated
+		// HONEYPOT_SECRET shows up, so pin that it is still being printed.
+		expect(serverOutput).toMatch(/honeypot seed fingerprint: [0-9a-f]{8}/)
+	})
+
+	it('answers a malformed honeypot field with 400, not 500', async () => {
+		for (const [path, validFrom] of HONEYPOT_POSTS) {
+			const body = new URLSearchParams({
+				name__confirm: '',
+				from__confirm: validFrom,
+			})
+			const response = await fetch(`${base}${path}`, {
+				method: 'POST',
+				body,
+				headers: { 'content-type': 'application/x-www-form-urlencoded' },
+				redirect: 'manual',
+			})
+			expect(response.status, `${path} with from__confirm=${validFrom}`).toBe(
+				400,
+			)
+			await response.text()
+		}
+
+		// Nothing above should have taken the process with it, and a 500 here
+		// would have been reported to Sentry as an unhandled action error.
+		await new Promise((resolve) => setTimeout(resolve, 500))
+		expect(
+			server?.exitCode,
+			`server should still be running${serverOutput ? `\n${serverOutput}` : ''}`,
+		).toBeNull()
+	})
+
 	// The morgan `url` token decodes the whole request URL, query string
 	// included. morgan evaluates its tokens from the response's `finished`
 	// event with no try/catch, so a URIError there escapes as an uncaught
