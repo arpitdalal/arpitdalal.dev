@@ -3,13 +3,14 @@ declare module 'virtual:react-router/server-build' {
 
 	/**
 	 * React Router resolves this to the generated server build inside the
-	 * server bundle, and re-exports the ServerBuild fields as named exports
-	 * rather than a default. @react-router/dev documents the module for
-	 * custom servers but ships no ambient types for it, so they are declared
-	 * here against the same ServerBuild shape.
+	 * server bundle, and re-exports the ServerBuild fields as named exports.
+	 * There is deliberately no default export declared: the generated module
+	 * does not provide one, so `import build from 'virtual:...'` would
+	 * type-check here and then be undefined at runtime.
+	 *
+	 * @react-router/dev documents the module for custom servers but ships no
+	 * ambient types for it, so they are declared here against ServerBuild.
 	 */
-	const serverBuild: ServerBuild
-	export default serverBuild
 	export const routes: ServerBuild['routes']
 	export const assets: ServerBuild['assets']
 	export const assetsBuildDirectory: ServerBuild['assetsBuildDirectory']

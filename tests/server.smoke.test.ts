@@ -18,21 +18,69 @@ const BASE = `http://127.0.0.1:${PORT}`
 const BUILD_OUTPUT = 'build/server/index.js'
 const BOOT_TIMEOUT_MS = 30_000
 
-let server: ChildProcess | undefined
+/**
+ * Every variable app/utils/env.server.ts validates, supplied here rather than
+ * read from a file. `.env` is gitignored and the deploy workflow's test job
+ * does not create one, so `--env-file=.env` made Node exit before listening.
+ * Keeping the values inline also stops the test depending on a developer's
+ * local file, and SENTRY_DSN is left empty so Sentry never initialises and
+ * the test makes no outbound requests.
+ */
+const TEST_ENV = {
+	NODE_ENV: 'production',
+	SESSION_SECRET: 'test-session-secret',
+	HONEYPOT_SECRET: 'test-honeypot-secret',
+	INTERNAL_COMMAND_TOKEN: 'test-command-token',
+	SENTRY_DSN: '',
+	NODEMAILER_HOST: 'test-host',
+	NODEMAILER_USER: 'test-user',
+	NODEMAILER_PASSWORD: 'test-password',
+	HASHNODE_PUBLICATION_ID: 'test-publication-id',
+	HASHNODE_PUBLICATION_HOST: 'test-publication-host',
+	POSTHOG_API_KEY: 'test-posthog-key',
+	UMAMI_WEBSITE_ID: 'test-umami-id',
+	UMAMI_DOMAINS: 'test-umami-domains',
+	UMAMI_DOMAIN: 'test-umami-domain',
+	UMAMI_SCRIPT_NAME: 'test-umami-script',
+	UMAMI_PUBLIC_ANALYTICS_URL: '',
+} as const
 
-async function waitForServer(url: string, deadline: number) {
+let server: ChildProcess | undefined
+let serverOutput = ''
+
+async function waitForServer(url: string, child: ChildProcess) {
 	// The healthcheck route is the cheapest thing that proves both that the
 	// server is listening and that the React Router handler is mounted.
+	const deadline = Date.now() + BOOT_TIMEOUT_MS
+	let lastStatus: number | undefined
+
 	while (Date.now() < deadline) {
+		// A crash at startup is the other common failure, so surface that
+		// immediately instead of waiting out the whole timeout.
+		if (child.exitCode !== null || child.signalCode !== null) {
+			throw new Error(
+				`server exited during startup (code ${child.exitCode}, signal ${child.signalCode})\n${serverOutput}`,
+			)
+		}
 		try {
 			const response = await fetch(url, { redirect: 'manual' })
 			if (response.status < 500) return
+			// Listening but unhealthy: keep the status so the timeout below can
+			// say the server was up but failing.
+			lastStatus = response.status
 		} catch {
-			// not up yet
+			// not listening yet
 		}
 		await new Promise((resolve) => setTimeout(resolve, 250))
 	}
-	throw new Error(`server did not become ready at ${url}`)
+
+	const listening =
+		lastStatus === undefined
+			? 'never accepted a connection'
+			: `last responded ${lastStatus}`
+	throw new Error(
+		`server did not become ready at ${url} (${listening})\n${serverOutput}`,
+	)
 }
 
 beforeAll(async () => {
@@ -42,19 +90,20 @@ beforeAll(async () => {
 		)
 	}
 
-	server = spawn(
-		process.execPath,
-		['--env-file=.env', 'server-build/index.js'],
-		{
-			env: { ...process.env, NODE_ENV: 'production', PORT: String(PORT) },
-			stdio: 'ignore',
-		},
-	)
+	const child = spawn(process.execPath, ['server-build/index.js'], {
+		env: { ...process.env, ...TEST_ENV, PORT: String(PORT) },
+		stdio: ['ignore', 'pipe', 'pipe'],
+	})
+	server = child
 
-	await waitForServer(
-		`${BASE}/resources/healthcheck`,
-		Date.now() + BOOT_TIMEOUT_MS,
-	)
+	child.stdout?.on('data', (chunk: Buffer) => {
+		serverOutput += chunk.toString()
+	})
+	child.stderr?.on('data', (chunk: Buffer) => {
+		serverOutput += chunk.toString()
+	})
+
+	await waitForServer(`${BASE}/resources/healthcheck`, child)
 }, 60_000)
 
 afterAll(() => {
@@ -142,6 +191,29 @@ describe('production server', () => {
 			nonce,
 		)
 		expect(await first.text()).toContain(`nonce="${nonce}"`)
+	})
+
+	it('ignores a client-supplied CSP nonce', async () => {
+		// The nonce now travels as a request header, which means a client can
+		// send one. The middleware must overwrite it before Helmet and the
+		// renderer read it, otherwise an attacker could supply a known nonce
+		// and have their own script allowed by the policy.
+		const attackerNonce = 'attacker-controlled-nonce'
+		const response = await fetch(`${BASE}/`, {
+			headers: { 'x-csp-nonce': attackerNonce },
+		})
+
+		const csp =
+			response.headers.get('content-security-policy-report-only') ?? ''
+		const body = await response.text()
+
+		expect(csp).not.toContain(attackerNonce)
+		expect(body).not.toContain(`nonce="${attackerNonce}"`)
+
+		const serverNonce = csp.match(/'nonce-([^']+)'/)?.[1]
+		expect(serverNonce, 'server should still issue a nonce').toBeTruthy()
+		expect(serverNonce).not.toBe(attackerNonce)
+		expect(body).toContain(`nonce="${serverNonce}"`)
 	})
 
 	it('sets rate limit headers', async () => {
