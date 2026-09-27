@@ -172,6 +172,7 @@ function Document({
 				<ScrollRestoration nonce={nonce} />
 				<Scripts nonce={nonce} />
 				<script
+					nonce={nonce}
 					async
 					defer
 					src={`https://${env.UMAMI_DOMAIN}/${env.UMAMI_SCRIPT_NAME}`}

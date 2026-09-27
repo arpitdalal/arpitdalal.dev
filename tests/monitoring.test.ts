@@ -4,6 +4,7 @@ const { sentry } = vi.hoisted(() => ({
 	sentry: {
 		init: vi.fn(),
 		getClient: vi.fn(),
+		captureMessage: vi.fn(),
 		replayIntegration: vi.fn(() => ({ name: 'Replay' })),
 		browserProfilingIntegration: vi.fn(() => ({ name: 'BrowserProfiling' })),
 		reactRouterBrowserTracingIntegration: vi.fn(() => ({
@@ -15,6 +16,7 @@ const { sentry } = vi.hoisted(() => ({
 vi.mock('@sentry/react', () => ({
 	init: (...args: unknown[]) => sentry.init(...args),
 	getClient: (...args: unknown[]) => sentry.getClient(...args),
+	captureMessage: (...args: unknown[]) => sentry.captureMessage(...args),
 	replayIntegration: () => sentry.replayIntegration(),
 	browserProfilingIntegration: () => sentry.browserProfilingIntegration(),
 	reactRouterBrowserTracingIntegration: () =>
@@ -145,6 +147,47 @@ describe('monitoring init', () => {
 			const options = initOptions()
 			expect(options.replaysSessionSampleRate).toBe(0.1)
 			expect(options.replaysOnErrorSampleRate).toBe(1.0)
+		})
+	})
+
+	it('forwards CSP violations to Sentry so reportOnly holes are visible', () => {
+		withMonitoring(() => {
+			const listeners = new Map<string, EventListener>()
+			const addEventListener = vi
+				.spyOn(window, 'addEventListener')
+				.mockImplementation((type, listener) => {
+					listeners.set(type, listener as EventListener)
+				})
+
+			try {
+				init()
+
+				const handler = listeners.get('securitypolicyviolation')
+				expect(handler, 'CSP violation listener').toBeTruthy()
+
+				handler?.({
+					blockedURI: 'https://evil.example/x.js',
+					violatedDirective: 'script-src',
+					effectiveDirective: 'script-src',
+					originalPolicy: "script-src 'nonce-abc'",
+					disposition: 'report',
+					sourceFile: 'https://arpitdalal.dev/',
+					lineNumber: 1,
+				} as SecurityPolicyViolationEvent)
+
+				expect(sentry.captureMessage).toHaveBeenCalledWith(
+					'CSP: script-src',
+					expect.objectContaining({
+						level: 'warning',
+						tags: expect.objectContaining({
+							csp_directive: 'script-src',
+							csp_disposition: 'report',
+						}),
+					}),
+				)
+			} finally {
+				addEventListener.mockRestore()
+			}
 		})
 	})
 })

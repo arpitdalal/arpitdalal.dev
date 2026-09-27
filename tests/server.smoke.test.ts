@@ -243,6 +243,33 @@ describe('production server', () => {
 		expect(await first.text()).toContain(`nonce="${nonce}"`)
 	})
 
+	it('allows Umami connect-src and nonces the tracker script', async () => {
+		// Without both, the tracker either fails to load (strict-dynamic + no
+		// nonce) or loads and then fails to POST pageviews (connect-src).
+		// TEST_ENV sets UMAMI_DOMAIN to test-umami-domain.
+		const response = await fetch(`${base}/talks`)
+		const csp =
+			response.headers.get('content-security-policy-report-only') ?? ''
+		const body = await response.text()
+		const umamiScript = body.match(
+			/<script\b[^>]*src="https:\/\/test-umami-domain\/test-umami-script"[^>]*>/,
+		)?.[0]
+
+		expect(csp).toContain('https://test-umami-domain')
+		expect(umamiScript, 'Umami script tag').toBeTruthy()
+		expect(umamiScript).toMatch(/nonce="[^"]+"/)
+	})
+
+	it('allows the Hashnode CDN in img-src for blog and notes cover images', async () => {
+		// The policy only allowed cloudinary, so every coverImage.url served by
+		// the Hashnode GraphQL API was refused by img-src.
+		const response = await fetch(`${base}/talks`)
+		const csp =
+			response.headers.get('content-security-policy-report-only') ?? ''
+
+		expect(csp).toMatch(/img-src[^;]*\*\.hashnode\.com/)
+	})
+
 	it('ignores a client-supplied CSP nonce', async () => {
 		// The nonce now travels as a request header, which means a client can
 		// send one. The middleware must overwrite it before Helmet and the

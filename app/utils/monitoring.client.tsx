@@ -47,6 +47,29 @@ export function init() {
 		replaysOnErrorSampleRate: 1.0,
 	})
 
+	// reportOnly CSP violations never hit a report-uri here, so without this
+	// listener they only exist in the browser console — which is how Umami's
+	// missing nonce stayed invisible. Forward them so the next CSP hole is
+	// visible in Sentry before reportOnly is flipped off.
+	window.addEventListener('securitypolicyviolation', (event) => {
+		Sentry.captureMessage(`CSP: ${event.violatedDirective}`, {
+			level: 'warning',
+			tags: {
+				csp_directive: event.effectiveDirective,
+				csp_disposition: event.disposition,
+			},
+			extra: {
+				blockedURI: event.blockedURI,
+				violatedDirective: event.violatedDirective,
+				effectiveDirective: event.effectiveDirective,
+				originalPolicy: event.originalPolicy,
+				disposition: event.disposition,
+				sourceFile: event.sourceFile,
+				lineNumber: event.lineNumber,
+			},
+		})
+	})
+
 	startReplay()
 }
 

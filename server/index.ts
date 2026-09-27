@@ -9,6 +9,7 @@ import rateLimit, { ipKeyGenerator } from 'express-rate-limit'
 import getPort, { portNumbers } from 'get-port'
 import helmet from 'helmet'
 import morgan from 'morgan'
+import { cspConnectSrc, cspImgSrc } from './utils/csp.ts'
 import { decodeRequestUrl } from './utils/request-url.ts'
 
 const MODE = process.env.NODE_ENV ?? 'development'
@@ -134,14 +135,14 @@ app.use(
 			// NOTE: Remove reportOnly when you're ready to enforce this CSP
 			reportOnly: true,
 			directives: {
-				'connect-src': [
-					MODE === 'development' ? 'ws:' : null,
-					process.env.SENTRY_DSN ? '*.sentry.io' : null,
-					"'self'",
-				].filter(Boolean),
+				'connect-src': cspConnectSrc({
+					mode: MODE,
+					sentryDsn: process.env.SENTRY_DSN,
+					umamiDomain: process.env.UMAMI_DOMAIN,
+				}),
 				'font-src': ["'self'"],
 				'frame-src': ["'self'"],
-				'img-src': ["'self'", 'data:', '*.cloudinary.com'],
+				'img-src': cspImgSrc(),
 				'script-src': [
 					"'strict-dynamic'",
 					"'self'",
