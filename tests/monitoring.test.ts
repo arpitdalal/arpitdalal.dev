@@ -4,6 +4,7 @@ const { sentry } = vi.hoisted(() => ({
 	sentry: {
 		init: vi.fn(),
 		getClient: vi.fn(),
+		captureMessage: vi.fn(),
 		replayIntegration: vi.fn(() => ({ name: 'Replay' })),
 		browserProfilingIntegration: vi.fn(() => ({ name: 'BrowserProfiling' })),
 		reactRouterBrowserTracingIntegration: vi.fn(() => ({
@@ -15,6 +16,7 @@ const { sentry } = vi.hoisted(() => ({
 vi.mock('@sentry/react', () => ({
 	init: (...args: unknown[]) => sentry.init(...args),
 	getClient: (...args: unknown[]) => sentry.getClient(...args),
+	captureMessage: (...args: unknown[]) => sentry.captureMessage(...args),
 	replayIntegration: () => sentry.replayIntegration(),
 	browserProfilingIntegration: () => sentry.browserProfilingIntegration(),
 	reactRouterBrowserTracingIntegration: () =>
@@ -146,5 +148,106 @@ describe('monitoring init', () => {
 			expect(options.replaysSessionSampleRate).toBe(0.1)
 			expect(options.replaysOnErrorSampleRate).toBe(1.0)
 		})
+	})
+
+	it('forwards buffered parse-time CSP violations to Sentry', () => {
+		withMonitoring(() => {
+			// The inline script in root.tsx fills this during parsing, which is
+			// long before this module is dynamically imported.
+			window.__cspViolations = [
+				{
+					blockedURI: 'https://stats.example.com/script.js',
+					violatedDirective: 'script-src',
+					effectiveDirective: 'script-src',
+					disposition: 'report',
+					sourceFile: 'https://arpitdalal.dev/',
+					lineNumber: 1,
+					columnNumber: 1,
+					statusCode: 0,
+				},
+			]
+
+			try {
+				init()
+
+				expect(sentry.captureMessage).toHaveBeenCalledWith(
+					'CSP: script-src',
+					expect.objectContaining({
+						level: 'warning',
+						tags: expect.objectContaining({
+							csp_directive: 'script-src',
+							csp_disposition: 'report',
+						}),
+					}),
+				)
+				expect(window.__cspViolations).toBeUndefined()
+			} finally {
+				window.__cspViolations = undefined
+			}
+		})
+	})
+
+	it('forwards CSP violations that fire after init', () => {
+		withMonitoring(() => {
+			try {
+				init()
+				sentry.captureMessage.mockClear()
+
+				// jsdom has no SecurityPolicyViolationEvent constructor, so
+				// build the event the browser would have produced.
+				const event = new Event('securitypolicyviolation')
+				Object.defineProperties(event, {
+					blockedURI: { value: 'https://cdn.hashnode.com/x.jpeg' },
+					violatedDirective: { value: 'img-src' },
+					effectiveDirective: { value: 'img-src' },
+					disposition: { value: 'report' },
+					sourceFile: { value: '' },
+					lineNumber: { value: 0 },
+					columnNumber: { value: 0 },
+					statusCode: { value: 0 },
+				})
+				window.dispatchEvent(event)
+
+				expect(sentry.captureMessage).toHaveBeenCalledWith(
+					'CSP: img-src',
+					expect.objectContaining({ level: 'warning' }),
+				)
+			} finally {
+				window.__cspViolations = undefined
+			}
+		})
+	})
+
+	it('does not report a blocked Sentry envelope back to Sentry', () => {
+		// The loop: reporting this violation means sending an envelope to the
+		// same blocked origin, which raises another violation. Unbounded, and
+		// it costs Sentry quota. `connect-src` is built from the DSN origin so
+		// this should not happen; this is the guard for when it does.
+		vi.stubGlobal('ENV', {
+			SENTRY_DSN: 'https://abc123@o0.ingest.sentry.io/456',
+		})
+		sentry.getClient.mockReturnValue({ addIntegration })
+
+		try {
+			window.__cspViolations = [
+				{
+					blockedURI: 'https://o0.ingest.sentry.io/api/456/envelope/',
+					violatedDirective: 'connect-src',
+					effectiveDirective: 'connect-src',
+					disposition: 'report',
+					sourceFile: 'https://arpitdalal.dev/',
+					lineNumber: 1,
+					columnNumber: 1,
+					statusCode: 0,
+				},
+			] as never
+
+			init()
+
+			expect(sentry.captureMessage).not.toHaveBeenCalled()
+		} finally {
+			window.__cspViolations = undefined
+			vi.unstubAllGlobals()
+		}
 	})
 })

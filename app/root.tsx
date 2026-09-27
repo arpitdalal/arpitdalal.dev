@@ -26,6 +26,7 @@ import { socialLinksData } from '#app/routes/_marketing+/__data'
 import tailwindStyleSheetUrl from '#app/styles/tailwind.css?url'
 import { usePosthogPageView } from '#app/utils/analytics'
 import { ClientHintCheck, getHints, useHints } from '#app/utils/client-hints'
+import { cspCaptureScript } from '#app/utils/csp'
 import { getEnv } from '#app/utils/env.server'
 import { honeypot } from '#app/utils/honeypot.server'
 import { getDomainUrl, getUrl } from '#app/utils/misc'
@@ -148,6 +149,17 @@ function Document({
 			className={`${theme || hintTheme || 'light'} h-full overflow-x-hidden`}
 		>
 			<head>
+				{/*
+				 * Must be the first thing in <head>. Parse-time CSP violations
+				 * (this document's own images, the Umami tracker below) fire
+				 * while the parser is still running, long before the
+				 * dynamically imported monitoring module could register a
+				 * listener. See app/utils/csp.ts.
+				 */}
+				<script
+					nonce={nonce}
+					dangerouslySetInnerHTML={{ __html: cspCaptureScript }}
+				/>
 				<ClientHintCheck nonce={nonce} />
 				<Meta />
 				<meta charSet="utf-8" />
@@ -172,6 +184,7 @@ function Document({
 				<ScrollRestoration nonce={nonce} />
 				<Scripts nonce={nonce} />
 				<script
+					nonce={nonce}
 					async
 					defer
 					src={`https://${env.UMAMI_DOMAIN}/${env.UMAMI_SCRIPT_NAME}`}

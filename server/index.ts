@@ -9,6 +9,7 @@ import rateLimit, { ipKeyGenerator } from 'express-rate-limit'
 import getPort, { portNumbers } from 'get-port'
 import helmet from 'helmet'
 import morgan from 'morgan'
+import { cspConnectSrc, cspImgSrc } from './utils/csp.ts'
 import { decodeRequestUrl } from './utils/request-url.ts'
 
 const MODE = process.env.NODE_ENV ?? 'development'
@@ -131,17 +132,28 @@ app.use(
 		referrerPolicy: { policy: 'same-origin' },
 		crossOriginEmbedderPolicy: false,
 		contentSecurityPolicy: {
-			// NOTE: Remove reportOnly when you're ready to enforce this CSP
+			// NOTE: Remove reportOnly when you're ready to enforce this CSP.
+			//
+			// Read this before flipping it. `reportOnly: true` means the policy
+			// is *never applied* — the browser reports violations and loads
+			// everything anyway. So every gap below has been invisible and
+			// harmless so far, and nothing about the site working today is
+			// evidence the policy is correct. Flipping this turns all of it
+			// live at once, and any hole becomes a broken page.
+			//
+			// Violations are now captured in Sentry (see app/utils/csp.ts), so
+			// the safe order is: deploy with reportOnly, read the Sentry CSP
+			// messages until they are clean, then flip.
 			reportOnly: true,
 			directives: {
-				'connect-src': [
-					MODE === 'development' ? 'ws:' : null,
-					process.env.SENTRY_DSN ? '*.sentry.io' : null,
-					"'self'",
-				].filter(Boolean),
+				'connect-src': cspConnectSrc({
+					mode: MODE,
+					sentryDsn: process.env.SENTRY_DSN,
+					umamiDomain: process.env.UMAMI_DOMAIN,
+				}),
 				'font-src': ["'self'"],
 				'frame-src': ["'self'"],
-				'img-src': ["'self'", 'data:', '*.cloudinary.com'],
+				'img-src': cspImgSrc(),
 				'script-src': [
 					"'strict-dynamic'",
 					"'self'",

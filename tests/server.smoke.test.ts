@@ -243,6 +243,73 @@ describe('production server', () => {
 		expect(await first.text()).toContain(`nonce="${nonce}"`)
 	})
 
+	it('does not enforce the CSP yet', async () => {
+		// Deliberate, and easy to get wrong by accident. Under reportOnly the
+		// policy is never applied, which is why the Umami nonce and the
+		// missing hashnode img-src host went unnoticed. If this ever fails
+		// because someone set reportOnly: false, the enforcement flip is
+		// happening without anyone having read the Sentry CSP messages first.
+		const response = await fetch(`${base}/talks`)
+
+		expect(
+			response.headers.get('content-security-policy'),
+			'enforcing CSP header',
+		).toBeNull()
+		expect(
+			response.headers.get('content-security-policy-report-only'),
+			'report-only CSP header',
+		).toBeTruthy()
+	})
+
+	it('allows Umami connect-src and nonces the tracker script', async () => {
+		// Both would become blocking the moment reportOnly is flipped: the tag
+		// without a nonce is refused under 'strict-dynamic', and the beacon
+		// POST to /api/send is cross-origin. TEST_ENV sets UMAMI_DOMAIN to
+		// test-umami-domain.
+		const response = await fetch(`${base}/talks`)
+		const csp =
+			response.headers.get('content-security-policy-report-only') ?? ''
+		const body = await response.text()
+		const umamiScript = body.match(
+			/<script\b[^>]*src="https:\/\/test-umami-domain\/test-umami-script"[^>]*>/,
+		)?.[0]
+
+		expect(csp).toContain('https://test-umami-domain')
+		expect(umamiScript, 'Umami script tag').toBeTruthy()
+		expect(umamiScript).toMatch(/nonce="[^"]+"/)
+	})
+
+	it('allows the Hashnode CDN in img-src for blog and notes cover images', async () => {
+		// The policy allowed cloudinary but not hashnode, so every
+		// coverImage.url served by the Hashnode GraphQL API would be refused
+		// under enforcement. Harmless while reportOnly, a broken image on the
+		// blog and notes pages once it is flipped.
+		const response = await fetch(`${base}/talks`)
+		const csp =
+			response.headers.get('content-security-policy-report-only') ?? ''
+
+		expect(csp).toMatch(/img-src[^;]*\*\.hashnode\.com/)
+	})
+
+	it('ships the CSP capture script first in the head, nonced', async () => {
+		// Parse-time violations fire before entry.client.tsx dynamically
+		// imports monitoring, so the listener has to be inline in <head>. If
+		// this regresses, CSP violations go back to being console-only.
+		const response = await fetch(`${base}/talks`)
+		const body = await response.text()
+		const csp =
+			response.headers.get('content-security-policy-report-only') ?? ''
+		const nonce = csp.match(/'nonce-([^']+)'/)?.[1]
+
+		expect(nonce, 'server should issue a nonce').toBeTruthy()
+
+		const head = body.match(/<head>([\s\S]*?)<\/head>/)?.[1] ?? ''
+		const firstScript = head.match(/<script[^>]*>/)?.[0] ?? ''
+
+		expect(firstScript, 'first element in <head>').toContain('nonce=')
+		expect(body).toContain('securitypolicyviolation')
+	})
+
 	it('ignores a client-supplied CSP nonce', async () => {
 		// The nonce now travels as a request header, which means a client can
 		// send one. The middleware must overwrite it before Helmet and the
