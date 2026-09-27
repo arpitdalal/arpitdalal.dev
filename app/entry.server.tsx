@@ -12,7 +12,10 @@ import {
 } from 'react-router'
 import { getEnv, init } from './utils/env.server'
 import { NonceProvider } from './utils/nonce-provider'
-import { isExpectedReactRouterRouteError } from './utils/sentry-event-filters'
+import {
+	getRouteErrorCause,
+	isExpectedReactRouterRouteError,
+} from './utils/sentry-event-filters'
 import { makeTimings } from './utils/timing.server'
 
 export const streamTimeout = 5000
@@ -95,19 +98,29 @@ export function handleError(
 		return
 	}
 
+	// React Router hands `handleError` an `ErrorResponse` rather than an
+	// `Error` for anything a route rejected, so the message and stack live on
+	// `.error`. Report that instead of the wrapper, otherwise Sentry files a
+	// stackless issue grouped on a synthesised message. This mirrors React
+	// Router's own default handler.
+	const reported = getRouteErrorCause(error)
+	const logReportedError = () => {
+		if (reported instanceof Error) {
+			console.error(styleText('red', String(reported.stack)))
+		} else {
+			console.error(reported)
+		}
+	}
+
 	// Bots and scanners request every URL in the sitemap with methods the
 	// routes do not handle, and React Router throws for each of those. They are
 	// expected answers to invalid traffic, not bugs, so they get logged (they
 	// still show up in `fly logs`) but never reported to Sentry.
 	if (isExpectedReactRouterRouteError(error)) {
-		console.error(error)
+		logReportedError()
 		return
 	}
 
-	if (error instanceof Error) {
-		console.error(styleText('red', String(error.stack)))
-	} else {
-		console.error(error)
-	}
-	void Sentry.captureException(error)
+	logReportedError()
+	void Sentry.captureException(reported)
 }

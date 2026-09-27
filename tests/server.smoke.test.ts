@@ -250,15 +250,50 @@ describe('production server', () => {
 		expect(response.headers.get('ratelimit-limit')).toBeTruthy()
 	})
 
-	// Express 5 / path-to-regexp v8 decodes route params itself and throws a
-	// URIError on a malformed percent-encoding, so this path is handled before
-	// it reaches any of our own middleware. It must come back as a client error
-	// and leave the process serving rather than taking it down.
-	it('survives a URL with a malformed percent-encoding', async () => {
-		const response = await fetch(`${base}/%`, { redirect: 'manual' })
-		expect(response.status).toBeLessThan(500)
+	it('reports Server-Timing for both the root loader and the render', async () => {
+		// The root loader's metric only reaches the client because
+		// `app/root.tsx` exports a `headers` function. React Router ignores a
+		// loader's response headers on the document without one, so dropping
+		// that export silently costs half the instrumentation and nothing else
+		// would notice.
+		const response = await fetch(`${base}/talks`)
+		const serverTiming = response.headers.get('server-timing') ?? ''
 
-		// The point is the process surviving, so prove it still serves.
+		expect(serverTiming).toContain('root_loader')
+		expect(serverTiming).toContain('render')
+	})
+
+	it('sends no X-Robots-Tag by default', async () => {
+		// ALLOW_INDEXING is unset for this server. The noindex behaviour is
+		// covered in tests/allow-indexing.test.ts, which boots its own process.
+		const response = await fetch(`${base}/talks`)
+		expect(response.headers.get('x-robots-tag')).toBeNull()
+		expect(await response.text()).not.toContain('name="robots"')
+	})
+
+	// The morgan `url` token decodes the whole request URL, query string
+	// included. morgan evaluates its tokens from the response's `finished`
+	// event with no try/catch, so a URIError there escapes as an uncaught
+	// exception and the process exits mid-request. Verified against `main`:
+	// this request kills the server, and the guard in
+	// `server/utils/request-url.ts` is what keeps it alive.
+	//
+	// The malformed value has to be in the query. A malformed *path* is thrown
+	// on by Express's own `decodeParam` before it reaches morgan, which returns
+	// a 400 and never evaluates the token, so that path cannot exercise this.
+	it('survives a query string with a malformed percent-encoding', async () => {
+		const response = await fetch(`${base}/talks?x=%`, { redirect: 'manual' })
+		expect(response.status).toBe(200)
+
+		// The uncaught throw lands on the `finished` event, which races the
+		// client's response resolving, so give the process a moment to die
+		// before asserting it is still up.
+		await new Promise((resolve) => setTimeout(resolve, 500))
+		expect(
+			server?.exitCode,
+			`server should still be running${serverOutput ? `\n${serverOutput}` : ''}`,
+		).toBeNull()
+
 		const after = await fetch(`${base}/talks`)
 		expect(after.status).toBe(200)
 	})

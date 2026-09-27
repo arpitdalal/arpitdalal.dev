@@ -99,7 +99,12 @@ app.get(['/img/{*splat}', '/favicons/{*splat}'], (_req, res) => {
 	return
 })
 
-morgan.token('url', (req) => decodeRequestUrl(req.url))
+// Same fallback morgan's own `url` token uses, so mounting morgan at a path
+// prefix cannot silently drop the prefix from every log line. morgan types the
+// request as a bare IncomingMessage, but Express puts `originalUrl` on it.
+morgan.token('url', (req) =>
+	decodeRequestUrl((req as express.Request).originalUrl ?? req.url),
+)
 app.use(
 	morgan('tiny', {
 		skip: (req, res) =>

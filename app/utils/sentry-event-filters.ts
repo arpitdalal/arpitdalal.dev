@@ -34,6 +34,19 @@ export function isExpectedReactRouterErrorMessage(message: string): boolean {
 }
 
 /**
+ * The `Error` behind a route error, when React Router kept one.
+ *
+ * `ErrorResponseImpl.error` is marked private, but it is what React Router's
+ * own default `handleError` reads and it holds the real message and stack.
+ * Handing the wrapper to Sentry instead files a stackless issue grouped on a
+ * synthesised message.
+ */
+export function getRouteErrorCause(error: unknown): unknown {
+	if (!isRouteErrorResponse(error)) return error
+	return (error as { error?: unknown }).error ?? error
+}
+
+/**
  * Narrows a value thrown by a loader/action to the React Router "no handler for
  * this request" errors.
  *
@@ -48,8 +61,10 @@ export function isExpectedReactRouterRouteError(error: unknown): boolean {
 	if (!isRouteErrorResponse(error)) return false
 	if (!EXPECTED_REACT_ROUTER_ERROR_STATUSES.includes(error.status)) return false
 
-	// `data` is the message string in production and the underlying `Error` in
-	// development.
+	// `.data` carries the message two ways. React Router wraps it in an `Error`
+	// (see `getInternalRouterError` in react-router's router.js) and unwraps it
+	// again when it renders a document, so the document path yields a string;
+	// the single-fetch path yields the `Error`. Accept both.
 	const { data } = error
 	const message =
 		typeof data === 'string'

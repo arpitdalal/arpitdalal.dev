@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
 	EXPECTED_REACT_ROUTER_ERROR_PATTERNS,
 	getEventErrorMessages,
+	getRouteErrorCause,
 	isExpectedReactRouterErrorMessage,
 	isExpectedReactRouterRouteError,
 	shouldDropErrorEvent,
@@ -171,5 +172,28 @@ describe('isExpectedReactRouterRouteError', () => {
 		expect(isExpectedReactRouterRouteError(routeError(405, undefined))).toBe(
 			false,
 		)
+	})
+})
+
+describe('getRouteErrorCause', () => {
+	it('returns the wrapped Error behind a route error', () => {
+		// Without this, `handleError` hands Sentry an `ErrorResponse` wrapper,
+		// which Sentry files as a stackless issue.
+		const cause = new Error(NO_ACTION)
+		const routeError = new ErrorResponseImpl(405, 'status', cause, true)
+
+		expect(getRouteErrorCause(routeError)).toBe(cause)
+	})
+
+	it('falls back to the route error when it carries no cause', () => {
+		const routeError = new ErrorResponseImpl(404, 'Not Found', 'nope', true)
+		expect(getRouteErrorCause(routeError)).toBe(routeError)
+	})
+
+	it('passes a plain value straight through', () => {
+		const error = new Error('boom')
+		expect(getRouteErrorCause(error)).toBe(error)
+		expect(getRouteErrorCause('boom')).toBe('boom')
+		expect(getRouteErrorCause(undefined)).toBeUndefined()
 	})
 })

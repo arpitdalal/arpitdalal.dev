@@ -66,7 +66,18 @@ export const envSchema = z.object({
 	UMAMI_DOMAINS: z.string(),
 	UMAMI_SCRIPT_NAME: z.string(),
 	UMAMI_PUBLIC_ANALYTICS_URL: z.string().optional(),
-	ALLOW_INDEXING: z.enum(['true', 'false']).optional(),
+	// `server/index.ts` reads the same variable with a deliberately lenient
+	// grammar: only the exact string 'false' opts out of indexing, everything
+	// else (including unset and '') means indexing is allowed. An enum would
+	// reject '', '0' and 'FALSE' in `init()`, and because the app bundle is
+	// imported per request inside `getBuild()` — whose catch swallows the
+	// failure — a mistyped value would turn into a permanent silent 500 on
+	// every route instead of a boot error. Normalise instead of rejecting, so
+	// the two parsers can never disagree.
+	ALLOW_INDEXING: z
+		.string()
+		.optional()
+		.transform((value) => (value === 'false' ? 'false' : undefined)),
 })
 
 // Type exports for TypeScript inference
