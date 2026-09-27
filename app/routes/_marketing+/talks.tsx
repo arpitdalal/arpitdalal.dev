@@ -7,7 +7,7 @@ import {
 } from '#app/components/highlight'
 import { LineGlow } from '#app/components/line-glow'
 import { TalkCard } from '#app/components/talk-card'
-import { type loader as rootLoader } from '#app/root'
+import { type RootLoaderData } from '#app/root'
 import { formatDateWithHints } from '#app/utils/client-hints'
 import { getUrl } from '#app/utils/misc'
 import { getSocialMetas } from '#app/utils/seo'
@@ -20,8 +20,7 @@ const PAGE_DESCRIPTION =
 
 export const meta: Route.MetaFunction = ({ matches }) => {
 	const rootMatch = matches.find((m) => m?.id === 'root')
-	const rootData = rootMatch?.loaderData as
-		Awaited<ReturnType<typeof rootLoader>> | undefined
+	const rootData = rootMatch?.loaderData as RootLoaderData | undefined
 	const requestInfo = rootData?.requestInfo
 	return [
 		{ title: PAGE_TITLE },

@@ -249,4 +249,17 @@ describe('production server', () => {
 		const response = await fetch(`${base}/talks`)
 		expect(response.headers.get('ratelimit-limit')).toBeTruthy()
 	})
+
+	// Express 5 / path-to-regexp v8 decodes route params itself and throws a
+	// URIError on a malformed percent-encoding, so this path is handled before
+	// it reaches any of our own middleware. It must come back as a client error
+	// and leave the process serving rather than taking it down.
+	it('survives a URL with a malformed percent-encoding', async () => {
+		const response = await fetch(`${base}/%`, { redirect: 'manual' })
+		expect(response.status).toBeLessThan(500)
+
+		// The point is the process surviving, so prove it still serves.
+		const after = await fetch(`${base}/talks`)
+		expect(after.status).toBe(200)
+	})
 })

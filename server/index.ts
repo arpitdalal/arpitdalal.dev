@@ -1,8 +1,8 @@
 import crypto from 'node:crypto'
+import { styleText } from 'node:util'
 import { createRequestHandler } from '@react-router/express'
 import * as Sentry from '@sentry/node'
 import { ip as ipAddress } from 'address'
-import chalk from 'chalk'
 import closeWithGrace from 'close-with-grace'
 import compression from 'compression'
 import express from 'express'
@@ -11,10 +11,12 @@ import getPort, { portNumbers } from 'get-port'
 import helmet from 'helmet'
 import morgan from 'morgan'
 import { type ServerBuild, RouterContextProvider } from 'react-router'
+import { decodeRequestUrl } from './utils/request-url.js'
 
 const MODE = process.env.NODE_ENV ?? 'development'
 const IS_PROD = MODE === 'production'
 const IS_DEV = MODE === 'development'
+const ALLOW_INDEXING = process.env.ALLOW_INDEXING !== 'false'
 const SENTRY_ENABLED = IS_PROD && process.env.SENTRY_DSN
 
 if (SENTRY_ENABLED) {
@@ -26,6 +28,9 @@ const viteDevServer = IS_PROD
 	: await import('vite').then((vite) =>
 			vite.createServer({
 				server: { middlewareMode: true },
+				// We tell Vite we are running a custom app instead of
+				// the SPA default so it doesn't run HTML middleware
+				appType: 'custom',
 			}),
 		)
 
@@ -66,6 +71,13 @@ app.use(compression())
 // http://expressjs.com/en/advanced/best-practice-security.html#at-a-minimum-disable-x-powered-by-header
 app.disable('x-powered-by')
 
+if (!ALLOW_INDEXING) {
+	app.use((_, res, next) => {
+		res.set('X-Robots-Tag', 'noindex, nofollow')
+		next()
+	})
+}
+
 if (viteDevServer) {
 	app.use(viteDevServer.middlewares)
 } else {
@@ -87,7 +99,7 @@ app.get(['/img/{*splat}', '/favicons/{*splat}'], (_req, res) => {
 	return
 })
 
-morgan.token('url', (req) => decodeURIComponent(req.url ?? ''))
+morgan.token('url', (req) => decodeRequestUrl(req.url))
 app.use(
 	morgan('tiny', {
 		skip: (req, res) =>
@@ -234,7 +246,8 @@ if (!portAvailable && !IS_DEV) {
 const server = app.listen(portToUse, () => {
 	if (!portAvailable) {
 		console.warn(
-			chalk.yellow(
+			styleText(
+				'yellow',
 				`⚠️  Port ${desiredPort} is not available, using ${portToUse} instead.`,
 			),
 		)
@@ -252,9 +265,9 @@ const server = app.listen(portToUse, () => {
 
 	console.log(
 		`
-${chalk.bold('Local:')}            ${chalk.cyan(localUrl)}
-${lanUrl ? `${chalk.bold('On Your Network:')}  ${chalk.cyan(lanUrl)}` : ''}
-${chalk.bold('Press Ctrl+C to stop')}
+${styleText('bold', 'Local:')}            ${styleText('cyan', localUrl)}
+${lanUrl ? `${styleText('bold', 'On Your Network:')}  ${styleText('cyan', lanUrl)}` : ''}
+${styleText('bold', 'Press Ctrl+C to stop')}
 		`.trim(),
 	)
 })
@@ -264,8 +277,8 @@ closeWithGrace(async ({ err }) => {
 		server.close((e) => (e ? reject(e) : resolve('ok')))
 	})
 	if (err) {
-		console.error(chalk.red(err))
-		console.error(chalk.red(err.stack))
+		console.error(styleText('red', String(err)))
+		console.error(styleText('red', String(err.stack)))
 		if (SENTRY_ENABLED) {
 			Sentry.captureException(err)
 			await Sentry.flush(500)

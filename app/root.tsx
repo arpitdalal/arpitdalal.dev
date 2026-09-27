@@ -1,4 +1,5 @@
 import {
+	data,
 	href,
 	Link,
 	Links,
@@ -29,6 +30,7 @@ import { honeypot } from '#app/utils/honeypot.server'
 import { getDomainUrl, getUrl } from '#app/utils/misc'
 import { useNonce } from '#app/utils/nonce-provider'
 import { getSocialMetas } from '#app/utils/seo'
+import { makeTimings, time } from '#app/utils/timing.server'
 import { type Theme } from '#types/index'
 import { type Route } from './+types/root'
 
@@ -67,18 +69,62 @@ export const meta: Route.MetaFunction = ({ loaderData }) => {
 	]
 }
 
-export async function loader({ request }: Route.LoaderArgs) {
-	const honeyProps = await honeypot.getInputProps()
+/**
+ * Split out of `loader` so `RootLoaderData` can be derived from it. The loader
+ * wraps this payload in `data()` to attach a `Server-Timing` header, which
+ * means `Awaited<ReturnType<typeof loader>>` is a `DataWithResponseInit` rather
+ * than the payload. `useLoaderData`/`useRouteLoaderData` unwrap it, but the
+ * `meta` functions in child routes read the root match's `loaderData` straight
+ * out of `matches`, where they need the payload type explicitly.
+ */
+async function getRootData(request: Request) {
+	const timings = makeTimings('root loader')
+	const honeyProps = await time(() => honeypot.getInputProps(), {
+		timings,
+		type: 'honeypot',
+		desc: 'get honeypot input props in root',
+	})
 
 	return {
-		requestInfo: {
-			hints: getHints(request),
-			origin: getDomainUrl(request),
-			path: new URL(request.url).pathname,
+		timings,
+		payload: {
+			requestInfo: {
+				hints: getHints(request),
+				origin: getDomainUrl(request),
+				path: new URL(request.url).pathname,
+			},
+			ENV: getEnv(),
+			honeyProps,
 		},
-		ENV: getEnv(),
-		honeyProps,
 	}
+}
+
+export type RootLoaderData = Awaited<ReturnType<typeof getRootData>>['payload']
+
+export async function loader({ request }: Route.LoaderArgs) {
+	const { payload, timings } = await getRootData(request)
+
+	return data(payload, {
+		headers: { 'Server-Timing': timings.toString() },
+	})
+}
+
+/**
+ * React Router only puts a loader's response headers on the document response
+ * if a matched route exports a `headers` function, so without this the root
+ * loader's `Server-Timing` never leaves the server. `entry.server.tsx` appends
+ * the render timings to the same header.
+ */
+export const headers: Route.HeadersFunction = ({
+	loaderHeaders,
+	parentHeaders,
+}) => {
+	const headers = new Headers(parentHeaders)
+	const serverTiming = loaderHeaders.get('Server-Timing')
+	if (serverTiming) {
+		headers.set('Server-Timing', serverTiming)
+	}
+	return headers
 }
 
 function Document({
@@ -105,6 +151,13 @@ function Document({
 				<Meta />
 				<meta charSet="utf-8" />
 				<meta name="viewport" content="width=device-width,initial-scale=1" />
+				{env.ALLOW_INDEXING === 'false' ? (
+					// Staging deploys opt out of indexing with ALLOW_INDEXING=false
+					// so they do not compete with production in search results. The
+					// server sends the matching X-Robots-Tag header; this covers
+					// crawlers that read the document instead.
+					<meta name="robots" content="noindex, nofollow" />
+				) : null}
 				<Links />
 			</head>
 			<body className="bg-background text-foreground">

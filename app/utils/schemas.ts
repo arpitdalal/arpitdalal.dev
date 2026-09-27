@@ -66,6 +66,7 @@ export const envSchema = z.object({
 	UMAMI_DOMAINS: z.string(),
 	UMAMI_SCRIPT_NAME: z.string(),
 	UMAMI_PUBLIC_ANALYTICS_URL: z.string().optional(),
+	ALLOW_INDEXING: z.enum(['true', 'false']).optional(),
 })
 
 // Type exports for TypeScript inference
