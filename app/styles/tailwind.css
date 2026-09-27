@@ -1,4 +1,6 @@
-@import 'tailwindcss';
+/* Vite 8 SSR: bare `tailwindcss` fails package-root style resolution
+   (vite#23096). Pin the export key so client + SSR resolve the same file. */
+@import 'tailwindcss/index.css';
 
 @config '../../tailwind.config.ts';
 
