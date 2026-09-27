@@ -11,10 +11,14 @@ import { ensureCSSStyleDeclaration } from './cssom.client'
 export function init() {
 	// rrweb reads `CSSStyleDeclaration.prototype` unguarded while setting up
 	// Replay, and that happens inside `Sentry.init()`. Repair the global first so
-	// the read cannot throw and take the integrations behind it down with it.
-	if (!ensureCSSStyleDeclaration()) {
+	// the read cannot throw, and skip Replay outright if it cannot be repaired —
+	// registering it anyway would throw out of init() and surface as a misleading
+	// "failed to initialize error monitoring" even though errors and tracing are
+	// fine by then.
+	const canReplay = ensureCSSStyleDeclaration()
+	if (!canReplay) {
 		console.warn(
-			'Sentry Replay will not start: CSSStyleDeclaration is unavailable and could not be restored.',
+			'Sentry Replay disabled: CSSStyleDeclaration is unavailable and could not be restored.',
 		)
 	}
 
@@ -47,7 +51,7 @@ export function init() {
 				createRoutesFromChildren,
 				matchRoutes,
 			}),
-			Sentry.replayIntegration(),
+			...(canReplay ? [Sentry.replayIntegration()] : []),
 		],
 
 		// Set tracesSampleRate to 1.0 to capture 100%

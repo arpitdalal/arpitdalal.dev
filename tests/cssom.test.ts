@@ -65,17 +65,30 @@ describe('ensureCSSStyleDeclaration', () => {
 		withCSSStyleDeclarationStripped(() => {
 			ensureCSSStyleDeclaration()
 
-			// rrweb assigns its Proxy straight onto these two.
+			// rrweb assigns its Proxy straight onto these two. The recovered object is
+			// the live prototype, so put the originals back afterwards.
 			const proto = window.CSSStyleDeclaration.prototype as CSSStyleDeclaration
+			const originalSet = Object.getOwnPropertyDescriptor(proto, 'setProperty')
+			const originalRemove = Object.getOwnPropertyDescriptor(
+				proto,
+				'removeProperty',
+			)
 			const setProperty = vi.fn((property: string) => property)
 			const removeProperty = vi.fn((property: string) => property)
 
-			expect(() => {
+			try {
 				proto.setProperty = setProperty
 				proto.removeProperty = removeProperty
-			}).not.toThrow()
-			expect(proto.setProperty).toBe(setProperty)
-			expect(proto.removeProperty).toBe(removeProperty)
+				expect(proto.setProperty).toBe(setProperty)
+				expect(proto.removeProperty).toBe(removeProperty)
+			} finally {
+				if (originalSet) {
+					Object.defineProperty(proto, 'setProperty', originalSet)
+				}
+				if (originalRemove) {
+					Object.defineProperty(proto, 'removeProperty', originalRemove)
+				}
+			}
 		})
 	})
 
