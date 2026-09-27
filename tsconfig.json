@@ -8,7 +8,7 @@
 			"#app/*": ["./app/*"],
 			"#types/*": ["./types/*"],
 			"@/icon-name": [
-				"./app/components/ui/icons/name.d.ts",
+				"./app/components/ui/icons/name.ts",
 				"./types/icon-name.d.ts"
 			]
 		}

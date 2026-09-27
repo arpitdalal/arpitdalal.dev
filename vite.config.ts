@@ -58,9 +58,10 @@ export default defineConfig({
 			inputDir: './other/svg-icons',
 			outputDir: './app/components/ui/icons',
 			fileName: 'sprite.svg',
-			// The generated file lives where the @/icon-name alias already
-			// points, so the alias in tsconfig.json does not have to move.
-			typesOutputFile: './app/components/ui/icons/name.d.ts',
+			// A .ts file, not a .d.ts: the generated module exports the icon
+			// name array as a value, and a const initializer in an ambient
+			// context is an error that only skipLibCheck hides.
+			typesOutputFile: './app/components/ui/icons/name.ts',
 			withTypes: true,
 			// Keep the kebab-case file names (arrow-left-outline) rather than
 			// the plugin's default camelCase transform, so the existing
