@@ -21,9 +21,10 @@ import { afterAll, describe, expect, it, vi } from 'vitest'
 // import — otherwise a value exported in a developer's shell changes what these
 // tests assert. `TESTING` is the key that matters: setting it turns
 // `validFromFieldName` off, which makes `check` return before it ever decrypts.
-// Every case below would then fail loudly rather than pass for the wrong
-// reason, except the happy path, which would go green without decrypting
-// anything — that is the one the "future timestamp" case exists to catch.
+// Every case that depends on the decrypt would then fail loudly rather than
+// pass for the wrong reason — except the happy path, which would go green
+// without decrypting anything, and that is the one the "future timestamp" case
+// exists to catch.
 vi.stubEnv('TESTING', '')
 vi.stubEnv('HONEYPOT_SECRET', 'test-honeypot-secret')
 
@@ -77,16 +78,16 @@ describe('checkHoneypot with a malformed from__confirm', () => {
 	})
 
 	it('rejects a value that decodes to fewer bytes than the IV', async () => {
-		// Two characters decode to one byte, so `slice(12)` is an empty
-		// ciphertext. This is the shape a bot gets by echoing back any short
-		// base64 string, which is why it is the most common of the two.
+		// Two characters decode to one byte, which is less than the IV AES-GCM
+		// slices off, so it never gets far enough to look at a ciphertext. This
+		// is the shape a bot gets by echoing back any short base64 string.
 		const response = await captureResponse(checkHoneypot(formDataWith('aa')))
 		expect(response.status).toBe(400)
 	})
 
 	it('rejects a value that decodes to a whole IV but no GCM tag', async () => {
 		// 12 bytes clears the IV slice and still leaves nothing to authenticate,
-		// which is a different check inside AES-GCM from the empty-ciphertext one
+		// which is a different rejection inside AES-GCM from the short-IV one
 		// above even though both surface as `OperationError`.
 		const twelveBytes = btoa('x'.repeat(12))
 		expect(atob(twelveBytes)).toHaveLength(12)
@@ -213,9 +214,12 @@ describe('isMalformedHoneypotFieldError', () => {
 			)
 			expect(isMalformedHoneypotFieldError(error)).toBe(true)
 		}
-		// The two are different classes in this environment, which is the whole
-		// reason the predicate reads the tag instead of using `instanceof`.
-		expect(thrown[0]).not.toBeInstanceOf(DOMException)
+		// Both are different classes from this module's `DOMException` global,
+		// which is the whole reason the predicate reads the tag rather than
+		// using `instanceof`.
+		for (const error of thrown) {
+			expect(error).not.toBeInstanceOf(DOMException)
+		}
 	})
 
 	it('recognises the two errors the honeypot field provokes', () => {
