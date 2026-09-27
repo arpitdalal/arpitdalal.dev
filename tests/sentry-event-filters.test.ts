@@ -1,26 +1,25 @@
+import { UNSAFE_ErrorResponseImpl as ErrorResponseImpl } from 'react-router'
 import { describe, expect, it } from 'vitest'
 import {
 	EXPECTED_REACT_ROUTER_ERROR_PATTERNS,
 	getEventErrorMessages,
 	isExpectedReactRouterErrorMessage,
+	isExpectedReactRouterRouteError,
 	shouldDropErrorEvent,
 } from '#app/utils/sentry-event-filters'
 
+const NO_ACTION =
+	'You made a POST request to "/robots.txt" but did not provide an `action` for route "routes/_seo+/robots[.]txt", so there is no way to handle the request.'
+const NO_LOADER =
+	'You made a GET request to "/resources/theme-switch" but did not provide a `loader` for route "routes/resources/theme-switch", so there is no way to handle the request.'
+
 describe('isExpectedReactRouterErrorMessage', () => {
 	it('matches a request with no matching action', () => {
-		expect(
-			isExpectedReactRouterErrorMessage(
-				'You made a POST request to "/" but did not provide an `action` for route "root", so there is no way to handle the request.',
-			),
-		).toBe(true)
+		expect(isExpectedReactRouterErrorMessage(NO_ACTION)).toBe(true)
 	})
 
 	it('matches a request with no matching loader', () => {
-		expect(
-			isExpectedReactRouterErrorMessage(
-				'You made a GET request to "/resources/theme-switch" but did not provide a `loader` for route "routes/resources/theme-switch", so there is no way to handle the request.',
-			),
-		).toBe(true)
+		expect(isExpectedReactRouterErrorMessage(NO_LOADER)).toBe(true)
 	})
 
 	it('matches an unsupported request method', () => {
@@ -89,16 +88,7 @@ describe('getEventErrorMessages', () => {
 describe('shouldDropErrorEvent', () => {
 	it('drops an event whose exception value is an expected router error', () => {
 		expect(
-			shouldDropErrorEvent({
-				exception: {
-					values: [
-						{
-							value:
-								'You made a POST request to "/" but did not provide an `action` for route "root", so there is no way to handle the request.',
-						},
-					],
-				},
-			}),
+			shouldDropErrorEvent({ exception: { values: [{ value: NO_ACTION }] } }),
 		).toBe(true)
 	})
 
@@ -115,5 +105,71 @@ describe('shouldDropErrorEvent', () => {
 			}),
 		).toBe(false)
 		expect(shouldDropErrorEvent({})).toBe(false)
+	})
+})
+
+describe('isExpectedReactRouterRouteError', () => {
+	// React Router reports these as an `ErrorResponse`, not an `Error`, so
+	// `error instanceof Error` is false and `error.message` is undefined. A
+	// filter written against `instanceof Error` silently never fires.
+	const routeError = (status: number, data: unknown) =>
+		new ErrorResponseImpl(status, 'status', data, true)
+
+	it('matches a 405 with no matching action', () => {
+		expect(isExpectedReactRouterRouteError(routeError(405, NO_ACTION))).toBe(
+			true,
+		)
+	})
+
+	it('matches a 400 with no matching loader', () => {
+		expect(isExpectedReactRouterRouteError(routeError(400, NO_LOADER))).toBe(
+			true,
+		)
+	})
+
+	it('matches an unsupported method', () => {
+		expect(
+			isExpectedReactRouterRouteError(
+				routeError(405, 'Invalid request method "OPTIONS"'),
+			),
+		).toBe(true)
+	})
+
+	it('matches when data is an Error, as it is in development', () => {
+		expect(
+			isExpectedReactRouterRouteError(routeError(405, new Error(NO_ACTION))),
+		).toBe(true)
+	})
+
+	it('does not match a route error with another status', () => {
+		expect(isExpectedReactRouterRouteError(routeError(404, NO_ACTION))).toBe(
+			false,
+		)
+		expect(isExpectedReactRouterRouteError(routeError(500, NO_ACTION))).toBe(
+			false,
+		)
+	})
+
+	it('does not match a real error whose text contains the phrase', () => {
+		// The patterns are unanchored, so the status check is what keeps a
+		// genuine failure reportable.
+		expect(
+			isExpectedReactRouterRouteError(
+				new Error('newsletter route did not provide an `action` handler'),
+			),
+		).toBe(false)
+		expect(isExpectedReactRouterRouteError(routeError(500, NO_ACTION))).toBe(
+			false,
+		)
+	})
+
+	it('does not match values that are not route errors', () => {
+		expect(isExpectedReactRouterRouteError(undefined)).toBe(false)
+		expect(isExpectedReactRouterRouteError(null)).toBe(false)
+		expect(isExpectedReactRouterRouteError(NO_ACTION)).toBe(false)
+		expect(isExpectedReactRouterRouteError({ status: 405 })).toBe(false)
+		expect(isExpectedReactRouterRouteError(routeError(405, undefined))).toBe(
+			false,
+		)
 	})
 })

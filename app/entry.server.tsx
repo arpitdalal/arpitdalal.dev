@@ -12,7 +12,7 @@ import {
 } from 'react-router'
 import { getEnv, init } from './utils/env.server'
 import { NonceProvider } from './utils/nonce-provider'
-import { isExpectedReactRouterErrorMessage } from './utils/sentry-event-filters'
+import { isExpectedReactRouterRouteError } from './utils/sentry-event-filters'
 import { makeTimings } from './utils/timing.server'
 
 export const streamTimeout = 5000
@@ -96,14 +96,11 @@ export function handleError(
 	}
 
 	// Bots and scanners request every URL in the sitemap with methods the
-	// routes do not handle, and React Router throws for each of those. They
-	// are expected answers to invalid traffic, not bugs, so they get logged
-	// (they still show up in `fly logs`) but never reported to Sentry.
-	if (
-		error instanceof Error &&
-		isExpectedReactRouterErrorMessage(error.message)
-	) {
-		console.error(styleText('red', String(error.stack)))
+	// routes do not handle, and React Router throws for each of those. They are
+	// expected answers to invalid traffic, not bugs, so they get logged (they
+	// still show up in `fly logs`) but never reported to Sentry.
+	if (isExpectedReactRouterRouteError(error)) {
+		console.error(error)
 		return
 	}
 
