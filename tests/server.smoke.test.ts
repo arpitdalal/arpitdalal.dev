@@ -127,20 +127,31 @@ afterAll(() => {
 })
 
 describe('production server', () => {
+	// Every page here except `/` has a purely local loader. The homepage calls
+	// fetchBlogPosts() and fetchNotes(), which reach gql.hashnode.com with no
+	// timeout, so it gets its own test with a generous budget: a slow third
+	// party should not fail the run, and the loader already falls back to empty
+	// data on error.
+	const LOCAL_PAGES = [
+		'/talks',
+		'/uses',
+		'/contact',
+		'/subscribe',
+		'/satsang-tools',
+		'/terms',
+		'/privacy',
+	]
+
 	it('serves the marketing pages', async () => {
-		for (const path of [
-			'/',
-			'/talks',
-			'/uses',
-			'/contact',
-			'/subscribe',
-			'/satsang-tools',
-			'/terms',
-			'/privacy',
-		]) {
+		for (const path of LOCAL_PAGES) {
 			const response = await fetch(`${base}${path}`)
 			expect(response.status, `${path} should render`).toBe(200)
 		}
+	})
+
+	it('serves the homepage', { timeout: 30_000 }, async () => {
+		const response = await fetch(`${base}/`)
+		expect(response.status).toBe(200)
 	})
 
 	it('404s an unknown path rather than serving the app shell', async () => {
@@ -190,10 +201,12 @@ describe('production server', () => {
 		// Content-Security-Policy-Report-Only rather than the enforcing header.
 		const cspHeader = 'content-security-policy-report-only'
 
-		const first = await fetch(`${base}/`)
+		// A page with a local loader, so these wiring assertions never wait on
+		// Hashnode. The assertions are about the server, not page content.
+		const first = await fetch(`${base}/talks`)
 		const firstCsp = first.headers.get(cspHeader) ?? ''
 
-		const second = await fetch(`${base}/`)
+		const second = await fetch(`${base}/talks`)
 		const secondCsp = second.headers.get(cspHeader) ?? ''
 
 		// The nonce is generated per request and has to reach both the CSP
@@ -215,7 +228,7 @@ describe('production server', () => {
 		// renderer read it, otherwise an attacker could supply a known nonce
 		// and have their own script allowed by the policy.
 		const attackerNonce = 'attacker-controlled-nonce'
-		const response = await fetch(`${base}/`, {
+		const response = await fetch(`${base}/talks`, {
 			headers: { 'x-csp-nonce': attackerNonce },
 		})
 
@@ -233,7 +246,7 @@ describe('production server', () => {
 	})
 
 	it('sets rate limit headers', async () => {
-		const response = await fetch(`${base}/`)
+		const response = await fetch(`${base}/talks`)
 		expect(response.headers.get('ratelimit-limit')).toBeTruthy()
 	})
 })
