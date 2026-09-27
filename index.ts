@@ -16,8 +16,6 @@ sourceMapSupport.install({
 	},
 })
 
-if (process.env.NODE_ENV === 'production') {
-	await import('./server-build/index.js')
-} else {
-	await import('./server/index.ts')
-}
+// Node strips the types off this and the rest of the server graph, so there is
+// no compiled copy of it to pick between in development and production.
+await import('./server/index.ts')

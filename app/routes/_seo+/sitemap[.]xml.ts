@@ -9,10 +9,10 @@ export function loader({ request }: Route.LoaderArgs) {
 	// generateSitemap needs React Router's server route manifest. It used to
 	// arrive as `context.serverBuild`, but React Router 8 requires
 	// getLoadContext to return a RouterContextProvider, and a createContext()
-	// symbol cannot be shared between server/index.ts and the app because
-	// esbuild and Vite produce separate module graphs, so each side would hold
-	// a different context object. Reading the manifest straight out of the
-	// server build keeps it inside the app's own module graph instead.
+	// symbol cannot be shared between server/index.ts and the app because Node
+	// and Vite produce separate module graphs, so each side would hold a
+	// different context object. Reading the manifest straight out of the server
+	// build keeps it inside the app's own module graph instead.
 	return generateSitemap(request, serverRoutes, {
 		siteUrl: getDomainUrl(request),
 		headers: {

@@ -4,11 +4,24 @@
 	"compilerOptions": {
 		"types": ["@react-router/node", "vite/client"],
 		"rootDirs": [".", "./.react-router/types"],
+		// Node runs index.ts and the server graph directly, stripping the types
+		// itself, so anything tsc accepts has to be syntax it can erase.
+		// `erasableSyntaxOnly` rejects enums, namespaces and parameter
+		// properties: `tsx` compiles them happily in development, so nothing
+		// else would catch one landing in server/ and taking production down at
+		// boot. It is set repo-wide rather than narrowed to the server graph, so
+		// that app/ code is held to the same rule Vite's own transform can
+		// already meet. https://nodejs.org/api/typescript.html#type-stripping
+		//
+		// `verbatimModuleSyntax` is deliberately not set: it would stop the
+		// type-only `@/icon-name` import in app/components/ui/icon.tsx from
+		// being elided, and Vite cannot resolve that tsconfig paths alias.
+		"erasableSyntaxOnly": true,
 		"paths": {
 			"#app/*": ["./app/*"],
 			"#types/*": ["./types/*"],
 			"@/icon-name": [
-				"./app/components/ui/icons/name.d.ts",
+				"./app/components/ui/icons/name.ts",
 				"./types/icon-name.d.ts"
 			]
 		}

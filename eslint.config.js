@@ -14,6 +14,11 @@ export default [
 		},
 	},
 	{
-		ignores: ['.react-router/*'],
+		// Generated, gitignored, and absent in CI, so linting them here would
+		// only ever see files no other machine has. tsconfig picks the sprite's
+		// types up (it is a real module now), so a leftover .d.ts from the
+		// script this replaced would otherwise fail lint as a file "not found
+		// by the project service".
+		ignores: ['.react-router/*', 'app/components/ui/icons/*'],
 	},
 ]

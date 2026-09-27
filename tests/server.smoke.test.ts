@@ -112,7 +112,7 @@ beforeAll(async () => {
 	// "sends no X-Robots-Tag by default" test below fail on their machine only.
 	delete env.ALLOW_INDEXING
 
-	const child = spawn(process.execPath, ['server-build/index.js'], {
+	const child = spawn(process.execPath, ['index.ts'], {
 		env,
 		stdio: ['ignore', 'pipe', 'pipe'],
 	})
