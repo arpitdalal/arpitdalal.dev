@@ -65,11 +65,17 @@ export function getRouteErrorCause(error: unknown): unknown {
  * Error` is false and `error.message` is undefined — in production the message
  * lives on `.data` as a string. Matching on the message alone would also mean
  * any unrelated error whose text happened to contain one of these phrases got
- * dropped, so the status is checked first: the messages above are only ever
- * produced alongside one of these two statuses.
+ * dropped, so the status and the `internal` flag are checked first: the
+ * messages above are only ever produced alongside one of these two statuses, on
+ * an error React Router raised itself.
  */
 export function isExpectedReactRouterRouteError(error: unknown): boolean {
 	if (!isRouteErrorResponse(error)) return false
+	// `internal: true` is how React Router marks the errors it generated itself
+	// (see `getInternalRouterError`). A route that throws its own 400/405 is
+	// marked `internal: false`, and that is a real bug worth reporting even if
+	// its text happens to contain one of the phrases below.
+	if ((error as { internal?: unknown }).internal !== true) return false
 	if (!EXPECTED_REACT_ROUTER_ERROR_STATUSES.includes(error.status)) return false
 
 	// `.data` carries the message two ways. React Router wraps it in an `Error`

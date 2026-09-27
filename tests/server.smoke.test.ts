@@ -106,8 +106,14 @@ beforeAll(async () => {
 	port = await getPort({ port: portNumbers(41_000, 49_000) })
 	base = `http://127.0.0.1:${port}`
 
+	const env = { ...process.env, ...TEST_ENV, PORT: String(port) }
+	// `spawn` inherits `process.env`, and TEST_ENV does not mention
+	// ALLOW_INDEXING. A developer who exports it would otherwise make the
+	// "sends no X-Robots-Tag by default" test below fail on their machine only.
+	delete env.ALLOW_INDEXING
+
 	const child = spawn(process.execPath, ['server-build/index.js'], {
-		env: { ...process.env, ...TEST_ENV, PORT: String(port) },
+		env,
 		stdio: ['ignore', 'pipe', 'pipe'],
 	})
 	server = child

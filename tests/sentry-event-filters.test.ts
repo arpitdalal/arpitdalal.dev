@@ -122,8 +122,8 @@ describe('isExpectedReactRouterRouteError', () => {
 	// React Router reports these as an `ErrorResponse`, not an `Error`, so
 	// `error instanceof Error` is false and `error.message` is undefined. A
 	// filter written against `instanceof Error` silently never fires.
-	const routeError = (status: number, data: unknown) =>
-		new ErrorResponseImpl(status, 'status', data, true)
+	const routeError = (status: number, data: unknown, internal = true) =>
+		new ErrorResponseImpl(status, 'status', data, internal)
 
 	it('matches a 405 with no matching action', () => {
 		expect(isExpectedReactRouterRouteError(routeError(405, NO_ACTION))).toBe(
@@ -169,6 +169,23 @@ describe('isExpectedReactRouterRouteError', () => {
 		expect(
 			isExpectedReactRouterRouteError(routeError(405, new Error(NO_ACTION))),
 		).toBe(true)
+	})
+
+	it('does not match a route-thrown error response', () => {
+		// React Router marks the errors it raises itself `internal: true` and a
+		// route's own 400/405 `internal: false`. A route throwing its own error
+		// is a real bug even when the text contains one of these phrases.
+		expect(
+			isExpectedReactRouterRouteError(routeError(405, NO_ACTION, false)),
+		).toBe(false)
+		expect(
+			isExpectedReactRouterRouteError(
+				routeError(405, INVALID_METHOD_STRINGIFIED, false),
+			),
+		).toBe(false)
+		expect(
+			isExpectedReactRouterRouteError(routeError(400, NO_LOADER, false)),
+		).toBe(false)
 	})
 
 	it('does not match a route error with another status', () => {
