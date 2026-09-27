@@ -14,12 +14,12 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
  * The flag is read once at process start, so each state needs its own process.
  */
 
-// Two different build outputs. The server runs the esbuild bundle
-// (server-build/), which is what imports the React Router server build
-// (build/server/) on demand. Only the second one is worth checking for
-// existence, because that is what is missing on a tree that never built.
+// Node runs index.ts and the server graph straight from source, so the
+// entry is the one in the repository root. The React Router server build it
+// imports on demand is the only build output worth checking for existence,
+// because that is what is missing on a tree that never built.
 const REACT_ROUTER_BUILD = 'build/server/index.js'
-const SERVER_BUNDLE = 'server-build/index.js'
+const SERVER_ENTRY = 'index.ts'
 const BOOT_TIMEOUT_MS = 30_000
 
 /**
@@ -67,7 +67,7 @@ async function bootServer(allowIndexing: string | undefined) {
 		env.ALLOW_INDEXING = allowIndexing as NodeJS.ProcessEnv['ALLOW_INDEXING']
 	}
 
-	const child = spawn(process.execPath, [SERVER_BUNDLE], {
+	const child = spawn(process.execPath, [SERVER_ENTRY], {
 		env,
 		stdio: ['ignore', 'pipe', 'pipe'],
 	})

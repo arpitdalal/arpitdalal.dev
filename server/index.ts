@@ -1,6 +1,5 @@
 import crypto from 'node:crypto'
 import { styleText } from 'node:util'
-import { createRequestHandler } from '@react-router/express'
 import * as Sentry from '@sentry/node'
 import { ip as ipAddress } from 'address'
 import closeWithGrace from 'close-with-grace'
@@ -10,17 +9,19 @@ import rateLimit, { ipKeyGenerator } from 'express-rate-limit'
 import getPort, { portNumbers } from 'get-port'
 import helmet from 'helmet'
 import morgan from 'morgan'
-import { type ServerBuild, RouterContextProvider } from 'react-router'
-import { decodeRequestUrl } from './utils/request-url.js'
+import { decodeRequestUrl } from './utils/request-url.ts'
 
 const MODE = process.env.NODE_ENV ?? 'development'
 const IS_PROD = MODE === 'production'
 const IS_DEV = MODE === 'development'
 const ALLOW_INDEXING = process.env.ALLOW_INDEXING !== 'false'
 const SENTRY_ENABLED = IS_PROD && process.env.SENTRY_DSN
+// Relative to this file. Written by `vite build`, which bundles server/app.ts
+// into it — see the comment on the `app` export there.
+const BUILD_PATH = '../build/server/index.js'
 
 if (SENTRY_ENABLED) {
-	void import('./utils/monitoring.js').then(({ init }) => init())
+	void import('./utils/monitoring.ts').then(({ init }) => init())
 }
 
 const viteDevServer = IS_PROD
@@ -199,44 +200,30 @@ app.use((req, res, next) => {
 	return generalRateLimit(req, res, next)
 })
 
-async function getBuild() {
-	try {
-		const build = viteDevServer
-			? await viteDevServer.ssrLoadModule('virtual:react-router/server-build')
-			: // @ts-ignore - the file might not exist yet but it will
-				await import('../build/server/index.js')
-		return { build: build as unknown as ServerBuild, error: null }
-	} catch (error) {
-		// Catch error and return null to make express happy and avoid an unrecoverable crash
-		console.error('Error creating build:', error)
-		return { error: error, build: null as unknown as ServerBuild }
+// The React Router request handler lives in server/app.ts, which is mounted
+// last so that everything above gets first refusal on the request. Express 5
+// moved to path-to-regexp v8, which rejects the bare '*' wildcard, so the
+// catch-all in dev is reached through app.use rather than a route pattern.
+if (viteDevServer) {
+	app.use(async (req, res, next) => {
+		try {
+			// Loaded through Vite rather than Node so that
+			// `virtual:react-router/server-build` resolves, and so that edits
+			// under server/ and app/ are picked up without a restart.
+			const source = await viteDevServer.ssrLoadModule('./server/app.ts')
+			return await source.app(req, res, next)
+		} catch (error) {
+			if (error instanceof Error) viteDevServer.ssrFixStacktrace(error)
+			next(error)
+		}
+	})
+} else {
+	// @ts-ignore - the built server only exists after `npm run build`.
+	const { app: builtApp } = (await import(BUILD_PATH)) as {
+		app: express.Express
 	}
+	app.use(builtApp)
 }
-
-// Express 5 moved to path-to-regexp v8, which rejects the bare '*' wildcard.
-// The catch-all has to be named, and '/{*splat}' rather than '/*splat' so it
-// also matches the site root.
-app.all(
-	'/{*splat}',
-	createRequestHandler({
-		// React Router 8 made middleware unconditional, so getLoadContext must
-		// return a RouterContextProvider rather than a plain object. The CSP
-		// nonce travels on the request header instead of through a React
-		// context: this file is bundled separately from the app by esbuild, so
-		// a createContext() symbol created here would be a different instance
-		// from the one the app's loaders import.
-		getLoadContext: () => new RouterContextProvider(),
-		mode: MODE,
-		build: async () => {
-			const { error, build } = await getBuild()
-			// gracefully "catch" the error
-			if (error) {
-				throw error
-			}
-			return build
-		},
-	}),
-)
 
 const desiredPort = Number(process.env.PORT || 3000)
 const portToUse = await getPort({

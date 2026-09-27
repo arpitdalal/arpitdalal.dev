@@ -8,6 +8,30 @@ import { iconsSpritesheet } from 'vite-plugin-icons-spritesheet'
 const MODE = process.env.NODE_ENV
 
 export default defineConfig({
+	environments: {
+		// server/app.ts is the entry of the SSR build rather than React
+		// Router's virtual server build, so the Express request handler is
+		// bundled into build/server/index.js and server/index.ts mounts it
+		// from there. It has to be set per environment: @react-router/dev
+		// replaces the top-level `build.rollupOptions.input` with its virtual
+		// server build in its own config hook.
+		ssr: {
+			build: {
+				rollupOptions: {
+					input: './server/app.ts',
+				},
+			},
+			// server/app.ts is loaded by Vite in development, and it hands
+			// createRequestHandler a RouterContextProvider that the handler then
+			// checks with `instanceof`. React Router's `development` export
+			// condition gives Vite and Node two different builds of the package,
+			// so the handler has to be bundled into the same graph as the
+			// provider rather than externalized into Node's.
+			resolve: {
+				noExternal: ['@react-router/express'],
+			},
+		},
+	},
 	build: {
 		target: 'es2022',
 		cssMinify: MODE === 'production',
@@ -65,10 +89,7 @@ export default defineConfig({
 						},
 					},
 					sourcemaps: {
-						filesToDeleteAfterUpload: [
-							'./build/**/*.map',
-							'.server-build/**/*.map',
-						],
+						filesToDeleteAfterUpload: ['./build/**/*.map'],
 					},
 				})
 			: null,
