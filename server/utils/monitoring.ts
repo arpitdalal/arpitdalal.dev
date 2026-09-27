@@ -18,24 +18,29 @@ export function init() {
 		],
 		integrations: [Sentry.httpIntegration(), nodeProfilingIntegration()],
 		tracesSampler(samplingContext) {
+			const request = samplingContext.normalizedRequest
+
 			// ignore healthcheck transactions by other services (consul, etc.)
-			if (
-				samplingContext.normalizedRequest?.url?.includes(
-					'/resources/healthcheck',
-				)
-			) {
+			if (request?.url?.includes('/resources/healthcheck')) {
 				return 0
 			}
-			return 1
-		},
-		beforeSendTransaction(event) {
-			// ignore all healthcheck related transactions
-			//  note that name of header here is case-sensitive
-			if (event.request?.headers?.['x-healthcheck'] === 'true') {
-				return null
+
+			// The healthcheck route in app/routes/resources+/healthcheck.tsx
+			// requests `/` with this header set, so the URL check above cannot
+			// catch it.  Note that the header name is case-sensitive here.
+			//
+			// This used to be a beforeSendTransaction returning null. Sentry 11
+			// defaults to traceLifecycle: 'stream', which ignores that callback
+			// outright, and it is removed in v12. beforeSendSpan is the
+			// documented replacement but is typed `(span) => span`, so it can
+			// only rewrite a span, not drop one. Returning 0 from tracesSampler
+			// drops the root span, so the transaction is never created at all
+			// rather than being built and then discarded.
+			if (request?.headers?.['x-healthcheck'] === 'true') {
+				return 0
 			}
 
-			return event
+			return 1
 		},
 	})
 }
