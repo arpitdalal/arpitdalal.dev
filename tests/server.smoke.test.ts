@@ -1,5 +1,6 @@
 import { spawn, type ChildProcess } from 'node:child_process'
 import { existsSync } from 'node:fs'
+import getPort, { portNumbers } from 'get-port'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 /**
@@ -13,8 +14,16 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
  * starting the process and making a request.
  */
 
-const PORT = 3987
-const BASE = `http://127.0.0.1:${PORT}`
+// Readiness is probed on /robots.txt rather than /resources/healthcheck.
+// The healthcheck loader issues a HEAD request to `/`, whose loader awaits
+// fetchBlogPosts() and fetchNotes() — outbound calls to gql.hashnode.com with
+// no timeout. Gating startup on that made the test depend on a third party
+// being reachable and fast. /robots.txt is a resource route whose loader only
+// reads request headers, so it still proves the React Router handler is
+// mounted without touching the network.
+
+let port = 0
+let base = ''
 const BUILD_OUTPUT = 'build/server/index.js'
 const BOOT_TIMEOUT_MS = 30_000
 
@@ -90,8 +99,15 @@ beforeAll(async () => {
 		)
 	}
 
+	// server/index.ts calls process.exit(1) when the requested port is taken
+	// and NODE_ENV is production, which is exactly how this server runs. Ask
+	// for a free port up front so a collision with another process, or with a
+	// previous run whose SIGKILL has not been reaped yet, cannot fail the run.
+	port = await getPort({ port: portNumbers(41_000, 49_000) })
+	base = `http://127.0.0.1:${port}`
+
 	const child = spawn(process.execPath, ['server-build/index.js'], {
-		env: { ...process.env, ...TEST_ENV, PORT: String(PORT) },
+		env: { ...process.env, ...TEST_ENV, PORT: String(port) },
 		stdio: ['ignore', 'pipe', 'pipe'],
 	})
 	server = child
@@ -103,7 +119,7 @@ beforeAll(async () => {
 		serverOutput += chunk.toString()
 	})
 
-	await waitForServer(`${BASE}/resources/healthcheck`, child)
+	await waitForServer(`${base}/robots.txt`, child)
 }, 60_000)
 
 afterAll(() => {
@@ -122,33 +138,33 @@ describe('production server', () => {
 			'/terms',
 			'/privacy',
 		]) {
-			const response = await fetch(`${BASE}${path}`)
+			const response = await fetch(`${base}${path}`)
 			expect(response.status, `${path} should render`).toBe(200)
 		}
 	})
 
 	it('404s an unknown path rather than serving the app shell', async () => {
-		const response = await fetch(`${BASE}/nope-does-not-exist`)
+		const response = await fetch(`${base}/nope-does-not-exist`)
 		expect(response.status).toBe(404)
 	})
 
 	// Guards the path-to-regexp v8 migration: these routes were all bare '*'
 	// wildcards, which Express 5 throws on at startup.
 	it('redirects a trailing slash without a trailing slash', async () => {
-		const response = await fetch(`${BASE}/talks/`, { redirect: 'manual' })
+		const response = await fetch(`${base}/talks/`, { redirect: 'manual' })
 		expect(response.status).toBe(302)
 		expect(response.headers.get('location')).toBe('/talks')
 	})
 
 	it('404s missing files under /img and /favicons', async () => {
 		for (const path of ['/img/missing.png', '/favicons/missing.ico']) {
-			const response = await fetch(`${BASE}${path}`)
+			const response = await fetch(`${base}${path}`)
 			expect(response.status, `${path} should 404`).toBe(404)
 		}
 	})
 
 	it('serves the sitemap built from the server route manifest', async () => {
-		const response = await fetch(`${BASE}/sitemap.xml`)
+		const response = await fetch(`${base}/sitemap.xml`)
 		expect(response.status).toBe(200)
 		expect(response.headers.get('content-type')).toContain('application/xml')
 
@@ -164,7 +180,7 @@ describe('production server', () => {
 	})
 
 	it('serves robots.txt pointing at the sitemap', async () => {
-		const response = await fetch(`${BASE}/robots.txt`)
+		const response = await fetch(`${base}/robots.txt`)
 		expect(response.status).toBe(200)
 		expect(await response.text()).toContain('/sitemap.xml')
 	})
@@ -174,10 +190,10 @@ describe('production server', () => {
 		// Content-Security-Policy-Report-Only rather than the enforcing header.
 		const cspHeader = 'content-security-policy-report-only'
 
-		const first = await fetch(`${BASE}/`)
+		const first = await fetch(`${base}/`)
 		const firstCsp = first.headers.get(cspHeader) ?? ''
 
-		const second = await fetch(`${BASE}/`)
+		const second = await fetch(`${base}/`)
 		const secondCsp = second.headers.get(cspHeader) ?? ''
 
 		// The nonce is generated per request and has to reach both the CSP
@@ -199,7 +215,7 @@ describe('production server', () => {
 		// renderer read it, otherwise an attacker could supply a known nonce
 		// and have their own script allowed by the policy.
 		const attackerNonce = 'attacker-controlled-nonce'
-		const response = await fetch(`${BASE}/`, {
+		const response = await fetch(`${base}/`, {
 			headers: { 'x-csp-nonce': attackerNonce },
 		})
 
@@ -217,7 +233,7 @@ describe('production server', () => {
 	})
 
 	it('sets rate limit headers', async () => {
-		const response = await fetch(`${BASE}/`)
+		const response = await fetch(`${base}/`)
 		expect(response.headers.get('ratelimit-limit')).toBeTruthy()
 	})
 })
