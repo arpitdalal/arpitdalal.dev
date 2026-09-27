@@ -21,13 +21,8 @@ global.ENV = getEnv()
 type DocRequestArgs = Parameters<HandleDocumentRequestFunction>
 
 export default async function handleRequest(...args: DocRequestArgs) {
-	const [
-		request,
-		responseStatusCode,
-		responseHeaders,
-		reactRouterContext,
-		loadContext,
-	] = args
+	const [request, responseStatusCode, responseHeaders, reactRouterContext] =
+		args
 	responseHeaders.set('fly-region', process.env.FLY_REGION ?? 'unknown')
 	responseHeaders.set('fly-app', process.env.FLY_APP_NAME ?? 'unknown')
 
@@ -39,7 +34,7 @@ export default async function handleRequest(...args: DocRequestArgs) {
 		? 'onAllReady'
 		: 'onShellReady'
 
-	const nonce = loadContext.cspNonce?.toString() ?? ''
+	const nonce = request.headers.get('x-csp-nonce') ?? ''
 	return new Promise(async (resolve, reject) => {
 		let didError = false
 

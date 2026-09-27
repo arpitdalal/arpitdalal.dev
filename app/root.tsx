@@ -54,8 +54,8 @@ export const links: Route.LinksFunction = () => {
 	].filter(Boolean)
 }
 
-export const meta: Route.MetaFunction = ({ data }) => {
-	const requestInfo = data?.requestInfo
+export const meta: Route.MetaFunction = ({ loaderData }) => {
+	const requestInfo = loaderData?.requestInfo
 	return [
 		{ viewport: 'width=device-width,initial-scale=1,viewport-fit=cover' },
 		{

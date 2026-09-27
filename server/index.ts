@@ -10,7 +10,7 @@ import rateLimit, { ipKeyGenerator } from 'express-rate-limit'
 import getPort, { portNumbers } from 'get-port'
 import helmet from 'helmet'
 import morgan from 'morgan'
-import { type ServerBuild } from 'react-router'
+import { type ServerBuild, RouterContextProvider } from 'react-router'
 
 const MODE = process.env.NODE_ENV ?? 'development'
 const IS_PROD = MODE === 'production'
@@ -51,7 +51,7 @@ app.use((req, res, next) => {
 
 // no ending slashes for SEO reasons
 // https://github.com/epicweb-dev/epic-stack/discussions/108
-app.get('*', (req, res, next) => {
+app.get('/{*splat}', (req, res, next) => {
 	if (req.path.endsWith('/') && req.path.length > 1) {
 		const query = req.url.slice(req.path.length)
 		const safepath = req.path.slice(0, -1).replace(/\/+/g, '/')
@@ -80,7 +80,7 @@ if (viteDevServer) {
 	app.use(express.static('build/client', { maxAge: '1h' }))
 }
 
-app.get(['/img/*', '/favicons/*'], (_req, res) => {
+app.get(['/img/{*splat}', '/favicons/{*splat}'], (_req, res) => {
 	// if we made it past the express.static for these, then we're missing something.
 	// So we'll just send a 404 and won't bother calling other middleware.
 	res.status(404).send('Not found')
@@ -95,8 +95,12 @@ app.use(
 	}),
 )
 
-app.use((_, res, next) => {
-	res.locals.cspNonce = crypto.randomBytes(16).toString('hex')
+app.use((req, _res, next) => {
+	// The CSP nonce is generated here but consumed by app/entry.server.tsx.
+	// It travels as a request header rather than through a React context
+	// because this server bundle and the app bundle do not share module
+	// instances. See the note on getLoadContext below.
+	req.headers['x-csp-nonce'] = crypto.randomBytes(16).toString('hex')
 	next()
 })
 
@@ -120,13 +124,9 @@ app.use(
 				'script-src': [
 					"'strict-dynamic'",
 					"'self'",
-					// @ts-expect-error
-					(_, res) => `'nonce-${res.locals.cspNonce}'`,
+					(req) => `'nonce-${req.headers['x-csp-nonce']}'`,
 				],
-				'script-src-attr': [
-					// @ts-expect-error
-					(_, res) => `'nonce-${res.locals.cspNonce}'`,
-				],
+				'script-src-attr': [(req) => `'nonce-${req.headers['x-csp-nonce']}'`],
 				'upgrade-insecure-requests': null,
 			},
 		},
@@ -196,13 +196,19 @@ async function getBuild() {
 	}
 }
 
+// Express 5 moved to path-to-regexp v8, which rejects the bare '*' wildcard.
+// The catch-all has to be named, and '/{*splat}' rather than '/*splat' so it
+// also matches the site root.
 app.all(
-	'*',
+	'/{*splat}',
 	createRequestHandler({
-		getLoadContext: (_: any, res: any) => ({
-			cspNonce: res.locals.cspNonce,
-			serverBuild: getBuild(),
-		}),
+		// React Router 8 made middleware unconditional, so getLoadContext must
+		// return a RouterContextProvider rather than a plain object. The CSP
+		// nonce travels on the request header instead of through a React
+		// context: this file is bundled separately from the app by esbuild, so
+		// a createContext() symbol created here would be a different instance
+		// from the one the app's loaders import.
+		getLoadContext: () => new RouterContextProvider(),
 		mode: MODE,
 		build: async () => {
 			const { error, build } = await getBuild()
