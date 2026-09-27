@@ -11,6 +11,7 @@ import {
 	type HandleDocumentRequestFunction,
 } from 'react-router'
 import { getEnv, init } from './utils/env.server'
+import { logHoneypotSeedFingerprint } from './utils/honeypot.server'
 import { NonceProvider } from './utils/nonce-provider'
 import {
 	getRouteErrorCause,
@@ -21,6 +22,7 @@ import { makeTimings } from './utils/timing.server'
 export const streamTimeout = 5000
 
 init()
+logHoneypotSeedFingerprint()
 global.ENV = getEnv()
 
 type DocRequestArgs = Parameters<HandleDocumentRequestFunction>
