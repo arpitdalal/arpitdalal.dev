@@ -6,7 +6,7 @@ import {
 	useLocation,
 	useNavigationType,
 } from 'react-router'
-import { drainCspViolations } from './csp'
+import { drainCspViolations, isSentryViolation } from './csp'
 import { ensureCSSStyleDeclaration } from './cssom.client'
 
 export function init() {
@@ -52,6 +52,11 @@ export function init() {
 	// only in the devtools console. The parse-time ones were captured by the
 	// inline script in root.tsx; this drains that buffer and covers the rest.
 	drainCspViolations((violation) => {
+		// Reporting this would mean sending an envelope to Sentry. If Sentry's
+		// own request is what got blocked, that envelope fails too and raises
+		// another violation, forever.
+		if (isSentryViolation(violation.blockedURI, ENV.SENTRY_DSN)) return
+
 		Sentry.captureMessage(`CSP: ${violation.violatedDirective}`, {
 			level: 'warning',
 			tags: {

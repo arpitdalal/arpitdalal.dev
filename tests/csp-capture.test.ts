@@ -3,6 +3,7 @@ import {
 	CSP_VIOLATION_LIMIT,
 	cspCaptureScript,
 	drainCspViolations,
+	isSentryViolation,
 } from '#app/utils/csp'
 
 /** Run the inline script the way a browser would, against a fake window. */
@@ -141,5 +142,49 @@ describe('drainCspViolations', () => {
 	it('is safe when nothing was buffered', () => {
 		window.__cspViolations = undefined
 		expect(() => drainCspViolations(() => {})).not.toThrow()
+	})
+})
+
+describe('isSentryViolation', () => {
+	const DSN = 'https://abc123@o0.ingest.sentry.io/456'
+
+	it('recognises a blocked Sentry envelope', () => {
+		// Reporting this violation would send another envelope to the same
+		// blocked origin, which raises another violation, without end.
+		expect(
+			isSentryViolation('https://o0.ingest.sentry.io/api/456/envelope/', DSN),
+		).toBe(true)
+	})
+
+	it('recognises a self-hosted Sentry on a custom domain', () => {
+		expect(
+			isSentryViolation(
+				'https://sentry.internal.example:9000/api/1/envelope/',
+				'https://key@sentry.internal.example:9000/1',
+			),
+		).toBe(true)
+	})
+
+	it('does not swallow unrelated violations', () => {
+		expect(isSentryViolation('https://stats.example.com/api/send', DSN)).toBe(
+			false,
+		)
+		expect(isSentryViolation('https://cdn.hashnode.com/x.jpeg', DSN)).toBe(
+			false,
+		)
+		// A subdomain of the Sentry host is a different origin.
+		expect(isSentryViolation('https://evil.o0.ingest.sentry.io/x', DSN)).toBe(
+			false,
+		)
+	})
+
+	it('is inert without a DSN or a blocked URI', () => {
+		expect(isSentryViolation('https://o0.ingest.sentry.io/x', undefined)).toBe(
+			false,
+		)
+		expect(isSentryViolation('', DSN)).toBe(false)
+		// 'inline' and 'eval' are what the browser reports for blocked inline
+		// script; neither parses as a URL.
+		expect(isSentryViolation('inline', DSN)).toBe(false)
 	})
 })

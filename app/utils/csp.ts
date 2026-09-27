@@ -58,6 +58,31 @@ statusCode: Number(event.statusCode || 0)
 });
 })();`
 
+/**
+ * Whether a violation was caused by Sentry's own transport being refused.
+ *
+ * Reporting a violation means sending an envelope to Sentry. If that envelope
+ * is itself blocked, forwarding the violation produces another blocked
+ * envelope, which produces another violation — an unbounded loop against the
+ * Sentry quota, triggered by nothing but a page load.
+ *
+ * `connect-src` is built from the DSN origin precisely so this cannot happen
+ * (`sentryOrigin` in `server/utils/csp.ts`). This is the second lock on the
+ * same door, for the case where the policy is tightened later and someone
+ * removes the Sentry host without realising what the violation handler does.
+ */
+export function isSentryViolation(
+	blockedURI: string,
+	sentryDsn: string | undefined,
+): boolean {
+	if (!sentryDsn || !blockedURI) return false
+	try {
+		return new URL(blockedURI).origin === new URL(sentryDsn).origin
+	} catch {
+		return false
+	}
+}
+
 declare global {
 	interface Window {
 		__cspViolations?: CspViolation[]

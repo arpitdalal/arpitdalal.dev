@@ -217,4 +217,37 @@ describe('monitoring init', () => {
 			}
 		})
 	})
+
+	it('does not report a blocked Sentry envelope back to Sentry', () => {
+		// The loop: reporting this violation means sending an envelope to the
+		// same blocked origin, which raises another violation. Unbounded, and
+		// it costs Sentry quota. `connect-src` is built from the DSN origin so
+		// this should not happen; this is the guard for when it does.
+		vi.stubGlobal('ENV', {
+			SENTRY_DSN: 'https://abc123@o0.ingest.sentry.io/456',
+		})
+		sentry.getClient.mockReturnValue({ addIntegration })
+
+		try {
+			window.__cspViolations = [
+				{
+					blockedURI: 'https://o0.ingest.sentry.io/api/456/envelope/',
+					violatedDirective: 'connect-src',
+					effectiveDirective: 'connect-src',
+					disposition: 'report',
+					sourceFile: 'https://arpitdalal.dev/',
+					lineNumber: 1,
+					columnNumber: 1,
+					statusCode: 0,
+				},
+			] as never
+
+			init()
+
+			expect(sentry.captureMessage).not.toHaveBeenCalled()
+		} finally {
+			window.__cspViolations = undefined
+			vi.unstubAllGlobals()
+		}
+	})
 })
