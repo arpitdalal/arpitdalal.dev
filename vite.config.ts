@@ -42,11 +42,11 @@ export default defineConfig({
 
 		// The sprite stays a single immutable-cached request that app/root.tsx
 		// preloads rather than ~5 KB of data URI inlined into every document.
-		// The plugin also returns false for the spritesheet it generates, but it
-		// matches it on a path built from cwd, which its own issues report as
-		// having silently failed to match (notably on Windows). If that ever
-		// regresses, the sprite inlines itself and the preload becomes a no-op
-		// with nothing failing, so keep the case here.
+		// The plugin also excludes the spritesheet it generates, but it does so
+		// by string-matching the asset's path against its outputDir, which its
+		// own issues report as having silently stopped matching on some
+		// setups. If that regresses, the sprite inlines itself and the preload
+		// becomes a no-op with nothing failing, so keep the case here too.
 		assetsInlineLimit: (source: string) => {
 			if (
 				source.endsWith('sprite.svg') ||
