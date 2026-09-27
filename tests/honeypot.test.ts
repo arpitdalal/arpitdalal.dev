@@ -7,8 +7,8 @@ import { afterAll, describe, expect, it, vi } from 'vitest'
  * throws out of `check` as a `DOMException` rather than a `SpamError`:
  *
  * - not base64 at all → `atob` throws `InvalidCharacterError`
- * - base64, but decoding to fewer than 12 bytes → AES-GCM gets an empty
- *   ciphertext and `crypto.subtle.decrypt` throws `OperationError`
+ * - base64, but decoding to less than an IV plus a GCM tag → AES-GCM has
+ *   nothing to authenticate and `crypto.subtle.decrypt` throws `OperationError`
  *
  * Both were reaching Sentry as unhandled 500s from `POST /contact` and
  * `POST /resources/newsletter`, on input anyone can send. `checkHoneypot` has
@@ -20,10 +20,10 @@ import { afterAll, describe, expect, it, vi } from 'vitest'
 // so the env has to be pinned first and the module registry cleared before the
 // import — otherwise a value exported in a developer's shell changes what these
 // tests assert. `TESTING` is the key that matters: setting it turns
-// `validFromFieldName` off, which makes `check` return before it ever decrypts,
-// and every `from__confirm` case below would pass vacuously. An empty string is
-// falsy, so it pins production behaviour, and the "future timestamp" case
-// further down is what holds the rest of this file honest about it.
+// `validFromFieldName` off, which makes `check` return before it ever decrypts.
+// Every case below would then fail loudly rather than pass for the wrong
+// reason, except the happy path, which would go green without decrypting
+// anything — that is the one the "future timestamp" case exists to catch.
 vi.stubEnv('TESTING', '')
 vi.stubEnv('HONEYPOT_SECRET', 'test-honeypot-secret')
 
@@ -31,10 +31,17 @@ const { checkHoneypot, honeypot, isMalformedHoneypotFieldError } =
 	await import('#app/utils/honeypot.server')
 
 afterAll(() => {
+	vi.restoreAllMocks()
 	vi.unstubAllEnvs()
 })
 
-/** A form a human submits: the honeypot is present and left blank. */
+/**
+ * A form a human submits. `name__confirm` has to be here and blank: `check`
+ * only decrypts once it has passed that field, and a form carrying just
+ * `from__confirm` is rejected as missing the honeypot input before the crypto
+ * runs — so without this every case below would be a green 400 for the wrong
+ * reason.
+ */
 function formDataWith(validFrom: string) {
 	const formData = new FormData()
 	formData.set('name__confirm', '')
@@ -61,20 +68,42 @@ describe('checkHoneypot with a malformed from__confirm', () => {
 		expect(response.status).toBe(400)
 	})
 
-	it('rejects a value that decodes to fewer bytes than the IV', async () => {
-		// `atob('a')` is an empty buffer, so `slice(12)` is an empty
-		// ciphertext. This is the shape a bot gets by echoing back any short
-		// base64 string, which is why it is the most common of the two.
+	it('rejects a single character, which is a base64 length that cannot exist', async () => {
+		// A length of 1 (mod 4) is not decodable at all, so this stops at
+		// `atob`. The shortest value that gets as far as AES-GCM is two
+		// characters, covered below.
 		const response = await captureResponse(checkHoneypot(formDataWith('a')))
 		expect(response.status).toBe(400)
 	})
 
-	it('rejects five bytes of well-formed base64', async () => {
-		// Longer than zero, so it clears the IV slice and fails inside AES-GCM
-		// instead of at `atob` — the second half of `OperationError`.
+	it('rejects a value that decodes to fewer bytes than the IV', async () => {
+		// Two characters decode to one byte, so `slice(12)` is an empty
+		// ciphertext. This is the shape a bot gets by echoing back any short
+		// base64 string, which is why it is the most common of the two.
+		const response = await captureResponse(checkHoneypot(formDataWith('aa')))
+		expect(response.status).toBe(400)
+	})
+
+	it('rejects a value that decodes to a whole IV but no GCM tag', async () => {
+		// 12 bytes clears the IV slice and still leaves nothing to authenticate,
+		// which is a different check inside AES-GCM from the empty-ciphertext one
+		// above even though both surface as `OperationError`.
+		const twelveBytes = btoa('x'.repeat(12))
+		expect(atob(twelveBytes)).toHaveLength(12)
 		const response = await captureResponse(
-			checkHoneypot(formDataWith(btoa('12345'))),
+			checkHoneypot(formDataWith(twelveBytes)),
 		)
+		expect(response.status).toBe(400)
+	})
+
+	it('rejects a well-formed value that fails authentication', async () => {
+		// Long enough to be a real token shape — a 12-byte IV plus ciphertext
+		// and tag — but the tag does not verify. This is what a bot produces by
+		// echoing a `from__confirm` scraped from somewhere else, and it is the
+		// case that makes the narrowed check worth having.
+		const forged = btoa('x'.repeat(40))
+		expect(atob(forged)).toHaveLength(40)
+		const response = await captureResponse(checkHoneypot(formDataWith(forged)))
 		expect(response.status).toBe(400)
 	})
 
@@ -101,10 +130,9 @@ describe('checkHoneypot with a real submission', () => {
 	})
 
 	it('rejects a future from__confirm with the same 400', async () => {
-		// Doubles as the guard against this whole file going vacuous: the only
-		// thing that can turn a correctly encrypted value into a 400 is the
-		// timestamp check, which only runs if `check` decrypted the field. With
-		// `validFromFieldName` off this resolves instead, and fails.
+		// Doubles as the guard against this file going vacuous: the only thing
+		// that can turn a correctly encrypted value into a 400 is the timestamp
+		// check, which only runs if `check` decrypted the field.
 		const { encryptedValidFrom } = await honeypot.getInputProps({
 			validFromTimestamp: Date.now() + 60_000,
 		})
@@ -124,7 +152,72 @@ describe('checkHoneypot with a real submission', () => {
 	})
 })
 
+describe('checkHoneypot with an error that is not spam', () => {
+	it('rethrows an unrecognised DOMException instead of dressing it up as spam', async () => {
+		// The narrowed check is only worth having if the default is still to
+		// report, and that default lives in `checkHoneypot` rather than in the
+		// predicate — so it has to be asserted here. Without this case, replacing
+		// the catch with a blanket one leaves every other case in this file green.
+		const cryptoFailure = new DOMException('the key is bad', 'DataError')
+		vi.spyOn(honeypot, 'check').mockRejectedValueOnce(cryptoFailure)
+		const { encryptedValidFrom } = await honeypot.getInputProps()
+
+		await expect(checkHoneypot(formDataWith(encryptedValidFrom))).rejects.toBe(
+			cryptoFailure,
+		)
+	})
+
+	it('rethrows a non-DOMException unchanged', async () => {
+		const boom = new Error('something else broke')
+		vi.spyOn(honeypot, 'check').mockRejectedValueOnce(boom)
+
+		await expect(checkHoneypot(new FormData())).rejects.toBe(boom)
+	})
+})
+
 describe('isMalformedHoneypotFieldError', () => {
+	/**
+	 * The property this predicate is built on, read off the errors the runtime
+	 * actually throws rather than off one this test file constructed — the
+	 * `new DOMException(...)` cases below cannot show that a runtime's error
+	 * carries the tag, only that the constructor being used here sets it.
+	 */
+	it('recognises the DOMExceptions atob and crypto.subtle really throw', async () => {
+		const thrown: unknown[] = []
+		try {
+			atob('!!!not base64!!!')
+		} catch (error) {
+			thrown.push(error)
+		}
+		const key = await crypto.subtle.importKey(
+			'raw',
+			new Uint8Array(32),
+			{ name: 'AES-GCM' },
+			false,
+			['decrypt'],
+		)
+		try {
+			await crypto.subtle.decrypt(
+				{ name: 'AES-GCM', iv: new Uint8Array(12) },
+				key,
+				new Uint8Array(0),
+			)
+		} catch (error) {
+			thrown.push(error)
+		}
+
+		expect(thrown).toHaveLength(2)
+		for (const error of thrown) {
+			expect(Object.prototype.toString.call(error)).toBe(
+				'[object DOMException]',
+			)
+			expect(isMalformedHoneypotFieldError(error)).toBe(true)
+		}
+		// The two are different classes in this environment, which is the whole
+		// reason the predicate reads the tag instead of using `instanceof`.
+		expect(thrown[0]).not.toBeInstanceOf(DOMException)
+	})
+
 	it('recognises the two errors the honeypot field provokes', () => {
 		expect(
 			isMalformedHoneypotFieldError(
@@ -139,9 +232,9 @@ describe('isMalformedHoneypotFieldError', () => {
 	})
 
 	it('does not swallow a crypto error from another source', () => {
-		// The point of narrowing on `.name`: a real `OperationError` raised
-		// outside the honeypot, or another DOMException kind entirely, still
-		// has to reach Sentry rather than be dressed up as spam.
+		// The point of narrowing on `.name`: a `DataError` or
+		// `NotSupportedError` — what a bad key or algorithm raises — still has to
+		// reach Sentry rather than be dressed up as spam.
 		expect(
 			isMalformedHoneypotFieldError(new DOMException('bad key', 'DataError')),
 		).toBe(false)

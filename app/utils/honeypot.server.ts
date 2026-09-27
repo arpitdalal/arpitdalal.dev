@@ -6,9 +6,9 @@ export const honeypot = new Honeypot({
 })
 
 /**
- * The `DOMException` names `atob` raises on a string outside the base64
- * alphabet and `crypto.subtle.decrypt` raises when the buffer is too small to
- * hold an IV plus a GCM tag.
+ * The two `DOMException` names a junk `from__confirm` provokes:
+ * `InvalidCharacterError` when `atob` rejects the string, and `OperationError`
+ * when AES-GCM rejects what the string decoded to.
  */
 const MALFORMED_FIELD_ERROR_NAMES = new Set([
 	'InvalidCharacterError',
@@ -16,27 +16,41 @@ const MALFORMED_FIELD_ERROR_NAMES = new Set([
 ])
 
 /**
- * Whether `error` is the crypto layer choking on a `from__confirm` value we
- * never issued — which makes it spam, not a bug.
+ * Whether `error` is the crypto layer choking on a `from__confirm` value, which
+ * makes it spam rather than a bug.
  *
  * `remix-utils` decrypts the field before it validates it, with no shape check
- * in between, so a bot that fills the honeypot with junk takes down the
- * request: `atob` rejects the string outright, or decodes it to fewer than 12
- * bytes, leaving AES-GCM with an empty ciphertext to reject. Either way the
- * submission is something we did not issue and deserves the same 400 a
- * `SpamError` gets, rather than an unhandled exception that Sentry reports on
- * attacker-controlled input.
+ * in between, so a bot that fills the honeypot with junk takes the request down
+ * before any validation runs: `atob` rejects a value outside the base64
+ * alphabet, and a value that decodes to less than an IV plus a GCM tag leaves
+ * AES-GCM with a ciphertext too short to authenticate.
  *
- * Matched on the class *and* `.name`, never on `.message`: the message text
- * comes from the Node version's bundled undici and changes across releases.
+ * Matched on the class *and* `.name`, never on `.message`. The message is not
+ * even stable within one Node version — `atob('!!!')` and `atob('a')` raise
+ * different text on Node 26 — and Node 22's "The provided data is too small"
+ * became "The operation failed for an operation-specific reason" in Node 24,
+ * so a message match would break on a runtime bump. The name is spec'd, and
+ * held across the Node 22/24/26 range in `engines`.
+ *
+ * `DOMException` is a cross-realm class, so the class is read through the
+ * `Symbol.toStringTag` WebIDL puts on the interface rather than `instanceof`.
+ * The server is single-realm and `instanceof` would hold there; the test
+ * environment is not — vitest's jsdom global hands this module jsdom's
+ * `DOMException` while `atob` and `crypto.subtle` remain Node's — so
+ * `instanceof` misses exactly the two errors handled here. The tag is correct
+ * in both.
+ *
+ * Narrowed on purpose, because a `DOMException` outside this set still has to
+ * surface: `DataError` and `NotSupportedError` are the failures a real key or
+ * algorithm problem would raise, and dressing those up as spam would hide a
+ * genuine fault. The one thing this cannot tell apart is an `OperationError`
+ * from a failed authentication tag, which is also what a `from__confirm` we
+ * *did* issue throws if `HONEYPOT_SECRET` changes under an open form. That
+ * case is answered 400 rather than reported; keeping `HONEYPOT_SECRET` stable
+ * across deploys is what stops it from happening, and it is a required env
+ * var.
  */
 export function isMalformedHoneypotFieldError(error: unknown) {
-	// `DOMException` is a cross-realm class. The instances `atob` and
-	// `crypto.subtle` throw belong to the runtime's realm, not to this module's
-	// global, so `instanceof DOMException` is false for exactly the errors
-	// being handled here. The `toString` tag is the cross-realm-safe read of
-	// the class; narrowing further on `.name` keeps a real crypto failure
-	// (`DataError`, `NotSupportedError`, …) reporting as itself.
 	return (
 		Object.prototype.toString.call(error) === '[object DOMException]' &&
 		MALFORMED_FIELD_ERROR_NAMES.has((error as DOMException).name)
@@ -47,10 +61,10 @@ export async function checkHoneypot(formData: FormData) {
 	try {
 		await honeypot.check(formData)
 	} catch (error) {
-		if (error instanceof SpamError) {
-			throw new Response('Form not submitted properly', { status: 400 })
-		}
-		if (isMalformedHoneypotFieldError(error)) {
+		// A `SpamError` is the expected rejection. A malformed field is the same
+		// answer reached the long way round, because the value is one we never
+		// issued either. Everything else is a real fault and stays a 500.
+		if (error instanceof SpamError || isMalformedHoneypotFieldError(error)) {
 			throw new Response('Form not submitted properly', { status: 400 })
 		}
 		throw error
