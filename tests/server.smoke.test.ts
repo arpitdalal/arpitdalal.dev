@@ -154,6 +154,21 @@ describe('production server', () => {
 		expect(response.status).toBe(200)
 	})
 
+	// React Router short-circuits these before any loader runs, so the root
+	// loader never produced data. The document still has to render the error
+	// boundary, and `useRequestInfo` used to assert the data was there — which
+	// turned a 405 into a 500 and buried the real cause. Scanners send these
+	// constantly.
+	it('answers an unsupported method with 405, not 500', async () => {
+		for (const method of ['POST', 'PUT', 'DELETE', 'PATCH']) {
+			const response = await fetch(`${base}/talks`, {
+				method,
+				redirect: 'manual',
+			})
+			expect(response.status, `${method} /talks`).toBe(405)
+		}
+	})
+
 	it('404s an unknown path rather than serving the app shell', async () => {
 		const response = await fetch(`${base}/nope-does-not-exist`)
 		expect(response.status).toBe(404)

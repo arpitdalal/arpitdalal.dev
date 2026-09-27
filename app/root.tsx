@@ -8,6 +8,7 @@ import {
 	Scripts,
 	ScrollRestoration,
 	useLoaderData,
+	useRouteLoaderData,
 } from 'react-router'
 import { ClientOnly } from 'remix-utils/client-only'
 import { HoneypotProvider } from 'remix-utils/honeypot/react'
@@ -377,9 +378,12 @@ function Footer() {
 
 export function ErrorBoundary() {
 	const nonce = useNonce()
+	// The server sends `X-Robots-Tag` on every response including this one, so
+	// pass the same env to keep the document's robots meta tag in agreement.
+	const data = useRouteLoaderData<typeof loader>('root')
 
 	return (
-		<Document nonce={nonce}>
+		<Document nonce={nonce} env={data?.ENV ?? globalThis.ENV}>
 			<GeneralErrorBoundary />
 		</Document>
 	)

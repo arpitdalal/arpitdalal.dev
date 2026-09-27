@@ -52,7 +52,14 @@ export default function Talks() {
 	React.useEffect(() => {
 		const raw = location.hash.slice(1)
 		if (!raw) return
-		const id = decodeURIComponent(raw)
+		// A malformed percent-encoding in the hash would throw a URIError here,
+		// in the browser, and take the effect down with it.
+		let id: string
+		try {
+			id = decodeURIComponent(raw)
+		} catch {
+			return
+		}
 		const run = () => {
 			const el = document.getElementById(id)
 			if (el instanceof HTMLLIElement && el.tabIndex === -1) {

@@ -46,14 +46,18 @@ export async function time<ReturnType>(
 		timings?: Timings
 	},
 ): Promise<ReturnType> {
+	if (!timings) return typeof fn === 'function' ? fn() : fn
+
+	// Start the timer before invoking `fn` and end it in a `finally`. A
+	// rejecting or throwing `fn` is exactly when a timing is most worth having,
+	// and it must not be the one case that drops the metric — so `fn()` has to
+	// be called inside the `try`, not hoisted above it.
 	const timer = createTimer(type, desc)
-	const promise = typeof fn === 'function' ? fn() : fn
-	if (!timings) return promise
-
-	const result = await promise
-
-	timer.end(timings)
-	return result
+	try {
+		return await (typeof fn === 'function' ? fn() : fn)
+	} finally {
+		timer.end(timings)
+	}
 }
 
 export function getServerTimeHeader(timings?: Timings) {

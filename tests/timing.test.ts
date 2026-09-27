@@ -62,6 +62,38 @@ describe('time', () => {
 	it('resolves without timings and does not throw', async () => {
 		await expect(time(async () => 2, { type: 'work' })).resolves.toBe(2)
 	})
+
+	it('still records a duration when the timed work rejects', async () => {
+		// A failing loader is exactly when a timing is most worth having, so it
+		// must not be the one case that drops the metric.
+		const timings = makeTimings('root loader')
+
+		await expect(
+			time(
+				async () => {
+					throw new Error('boom')
+				},
+				{ timings, type: 'work', desc: 'the work' },
+			),
+		).rejects.toThrow('boom')
+
+		expect(getServerTimeHeader(timings)).toContain('work;desc="the work";dur=')
+	})
+
+	it('records a duration when the work throws synchronously', async () => {
+		const timings = makeTimings('root loader')
+
+		await expect(
+			time(
+				() => {
+					throw new Error('boom')
+				},
+				{ timings, type: 'work' },
+			),
+		).rejects.toThrow('boom')
+
+		expect(getServerTimeHeader(timings)).toContain('work;dur=')
+	})
 })
 
 describe('combineServerTimings', () => {
