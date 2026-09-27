@@ -106,8 +106,14 @@ beforeAll(async () => {
 	port = await getPort({ port: portNumbers(41_000, 49_000) })
 	base = `http://127.0.0.1:${port}`
 
+	const env = { ...process.env, ...TEST_ENV, PORT: String(port) }
+	// `spawn` inherits `process.env`, and TEST_ENV does not mention
+	// ALLOW_INDEXING. A developer who exports it would otherwise make the
+	// "sends no X-Robots-Tag by default" test below fail on their machine only.
+	delete env.ALLOW_INDEXING
+
 	const child = spawn(process.execPath, ['server-build/index.js'], {
-		env: { ...process.env, ...TEST_ENV, PORT: String(port) },
+		env,
 		stdio: ['ignore', 'pipe', 'pipe'],
 	})
 	server = child
@@ -152,6 +158,21 @@ describe('production server', () => {
 	it('serves the homepage', { timeout: 30_000 }, async () => {
 		const response = await fetch(`${base}/`)
 		expect(response.status).toBe(200)
+	})
+
+	// React Router short-circuits these before any loader runs, so the root
+	// loader never produced data. The document still has to render the error
+	// boundary, and `useRequestInfo` used to assert the data was there — which
+	// turned a 405 into a 500 and buried the real cause. Scanners send these
+	// constantly.
+	it('answers an unsupported method with 405, not 500', async () => {
+		for (const method of ['POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']) {
+			const response = await fetch(`${base}/talks`, {
+				method,
+				redirect: 'manual',
+			})
+			expect(response.status, `${method} /talks`).toBe(405)
+		}
 	})
 
 	it('404s an unknown path rather than serving the app shell', async () => {
@@ -248,5 +269,53 @@ describe('production server', () => {
 	it('sets rate limit headers', async () => {
 		const response = await fetch(`${base}/talks`)
 		expect(response.headers.get('ratelimit-limit')).toBeTruthy()
+	})
+
+	it('reports Server-Timing for both the root loader and the render', async () => {
+		// The root loader's metric only reaches the client because
+		// `app/root.tsx` exports a `headers` function. React Router ignores a
+		// loader's response headers on the document without one, so dropping
+		// that export silently costs half the instrumentation and nothing else
+		// would notice.
+		const response = await fetch(`${base}/talks`)
+		const serverTiming = response.headers.get('server-timing') ?? ''
+
+		expect(serverTiming).toContain('root_loader')
+		expect(serverTiming).toContain('render')
+	})
+
+	it('sends no X-Robots-Tag by default', async () => {
+		// ALLOW_INDEXING is unset for this server. The noindex behaviour is
+		// covered in tests/allow-indexing.test.ts, which boots its own process.
+		const response = await fetch(`${base}/talks`)
+		expect(response.headers.get('x-robots-tag')).toBeNull()
+		expect(await response.text()).not.toContain('name="robots"')
+	})
+
+	// The morgan `url` token decodes the whole request URL, query string
+	// included. morgan evaluates its tokens from the response's `finished`
+	// event with no try/catch, so a URIError there escapes as an uncaught
+	// exception and the process exits mid-request. Verified against `main`:
+	// this request kills the server, and the guard in
+	// `server/utils/request-url.ts` is what keeps it alive.
+	//
+	// The malformed value has to be in the query. A malformed *path* is thrown
+	// on by Express's own `decodeParam` before it reaches morgan, which returns
+	// a 400 and never evaluates the token, so that path cannot exercise this.
+	it('survives a query string with a malformed percent-encoding', async () => {
+		const response = await fetch(`${base}/talks?x=%`, { redirect: 'manual' })
+		expect(response.status).toBe(200)
+
+		// The uncaught throw lands on the `finished` event, which races the
+		// client's response resolving, so give the process a moment to die
+		// before asserting it is still up.
+		await new Promise((resolve) => setTimeout(resolve, 500))
+		expect(
+			server?.exitCode,
+			`server should still be running${serverOutput ? `\n${serverOutput}` : ''}`,
+		).toBeNull()
+
+		const after = await fetch(`${base}/talks`)
+		expect(after.status).toBe(200)
 	})
 })

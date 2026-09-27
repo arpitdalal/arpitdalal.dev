@@ -99,7 +99,10 @@ export function formatDateWithHints(isoDate: string, request: Request) {
  */
 export function useHints() {
 	const requestInfo = useRequestInfo()
-	return requestInfo.hints
+	// With no root loader there are no request headers to read the cookies from
+	// (see `useRequestInfo`), so fall back to each hint's own default rather
+	// than throwing in the middle of the document render.
+	return requestInfo?.hints ?? getHints()
 }
 
 /**

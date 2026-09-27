@@ -42,6 +42,12 @@ export function getEnv() {
 		UMAMI_DOMAINS: process.env.UMAMI_DOMAINS,
 		UMAMI_SCRIPT_NAME: process.env.UMAMI_SCRIPT_NAME,
 		UMAMI_PUBLIC_ANALYTICS_URL: process.env.UMAMI_PUBLIC_ANALYTICS_URL,
+		// Setting this to 'false' tells the server to send an
+		// `X-Robots-Tag: noindex, nofollow` response header and the document to
+		// render a matching `<meta name="robots">` tag. Intended for non-production
+		// deploys (staging, previews) so they do not compete with production in
+		// search results. Leave it unset or 'true' in production.
+		ALLOW_INDEXING: process.env.ALLOW_INDEXING,
 	}
 }
 

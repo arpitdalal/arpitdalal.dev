@@ -4,11 +4,17 @@ import { useState, useEffect, useRef } from 'react'
 import { useRequestInfo } from './request-info'
 
 export function usePosthogPageView() {
-	const { origin, path } = useRequestInfo()
+	const requestInfo = useRequestInfo()
+	// No root loader means no request info (see `useRequestInfo`), which happens
+	// for the error responses React Router short-circuits. There is no page view
+	// to report in that case, and the hooks below still have to run.
+	const origin = requestInfo?.origin
+	const path = requestInfo?.path
 	const [previousLocation, setPreviousLocation] = useState(path)
 	const isInitialRender = useRef(true)
 
 	useEffect(() => {
+		if (path === undefined) return
 		try {
 			if (isInitialRender.current) {
 				isInitialRender.current = false

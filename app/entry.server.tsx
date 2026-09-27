@@ -1,7 +1,7 @@
 import { PassThrough } from 'node:stream'
+import { styleText } from 'node:util'
 import { createReadableStreamFromReadable } from '@react-router/node'
 import * as Sentry from '@sentry/node'
-import chalk from 'chalk'
 import { isbot } from 'isbot'
 import { renderToPipeableStream } from 'react-dom/server'
 import {
@@ -12,6 +12,11 @@ import {
 } from 'react-router'
 import { getEnv, init } from './utils/env.server'
 import { NonceProvider } from './utils/nonce-provider'
+import {
+	getRouteErrorCause,
+	isExpectedReactRouterRouteError,
+} from './utils/sentry-event-filters'
+import { makeTimings } from './utils/timing.server'
 
 export const streamTimeout = 5000
 
@@ -37,6 +42,9 @@ export default async function handleRequest(...args: DocRequestArgs) {
 	const nonce = request.headers.get('x-csp-nonce') ?? ''
 	return new Promise(async (resolve, reject) => {
 		let didError = false
+		// NOTE: this timing will only include things that are rendered in the shell
+		// and will not include suspended components and deferred loaders
+		const timings = makeTimings('render', 'renderToPipeableStream')
 
 		const { pipe, abort } = renderToPipeableStream(
 			<NonceProvider value={nonce}>
@@ -50,6 +58,7 @@ export default async function handleRequest(...args: DocRequestArgs) {
 				[callbackName]: () => {
 					const body = new PassThrough()
 					responseHeaders.set('Content-Type', 'text/html')
+					responseHeaders.append('Server-Timing', timings.toString())
 					resolve(
 						new Response(createReadableStreamFromReadable(body), {
 							headers: responseHeaders,
@@ -88,11 +97,30 @@ export function handleError(
 	if (request.signal.aborted) {
 		return
 	}
-	if (error instanceof Error) {
-		console.error(chalk.red(error.stack))
-		void Sentry.captureException(error)
-	} else {
-		console.error(error)
-		void Sentry.captureException(error)
+
+	// React Router hands `handleError` an `ErrorResponse` rather than an
+	// `Error` for anything a route rejected, so the message and stack live on
+	// `.error`. Report that instead of the wrapper, otherwise Sentry files a
+	// stackless issue grouped on a synthesised message. This mirrors React
+	// Router's own default handler.
+	const reported = getRouteErrorCause(error)
+	const logReportedError = () => {
+		if (reported instanceof Error) {
+			console.error(styleText('red', String(reported.stack)))
+		} else {
+			console.error(reported)
+		}
 	}
+
+	// Bots and scanners request every URL in the sitemap with methods the
+	// routes do not handle, and React Router throws for each of those. They are
+	// expected answers to invalid traffic, not bugs, so they get logged (they
+	// still show up in `fly logs`) but never reported to Sentry.
+	if (isExpectedReactRouterRouteError(error)) {
+		logReportedError()
+		return
+	}
+
+	logReportedError()
+	void Sentry.captureException(reported)
 }
