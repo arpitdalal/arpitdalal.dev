@@ -10,26 +10,38 @@ function rrwebStyleDeclarationRead(win: Window & typeof globalThis) {
 }
 
 /**
- * Runs `body` against a global scope stripped of the CSSOM interface object,
- * the way a privacy extension leaves it, then puts the original back.
+ * Runs `body` against a global scope whose `CSSStyleDeclaration` has been
+ * replaced with `value`, the way a privacy extension leaves it, then puts the
+ * original back.
  */
-function withCSSStyleDeclarationStripped(body: () => void): void {
+function withCSSStyleDeclarationReplacedBy(
+	value: unknown,
+	body: () => void,
+): void {
 	const original = Object.getOwnPropertyDescriptor(
 		window,
 		'CSSStyleDeclaration',
 	)
 
-	// @ts-expect-error -- deliberately reproducing a mangled global scope.
-	delete window.CSSStyleDeclaration
+	Object.defineProperty(window, 'CSSStyleDeclaration', {
+		value,
+		writable: true,
+		enumerable: false,
+		configurable: true,
+	})
 
 	try {
-		expect(window.CSSStyleDeclaration).toBeUndefined()
 		body()
 	} finally {
 		if (original) {
 			Object.defineProperty(window, 'CSSStyleDeclaration', original)
 		}
 	}
+}
+
+/** Replaces the global with `undefined`, i.e. it is simply not there. */
+function withCSSStyleDeclarationMissing(body: () => void): void {
+	withCSSStyleDeclarationReplacedBy(undefined, body)
 }
 
 describe('ensureCSSStyleDeclaration', () => {
@@ -41,14 +53,33 @@ describe('ensureCSSStyleDeclaration', () => {
 	})
 
 	it('repairs a window that is missing the global', () => {
-		withCSSStyleDeclarationStripped(() => {
+		withCSSStyleDeclarationMissing(() => {
+			expect(ensureCSSStyleDeclaration()).toBe(true)
+			expect(typeof rrwebStyleDeclarationRead(window)).toBe('function')
+		})
+	})
+
+	// A truthy stand-in is the same failure as an absent global: rrweb reads
+	// `.prototype` off whatever is there. A presence check would wave all of
+	// these straight through, which is the bug this replaced.
+	it.each([
+		['an empty object', {}],
+		['a string', 'CSSStyleDeclaration'],
+		['a number', 42],
+		['an array', []],
+		['a null-prototype object', Object.create(null)],
+		['an object with an empty prototype', { prototype: {} }],
+		['a function', function fake() {}],
+	])('repairs a truthy stand-in: %s', (_label, value) => {
+		withCSSStyleDeclarationReplacedBy(value, () => {
+			expect(Boolean(window.CSSStyleDeclaration)).toBe(true)
 			expect(ensureCSSStyleDeclaration()).toBe(true)
 			expect(typeof rrwebStyleDeclarationRead(window)).toBe('function')
 		})
 	})
 
 	it('recovers the genuine interface object, not a stub', () => {
-		withCSSStyleDeclarationStripped(() => {
+		withCSSStyleDeclarationMissing(() => {
 			ensureCSSStyleDeclaration()
 
 			const recovered = window.CSSStyleDeclaration.prototype
@@ -67,7 +98,7 @@ describe('ensureCSSStyleDeclaration', () => {
 		const immediate = Object.getPrototypeOf(document.createElement('div').style)
 		expect(Object.hasOwn(immediate, 'setProperty')).toBe(false)
 
-		withCSSStyleDeclarationStripped(() => {
+		withCSSStyleDeclarationMissing(() => {
 			ensureCSSStyleDeclaration()
 
 			const recovered = window.CSSStyleDeclaration.prototype
@@ -78,7 +109,7 @@ describe('ensureCSSStyleDeclaration', () => {
 	})
 
 	it('leaves the recovered prototype writable, as rrweb requires', () => {
-		withCSSStyleDeclarationStripped(() => {
+		withCSSStyleDeclarationMissing(() => {
 			ensureCSSStyleDeclaration()
 
 			// rrweb assigns its Proxy straight onto these two. The recovered object is
@@ -109,7 +140,7 @@ describe('ensureCSSStyleDeclaration', () => {
 	})
 
 	it('is idempotent and keeps the recovered value stable', () => {
-		withCSSStyleDeclarationStripped(() => {
+		withCSSStyleDeclarationMissing(() => {
 			expect(ensureCSSStyleDeclaration()).toBe(true)
 			const recovered = window.CSSStyleDeclaration
 			expect(ensureCSSStyleDeclaration()).toBe(true)

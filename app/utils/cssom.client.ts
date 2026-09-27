@@ -1,30 +1,31 @@
 /**
  * Session Replay bundles its own copy of rrweb, and rrweb's
- * `initStyleDeclarationObserver` reads `win.CSSStyleDeclaration.prototype`
- * without a guard. That read runs synchronously inside `Sentry.init()`, so when
- * the global is missing the resulting `TypeError` escapes `init()`. Sentry does
- * not catch it: `afterSetupIntegrations` walks the integrations array in order
- * and aborts on the first throw, so Replay being first costs us browser
- * profiling and tracing as well as the replay we had already lost.
+ * `initStyleDeclarationObserver` reads `win.CSSStyleDeclaration.prototype` with
+ * no guard. Whatever it finds there, it wraps in a `Proxy` and assigns back:
  *
- * Some privacy extensions strip CSSOM interface objects off the page's global
- * scope, which is what produces a window that still has `Object`,
- * `MutationObserver` and `HTMLInputElement` but no `CSSStyleDeclaration`. rrweb
- * guards the adjacent `CSSStyleSheet` read but not this one.
+ * ```js
+ * const setProperty = win.CSSStyleDeclaration.prototype.setProperty;
+ * win.CSSStyleDeclaration.prototype.setProperty = new Proxy(setProperty, { ... });
+ * ```
  *
- * The interface object is recoverable from any live declaration, so we restore
- * the genuine one rather than a stub. That distinction matters: rrweb wraps
- * `setProperty`/`removeProperty` in a `Proxy` and assigns the result back onto
- * `.prototype`, so pointing it at a stand-in would leave the real prototype
- * unwrapped and silently drop every style mutation from the recording.
+ * So a global that is missing, null, or a truthy stand-in all fail the same way,
+ * and rrweb throws a `TypeError` out of `Sentry.init()`.
  *
- * Returns false when the global cannot be restored, which leaves Replay broken
- * exactly as it was. This is a no-op in an unmodified browser.
+ * Privacy extensions that strip CSSOM interface objects off the page's global
+ * scope are what produce such a window. rrweb guards the adjacent
+ * `win.CSSStyleSheet` read but not this one.
+ *
+ * We restore the *genuine* interface object rather than installing a stub,
+ * because rrweb patches `.prototype` in place: a stand-in would leave the real
+ * prototype unwrapped and silently drop every style mutation from the recording.
+ *
+ * A no-op in an unmodified browser. Returns false when no usable declaration can
+ * be found, which leaves Replay no better off than before.
  */
 export function ensureCSSStyleDeclaration(
 	win: Window & typeof globalThis = window,
 ): boolean {
-	if (win.CSSStyleDeclaration) return true
+	if (canPatchStyleDeclaration(win)) return true
 
 	const prototype = findStyleDeclarationPrototype(win)
 	const recovered = prototype?.constructor
@@ -38,11 +39,29 @@ export function ensureCSSStyleDeclaration(
 			configurable: true,
 		})
 	} catch {
-		// A non-configurable global cannot be redefined. Nothing left to try.
+		// A non-configurable global cannot be replaced. Nothing left to try.
 		return false
 	}
 
-	return win.CSSStyleDeclaration === recovered
+	return canPatchStyleDeclaration(win)
+}
+
+/**
+ * Whether `win` exposes a declaration rrweb can actually wrap.
+ *
+ * Presence is deliberately not enough. A privacy extension can leave a truthy
+ * stand-in — `{}`, a string, a number — which passes a presence check and then
+ * throws on the very read we are here to prevent. So we check the capability
+ * rrweb depends on rather than the existence of the property.
+ */
+function canPatchStyleDeclaration(win: Window & typeof globalThis): boolean {
+	const prototype = win.CSSStyleDeclaration?.prototype as
+		Partial<CSSStyleDeclaration> | undefined
+
+	return (
+		typeof prototype?.setProperty === 'function' &&
+		typeof prototype?.removeProperty === 'function'
+	)
 }
 
 /**
