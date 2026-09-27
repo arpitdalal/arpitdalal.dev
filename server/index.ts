@@ -132,7 +132,18 @@ app.use(
 		referrerPolicy: { policy: 'same-origin' },
 		crossOriginEmbedderPolicy: false,
 		contentSecurityPolicy: {
-			// NOTE: Remove reportOnly when you're ready to enforce this CSP
+			// NOTE: Remove reportOnly when you're ready to enforce this CSP.
+			//
+			// Read this before flipping it. `reportOnly: true` means the policy
+			// is *never applied* — the browser reports violations and loads
+			// everything anyway. So every gap below has been invisible and
+			// harmless so far, and nothing about the site working today is
+			// evidence the policy is correct. Flipping this turns all of it
+			// live at once, and any hole becomes a broken page.
+			//
+			// Violations are now captured in Sentry (see app/utils/csp.ts), so
+			// the safe order is: deploy with reportOnly, read the Sentry CSP
+			// messages until they are clean, then flip.
 			reportOnly: true,
 			directives: {
 				'connect-src': cspConnectSrc({

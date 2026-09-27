@@ -243,10 +243,29 @@ describe('production server', () => {
 		expect(await first.text()).toContain(`nonce="${nonce}"`)
 	})
 
+	it('does not enforce the CSP yet', async () => {
+		// Deliberate, and easy to get wrong by accident. Under reportOnly the
+		// policy is never applied, which is why the Umami nonce and the
+		// missing hashnode img-src host went unnoticed. If this ever fails
+		// because someone set reportOnly: false, the enforcement flip is
+		// happening without anyone having read the Sentry CSP messages first.
+		const response = await fetch(`${base}/talks`)
+
+		expect(
+			response.headers.get('content-security-policy'),
+			'enforcing CSP header',
+		).toBeNull()
+		expect(
+			response.headers.get('content-security-policy-report-only'),
+			'report-only CSP header',
+		).toBeTruthy()
+	})
+
 	it('allows Umami connect-src and nonces the tracker script', async () => {
-		// Without both, the tracker either fails to load (strict-dynamic + no
-		// nonce) or loads and then fails to POST pageviews (connect-src).
-		// TEST_ENV sets UMAMI_DOMAIN to test-umami-domain.
+		// Both would become blocking the moment reportOnly is flipped: the tag
+		// without a nonce is refused under 'strict-dynamic', and the beacon
+		// POST to /api/send is cross-origin. TEST_ENV sets UMAMI_DOMAIN to
+		// test-umami-domain.
 		const response = await fetch(`${base}/talks`)
 		const csp =
 			response.headers.get('content-security-policy-report-only') ?? ''
@@ -261,8 +280,10 @@ describe('production server', () => {
 	})
 
 	it('allows the Hashnode CDN in img-src for blog and notes cover images', async () => {
-		// The policy only allowed cloudinary, so every coverImage.url served by
-		// the Hashnode GraphQL API was refused by img-src.
+		// The policy allowed cloudinary but not hashnode, so every
+		// coverImage.url served by the Hashnode GraphQL API would be refused
+		// under enforcement. Harmless while reportOnly, a broken image on the
+		// blog and notes pages once it is flipped.
 		const response = await fetch(`${base}/talks`)
 		const csp =
 			response.headers.get('content-security-policy-report-only') ?? ''
