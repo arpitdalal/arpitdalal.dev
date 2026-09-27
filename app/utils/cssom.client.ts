@@ -47,8 +47,15 @@ export function ensureCSSStyleDeclaration(
 
 /**
  * The live `CSSStyleDeclaration.prototype`, found by walking up from a
- * declaration we just created. Resilient to engine differences in how many
- * intermediate prototypes sit between an instance and the interface prototype.
+ * declaration we just created.
+ *
+ * The walk requires the prototype to *own* `setProperty`/`removeProperty` rather
+ * than merely inherit them. A live declaration's immediate prototype is often a
+ * subclass (Blink and jsdom both expose `CSSStyleProperties` at that level) that
+ * inherits both from the real interface prototype one step up. Stopping there
+ * would hand rrweb a subclass, and since it patches `.prototype` in place, style
+ * declarations not created through that subclass would go unwrapped and their
+ * mutations would silently vanish from the recording.
  */
 function findStyleDeclarationPrototype(win: Window): object | null {
 	let declaration: CSSStyleDeclaration
@@ -60,10 +67,9 @@ function findStyleDeclarationPrototype(win: Window): object | null {
 
 	let prototype: object | null = Object.getPrototypeOf(declaration)
 	while (prototype) {
-		const candidate = prototype as Partial<CSSStyleDeclaration>
 		if (
-			typeof candidate.setProperty === 'function' &&
-			typeof candidate.removeProperty === 'function'
+			Object.hasOwn(prototype, 'setProperty') &&
+			Object.hasOwn(prototype, 'removeProperty')
 		) {
 			return prototype
 		}

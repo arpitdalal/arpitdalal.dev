@@ -49,15 +49,31 @@ describe('ensureCSSStyleDeclaration', () => {
 
 	it('recovers the genuine interface object, not a stub', () => {
 		withCSSStyleDeclarationStripped(() => {
-			const livePrototype = Object.getPrototypeOf(
-				document.createElement('div').style,
-			)
-
 			ensureCSSStyleDeclaration()
 
+			const recovered = window.CSSStyleDeclaration.prototype
+			expect(recovered.constructor?.name).toBe('CSSStyleDeclaration')
 			// rrweb patches `.prototype` in place, so a stand-in here would leave
 			// the real prototype unwrapped and silently drop style mutations.
-			expect(window.CSSStyleDeclaration.prototype).toBe(livePrototype)
+			expect(typeof recovered.setProperty).toBe('function')
+			expect(typeof recovered.removeProperty).toBe('function')
+		})
+	})
+
+	it('walks past an inheriting subclass to the prototype that owns the methods', () => {
+		// Blink and jsdom both put `CSSStyleProperties` at the immediate prototype
+		// of a live declaration, and it inherits both methods rather than owning
+		// them. Stopping there would hand rrweb a subclass.
+		const immediate = Object.getPrototypeOf(document.createElement('div').style)
+		expect(Object.hasOwn(immediate, 'setProperty')).toBe(false)
+
+		withCSSStyleDeclarationStripped(() => {
+			ensureCSSStyleDeclaration()
+
+			const recovered = window.CSSStyleDeclaration.prototype
+			expect(recovered).not.toBe(immediate)
+			expect(Object.hasOwn(recovered, 'setProperty')).toBe(true)
+			expect(Object.hasOwn(recovered, 'removeProperty')).toBe(true)
 		})
 	})
 
