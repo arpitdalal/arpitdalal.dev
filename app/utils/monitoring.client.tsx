@@ -6,6 +6,7 @@ import {
 	useLocation,
 	useNavigationType,
 } from 'react-router'
+import { ensureCSSStyleDeclaration } from './cssom.client'
 
 export function init() {
 	Sentry.init({
@@ -25,7 +26,6 @@ export function init() {
 			return event
 		},
 		integrations: [
-			Sentry.replayIntegration(),
 			Sentry.browserProfilingIntegration(),
 			Sentry.reactRouterBrowserTracingIntegration({
 				useEffect: React.useEffect,
@@ -46,4 +46,37 @@ export function init() {
 		replaysSessionSampleRate: 0.1,
 		replaysOnErrorSampleRate: 1.0,
 	})
+
+	startReplay()
+}
+
+/**
+ * Start Session Replay, isolated from everything else.
+ *
+ * rrweb performs a long run of unguarded global reads while it starts up, and
+ * Sentry invokes integration `afterAllSetup` hooks with no `try`/`catch` around
+ * them. Registering Replay up front therefore meant any one of those reads could
+ * throw out of `Sentry.init()` and take error reporting, profiling and tracing
+ * down with it — that is exactly how a missing `CSSStyleDeclaration` cost us all
+ * three. Adding it here, in its own step, means a Replay failure can now only
+ * ever cost us the replay.
+ *
+ * The sample rates above still apply: Replay reads them off the client during
+ * setup, which is more complete now that the client is fully initialised. Sentry
+ * sessions are unaffected too, since `BrowserSession` (a default integration)
+ * owns session creation rather than Replay.
+ */
+function startReplay() {
+	if (!ensureCSSStyleDeclaration()) {
+		console.warn(
+			'Sentry Replay disabled: no usable CSSStyleDeclaration on this window, and one could not be restored.',
+		)
+		return
+	}
+
+	try {
+		Sentry.getClient()?.addIntegration(Sentry.replayIntegration())
+	} catch (error) {
+		console.warn('Sentry Replay failed to start:', error)
+	}
 }
