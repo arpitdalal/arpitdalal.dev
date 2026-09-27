@@ -11,6 +11,15 @@ import {
 
 const NO_ACTION =
 	'You made a POST request to "/robots.txt" but did not provide an `action` for route "routes/_seo+/robots[.]txt", so there is no way to handle the request.'
+/**
+ * Captured from a running production server. React Router stringifies the
+ * internal `Error` into `.data` on the document path, so the message arrives
+ * with an `Error: ` prefix — which is what silently broke the anchored
+ * `^Invalid request method` pattern.
+ */
+const NO_ACTION_STRINGIFIED = `Error: ${NO_ACTION}`
+const INVALID_METHOD = 'Invalid request method "OPTIONS"'
+const INVALID_METHOD_STRINGIFIED = `Error: ${INVALID_METHOD}`
 const NO_LOADER =
 	'You made a GET request to "/resources/theme-switch" but did not provide a `loader` for route "routes/resources/theme-switch", so there is no way to handle the request.'
 
@@ -130,8 +139,28 @@ describe('isExpectedReactRouterRouteError', () => {
 
 	it('matches an unsupported method', () => {
 		expect(
+			isExpectedReactRouterRouteError(routeError(405, INVALID_METHOD)),
+		).toBe(true)
+	})
+
+	it('matches a stringified message, prefix and all', () => {
+		// This is the shape the document path actually produces. The anchored
+		// pattern does not match the `Error: ` prefix, so without stripping it
+		// these scanner requests keep paging.
+		expect(
 			isExpectedReactRouterRouteError(
-				routeError(405, 'Invalid request method "OPTIONS"'),
+				routeError(405, INVALID_METHOD_STRINGIFIED),
+			),
+		).toBe(true)
+		expect(
+			isExpectedReactRouterRouteError(routeError(405, NO_ACTION_STRINGIFIED)),
+		).toBe(true)
+	})
+
+	it('strips a custom error name prefix too', () => {
+		expect(
+			isExpectedReactRouterRouteError(
+				routeError(405, `TypeError: ${INVALID_METHOD}`),
 			),
 		).toBe(true)
 	})

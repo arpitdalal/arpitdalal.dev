@@ -160,7 +160,7 @@ describe('production server', () => {
 	// turned a 405 into a 500 and buried the real cause. Scanners send these
 	// constantly.
 	it('answers an unsupported method with 405, not 500', async () => {
-		for (const method of ['POST', 'PUT', 'DELETE', 'PATCH']) {
+		for (const method of ['POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']) {
 			const response = await fetch(`${base}/talks`, {
 				method,
 				redirect: 'manual',

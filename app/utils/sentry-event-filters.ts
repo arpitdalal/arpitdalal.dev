@@ -27,6 +27,17 @@ export const EXPECTED_REACT_ROUTER_ERROR_PATTERNS = [
  */
 const EXPECTED_REACT_ROUTER_ERROR_STATUSES = [400, 405]
 
+/**
+ * React Router's message arrives either bare (`Error.message`) or stringified
+ * (`String(error)`, which is what `.data` holds on the document path). The
+ * latter is prefixed with the error's name, which breaks the anchored
+ * `^Invalid request method` pattern. Strip it before matching so the patterns
+ * can stay anchored to the message itself.
+ */
+function stripErrorNamePrefix(message: string): string {
+	return message.replace(/^\w*Error:\s*/, '')
+}
+
 export function isExpectedReactRouterErrorMessage(message: string): boolean {
 	return EXPECTED_REACT_ROUTER_ERROR_PATTERNS.some((pattern) =>
 		pattern.test(message),
@@ -63,8 +74,8 @@ export function isExpectedReactRouterRouteError(error: unknown): boolean {
 
 	// `.data` carries the message two ways. React Router wraps it in an `Error`
 	// (see `getInternalRouterError` in react-router's router.js) and unwraps it
-	// again when it renders a document, so the document path yields a string;
-	// the single-fetch path yields the `Error`. Accept both.
+	// again when it renders a document, so the document path yields a
+	// stringified error; the single-fetch path yields the `Error`. Accept both.
 	const { data } = error
 	const message =
 		typeof data === 'string'
@@ -73,7 +84,9 @@ export function isExpectedReactRouterRouteError(error: unknown): boolean {
 				? data.message
 				: null
 
-	return message ? isExpectedReactRouterErrorMessage(message) : false
+	return message
+		? isExpectedReactRouterErrorMessage(stripErrorNamePrefix(message))
+		: false
 }
 
 type ErrorEventLike = {
