@@ -1,5 +1,19 @@
 import { z } from 'zod'
 
+// Zod v4 probes for `eval` support by calling the `Function` constructor
+// (`zod/v4/core/util.js`), which the `script-src` policy in `server/index.ts`
+// blocks because it does not allow `'unsafe-eval'`. The probe is wrapped in a
+// `try`/`catch` and falls back to the interpreted parser, so nothing breaks —
+// but CSP still fires a `securitypolicyviolation` for the swallowed throw, and
+// `drainCspViolations` in `app/utils/monitoring.client.tsx` reports it to Sentry
+// on every page load. `jitless` skips the probe outright.
+//
+// No parsing cost: `fastEnabled` is `jit && allowsEval.value`
+// (`zod/v4/core/schemas.js`), and `allowsEval` is already `false` under this
+// policy, so the JIT fastpass is already bypassed. Setting the flag only stops
+// the probe from running.
+z.config({ jitless: true })
+
 // Common field schemas
 export const emailField = z
 	.string({ error: 'Email is required' })
