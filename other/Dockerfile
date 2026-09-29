@@ -76,6 +76,14 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,required=true \
 # Finally, build the production image with minimal footprint
 FROM base
 
+# `ARG` does not cross a `FROM`, so the value the build stage declared has to be
+# redeclared here or the running container has no idea which commit it is. It is
+# the release name the server SDK tags its events with (server/utils/monitoring.ts),
+# so without it every server-side event arrives with no release and cannot be
+# correlated to a deploy. See #15.
+ARG COMMIT_SHA
+ENV COMMIT_SHA=$COMMIT_SHA
+
 ENV FLY="true"
 ENV INTERNAL_PORT="8080"
 ENV PORT="8081"
