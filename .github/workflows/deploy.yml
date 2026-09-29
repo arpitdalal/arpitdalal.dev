@@ -96,10 +96,42 @@ jobs:
       - name: 🎈 Setup Fly
         uses: superfly/flyctl-actions/setup-flyctl@1.5
 
+      # `run: |` rather than a folded plain scalar, so Prettier cannot reflow
+      # this command and wrap a flag across a line boundary.
+      #
+      # SENTRY_ORG and SENTRY_PROJECT are build-time only: @sentry/vite-plugin
+      # reads them while the Docker image is being built, and never again. They
+      # used to be Fly *runtime* secrets instead, which put them in the running
+      # container where the build cannot see them — the plugin's `org` guard then
+      # fired, and it silently skipped creating the release and uploading source
+      # maps while still injecting debug IDs, so the build stayed green. See #16.
+      #
+      # Every name passed here must also be mounted and exported in the build
+      # stage of other/Dockerfile. tests/sentry-release.test.ts fails if the two
+      # drift apart.
       - name: 🚀 Deploy Production
         if: ${{ github.ref == 'refs/heads/main' }}
-        run:
-          flyctl deploy --remote-only --build-arg COMMIT_SHA=${{ github.sha }}
-          --build-secret SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+        run: |
+          # An unset secret is the empty string, not an unset variable, so a
+          # deleted SENTRY_AUTH_TOKEN would arrive as "" and turn
+          # `getSentryPlugin()`'s "off" branch on — a green deploy with no
+          # release, no debug IDs and no evidence anything was skipped. Check
+          # here, where the name of the missing secret is still obvious.
+          for name in SENTRY_AUTH_TOKEN SENTRY_ORG SENTRY_PROJECT; do
+            if [ -z "${!name}" ]; then
+              echo "::error::$name is unset or empty in this repository's secrets"
+              exit 1
+            fi
+          done
+          flyctl deploy --remote-only \
+            --build-arg COMMIT_SHA=${{ github.sha }} \
+            --build-secret "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" \
+            --build-secret "SENTRY_ORG=$SENTRY_ORG" \
+            --build-secret "SENTRY_PROJECT=$SENTRY_PROJECT"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          # Passed through the environment rather than interpolated into the
+          # script with ${{ }}, so the values are never part of the command text.
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}

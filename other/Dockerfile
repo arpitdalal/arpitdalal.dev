@@ -37,9 +37,25 @@ COPY --from=deps /myapp/node_modules /myapp/node_modules
 
 ADD . .
 
-# Mount the secret and set it as an environment variable and run the build
-RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
-    export SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN) && \
+# Mount the secrets and run the build.
+#
+# `required=true` is what makes a missing secret fail the build. It looks like the
+# `&&` chain below would do it instead, but it would not: `export X="$(cat
+# /run/secrets/X)"` exits 0 even when the `cat` fails, because a failed command
+# substitution does not propagate through `export`. Without `required=true` an
+# absent secret silently becomes an empty string, and an empty string is exactly
+# what `getSentryPlugin()` in vite.config.ts treats as missing — so the build
+# would still fail, several layers later and with a less obvious message.
+#
+# The `cat`s are needed because a secret mount sets no environment variable on
+# its own; only the `env=` mount form does, and that needs a Dockerfile syntax
+# pin this file does not currently carry.
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,required=true \
+    --mount=type=secret,id=SENTRY_ORG,required=true \
+    --mount=type=secret,id=SENTRY_PROJECT,required=true \
+    export SENTRY_AUTH_TOKEN="$(cat /run/secrets/SENTRY_AUTH_TOKEN)" && \
+    export SENTRY_ORG="$(cat /run/secrets/SENTRY_ORG)" && \
+    export SENTRY_PROJECT="$(cat /run/secrets/SENTRY_PROJECT)" && \
     npm run build
 
 # Finally, build the production image with minimal footprint
