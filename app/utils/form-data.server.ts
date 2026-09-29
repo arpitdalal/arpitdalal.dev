@@ -33,39 +33,62 @@ const FORM_MEDIA_TYPES = new Set([
 ])
 
 /**
+ * The body text for both rejections, so a client sees one answer regardless of
+ * why its body was refused. The alternative — reporting which check failed —
+ * hands a scanner a map of what this endpoint validates.
+ */
+const UNREADABLE_BODY = 'Form not submitted properly'
+
+/**
  * Reads the request body as `FormData`, or answers 400.
  *
  * Throwing a `Response` is the same contract `checkHoneypot` uses for junk, so
  * both failure modes on these routes land as a 400 that React Router turns into
  * a status code rather than an unhandled exception.
  *
- * The media type is read off the header rather than inferred from the body. A
- * body is not required to carry a `Content-Type` at all — a bare
- * `curl -X POST /contact` sends neither — so the header is the only place the
- * answer to "could this possibly be a form?" exists. The parameters after `;`
- * are dropped, because the boundary on a `multipart/form-data` type is required
- * and the charset on a urlencoded one is optional; comparing the whole header
- * string would reject valid submissions that merely declared a charset.
- *
  * Deliberately not logged. This is scanner traffic, it is unbounded, and an
  * unparseable body is not information the operator can act on — the honeypot's
  * own 400 is silent for the same reason.
  */
 export async function readFormData(request: Request): Promise<FormData> {
-	const mediaType = request.headers
-		.get('content-type')
-		?.split(';', 1)[0]
-		?.trim()
-		.toLowerCase()
+	// Two separate rejections, because there are two separate ways the body can
+	// be unreadable, and only the second one is visible from inside `formData()`.
+	//
+	// The media type is checked first so the common case — a request that never
+	// claimed to be a form — is refused without touching the body at all. A
+	// body is not required to carry a `Content-Type`; a bare `curl -X POST
+	// /contact` sends neither, so the header is the only place the answer to
+	// "could this possibly be a form?" exists.
+	//
+	// That check is necessary but not sufficient, which is the bug this shape
+	// exists to close. `multipart/form-data` carries its boundary as a header
+	// *parameter*, and `formData()` throws when it is missing — so a request
+	// that declares a media type we accept can still be unreadable. Enumerating
+	// the headers that produce a parse failure is not a fix; it is a list of
+	// today's, and undici is free to reject a body for a reason nobody
+	// enumerated. So every throw from the parse itself is caught and answered the
+	// same way, which holds regardless of which reason it was.
+	//
+	// Only a `TypeError` is converted. `formData()` signals an unparseable body
+	// with one, and it is the only thing it throws for this input; anything else
+	// (a `File` handle that cannot be read, say) is a fault on this side of the
+	// wire and still belongs in Sentry.
+	try {
+		const mediaType = request.headers
+			.get('content-type')
+			?.split(';', 1)[0]
+			?.trim()
+			.toLowerCase()
 
-	if (!mediaType || !FORM_MEDIA_TYPES.has(mediaType)) {
-		throw new Response(
-			'Content-Type was not one of "multipart/form-data" or "application/x-www-form-urlencoded".',
-			{
-				status: 400,
-			},
-		)
+		if (!mediaType || !FORM_MEDIA_TYPES.has(mediaType)) {
+			throw new Response(UNREADABLE_BODY, { status: 400 })
+		}
+
+		return await request.formData()
+	} catch (error) {
+		if (error instanceof TypeError) {
+			throw new Response(UNREADABLE_BODY, { status: 400 })
+		}
+		throw error
 	}
-
-	return request.formData()
 }

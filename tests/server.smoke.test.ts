@@ -372,8 +372,11 @@ describe('production server', () => {
 	// without touching the crypto path. No other field is needed: both actions
 	// run the honeypot check before validating.
 	//
-	// Four requests here plus the page load above stay well inside the 10/min
-	// limit on /contact and the 100/min one on /resources/newsletter.
+	// Four requests here plus the page load above stay inside the rate limit:
+	// `/contact` and `/resources/newsletter` share one `express-rate-limit`
+	// instance keyed by IP, so the budget is 10 per minute across both rather
+	// than 10 each. Adding a case to this file can therefore break a test
+	// elsewhere in it with a 429 — see `UNREADABLE_POSTS` below.
 	const HONEYPOT_POSTS: Array<[path: string, validFrom: string]> = [
 		['/contact', '!!!not base64!!!'],
 		['/contact', 'a'],
@@ -416,21 +419,19 @@ describe('production server', () => {
 		).toBeNull()
 	})
 
-	// A `Content-Type` `formData()` cannot read used to throw a `TypeError`
-	// out of the action, which is a 500 and an unhandled exception in Sentry.
-	// Scanners reach a public form URL on their own, and a body-less `POST` —
-	// no `Content-Type` at all — is the cheapest request they send, so this is
-	// traffic that arrives rather than a shape to imagine. Both routes are
-	// covered because both actions read a form body.
+	// A body `formData()` cannot read used to throw a `TypeError` out of the
+	// action, which is a 500 and an unhandled exception in Sentry. Scanners reach
+	// a public form URL on their own, and a body-less `POST` — no `Content-Type`
+	// at all — is the cheapest request they send, so this is traffic that
+	// arrives rather than a shape to imagine.
 	//
-	// The status alone cannot separate the two 400s these routes have: the
-	// honeypot's own rejection is also a 400 (see above). The guard's body text
-	// is what tells them apart, so both are asserted on it.
-	//
-	// The label is carried in the fixture so the assertion can name the case
-	// that failed — `vitest/valid-expect` rejects a second argument that is not
-	// a literal, and a hoisted variable would not qualify. The results are
-	// compared as one array so a single `toEqual` diff names the bad case.
+	// One case per route, deliberately. `/contact` and `/resources/newsletter`
+	// are guarded by a *single* `express-rate-limit` instance keyed by IP (see
+	// `strongPaths` in `server/index.ts`), so every POST to either draws on one
+	// shared budget of 10 per minute — not 10 each. The full matrix of
+	// unreadable bodies lives in `tests/form-data.test.ts`, where it costs no
+	// budget at all; what is worth an end-to-end request here is only that each
+	// action is wired to the helper at all.
 	const UNREADABLE_POSTS: Array<{
 		label: string
 		path: string
@@ -438,22 +439,9 @@ describe('production server', () => {
 	}> = [
 		{ label: '/contact, no content-type', path: '/contact', init: {} },
 		{
-			label: '/contact, application/json',
-			path: '/contact',
-			init: {
-				body: JSON.stringify({ name: 'bot' }),
-				headers: { 'content-type': 'application/json' },
-			},
-		},
-		{
 			label: '/resources/newsletter, no content-type',
 			path: '/resources/newsletter',
 			init: {},
-		},
-		{
-			label: '/resources/newsletter, application/json',
-			path: '/resources/newsletter',
-			init: { body: '{}', headers: { 'content-type': 'application/json' } },
 		},
 	]
 
@@ -481,29 +469,23 @@ describe('production server', () => {
 	}
 
 	it('answers an unreadable form body with 400, not 500', async () => {
-		const results: Array<{ label: string; status: number; guarded: boolean }> =
-			[]
+		// Status only, deliberately. The body text is the same for every
+		// rejection on these routes, so it cannot tell a refused body from a
+		// honeypot rejection — and that is the intent: one answer for "we did
+		// not accept this submission", whatever the reason.
+		const results: Array<{ label: string; status: number }> = []
 		for (const { label, path, init } of UNREADABLE_POSTS) {
 			const response = await fetch(`${base}${path}`, {
 				method: 'POST',
 				redirect: 'manual',
 				...init,
 			})
-			results.push({
-				label,
-				status: response.status,
-				guarded: (await response.text()).includes(
-					'Content-Type was not one of',
-				),
-			})
+			results.push({ label, status: response.status })
+			await response.text()
 		}
 
 		expect(results).toEqual(
-			UNREADABLE_POSTS.map(({ label }) => ({
-				label,
-				status: 400,
-				guarded: true,
-			})),
+			UNREADABLE_POSTS.map(({ label }) => ({ label, status: 400 })),
 		)
 
 		await new Promise((resolve) => setTimeout(resolve, 500))
@@ -560,7 +542,10 @@ describe('production server', () => {
 			},
 		})
 		expect(response.status).toBe(200)
-		expect(await response.text()).not.toContain('Content-Type was not one of')
+		// A 200 here already proves the body was read — a refused body is a 400
+		// on the way in — so this only rules out the charset itself being
+		// mistaken for something unreadable, which would have produced that 400.
+		expect(await response.text()).not.toContain('Form not submitted properly')
 	})
 
 	// The morgan `url` token decodes the whole request URL, query string
