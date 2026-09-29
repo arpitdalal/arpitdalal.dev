@@ -7,6 +7,79 @@ import { iconsSpritesheet } from 'vite-plugin-icons-spritesheet'
 
 const MODE = process.env.NODE_ENV
 
+/**
+ * Every value `@sentry/vite-plugin` needs before it will create a release and
+ * upload source maps. Each one has exactly one supplier, and they live in three
+ * different files: the deploy workflow passes it as a `--build-secret` or
+ * `--build-arg`, the build stage of `other/Dockerfile` mounts and exports it,
+ * and the plugin below reads it. `tests/sentry-release.test.ts` fails if those
+ * three drift apart.
+ */
+const SENTRY_RELEASE_ENV = {
+	SENTRY_ORG: process.env.SENTRY_ORG,
+	SENTRY_PROJECT: process.env.SENTRY_PROJECT,
+	// The release is named after the commit. The server SDK also tags its events
+	// with it (see `server/utils/monitoring.ts`), so it is the one value that has
+	// to mean the same thing at build time and at runtime.
+	COMMIT_SHA: process.env.COMMIT_SHA,
+} as Record<string, string | undefined>
+
+/**
+ * Returns the Sentry plugin, or `null` when release management is off.
+ *
+ * A missing option is not an error as far as the plugin is concerned: it logs
+ * `logger.warn` and returns from `createRelease` and from `uploadSourcemaps`,
+ * having already injected the debug IDs during the bundle phase. The result is
+ * that a completely misconfigured build produces exactly the same artifacts as a
+ * working one — debug IDs present, `SENTRY_RELEASE` set — while the release
+ * never exists in Sentry and no source maps are ever uploaded. Every deploy up
+ * to 2026-09-29 looked fine and was not, because the workflow passed
+ * `SENTRY_AUTH_TOKEN` but not `SENTRY_ORG`.
+ *
+ * The upload is the plugin's only shot: it runs at build time, and it is gone by
+ * the time anything is deployed. There is no retry and no fallback, so when the
+ * plugin is going to do work, refuse to build until the values are all there.
+ * A red build is much cheaper than a release that silently does not exist.
+ */
+function getSentryPlugin() {
+	const authToken = process.env.SENTRY_AUTH_TOKEN
+
+	// A disabled plugin returns before it validates anything, so there is nothing
+	// worth asserting about a development build.
+	if (!authToken || MODE !== 'production') return null
+
+	const missing = Object.keys(SENTRY_RELEASE_ENV).filter(
+		(name) => !SENTRY_RELEASE_ENV[name],
+	)
+	if (missing.length > 0) {
+		const listed = missing.join(', ')
+		const pronoun = missing.length === 1 ? 'is' : 'are'
+		const object = missing.length === 1 ? 'it' : 'them'
+		throw new Error(
+			`Sentry release management is enabled (SENTRY_AUTH_TOKEN is set) but ${listed} ${pronoun} missing from the build environment, so @sentry/vite-plugin would log a warning and skip creating the release and uploading source maps. Set ${object} in the build: the deploy workflow passes ${object} to "flyctl deploy" and other/Dockerfile mounts ${object} into the build stage. To build without release management, unset SENTRY_AUTH_TOKEN.`,
+		)
+	}
+
+	// Narrowed by the check above; the cast keeps that fact across the boundary
+	// without a non-null assertion on each lookup.
+	const releaseEnv = SENTRY_RELEASE_ENV as Record<string, string>
+
+	return sentryVitePlugin({
+		authToken,
+		org: releaseEnv.SENTRY_ORG,
+		project: releaseEnv.SENTRY_PROJECT,
+		release: {
+			name: releaseEnv.COMMIT_SHA,
+			setCommits: {
+				auto: true,
+			},
+		},
+		sourcemaps: {
+			filesToDeleteAfterUpload: ['./build/**/*.map'],
+		},
+	})
+}
+
 export default defineConfig({
 	environments: {
 		// server/app.ts is the entry of the SSR build rather than React
@@ -80,22 +153,6 @@ export default defineConfig({
 				plugins: ['babel-plugin-react-compiler'],
 			},
 		}),
-		process.env.SENTRY_AUTH_TOKEN
-			? sentryVitePlugin({
-					disable: MODE !== 'production',
-					authToken: process.env.SENTRY_AUTH_TOKEN,
-					org: process.env.SENTRY_ORG,
-					project: process.env.SENTRY_PROJECT,
-					release: {
-						name: process.env.COMMIT_SHA,
-						setCommits: {
-							auto: true,
-						},
-					},
-					sourcemaps: {
-						filesToDeleteAfterUpload: ['./build/**/*.map'],
-					},
-				})
-			: null,
+		getSentryPlugin(),
 	],
 })
