@@ -84,11 +84,19 @@ function envUsedByPlugin() {
 function buildInputsFromWorkflow() {
 	return matchAll(
 		read(DEPLOY_WORKFLOW),
-		/--build-(?:secret|arg)\s+(SENTRY_[A-Z_]+|COMMIT_SHA)=/g,
+		// The name may be quoted, because its value is a shell expansion rather
+		// than a ${{ }} interpolation.
+		/--build-(?:secret|arg)\s+"?([A-Z_]+)=/g,
 	)
 }
 
-/** Secrets the build stage mounts under `/run/secrets`. */
+/**
+ * Secrets the build stage mounts under `/run/secrets`.
+ *
+ * Deliberately scoped to the `as build` stage. `ARG` does not cross a `FROM`,
+ * so each stage has to redeclare what it needs, and a `--mount` in the runtime
+ * stage would be a different mechanism entirely.
+ */
 function mountedSecrets() {
 	return matchAll(buildStage(), /--mount=type=secret,id=(SENTRY_[A-Z_]+)\b/g)
 }
@@ -141,5 +149,20 @@ describe('Sentry release management build inputs', () => {
 		// `ENV` too, because `ARG` alone is not visible to the RUN that runs
 		// `npm run build` — and `getSentryPlugin()` reads process.env.COMMIT_SHA.
 		expect(dockerfile).toMatch(/^ENV COMMIT_SHA=\$COMMIT_SHA$/m)
+	})
+
+	it('supplies every build secret from the step env, not a ${{ }} interpolation', () => {
+		// The deploy step passes each secret as `--build-secret "NAME=$NAME"`, so
+		// the value is a shell expansion. If the `env:` entry behind it were
+		// dropped, `flyctl` would forward the literal string `$SENTRY_ORG` as a
+		// secret and the build would fail far from the cause. `COMMIT_SHA` is
+		// excluded because it is an interpolated `github.sha`, not a secret.
+		const suppliedByEnv = matchAll(
+			read(DEPLOY_WORKFLOW),
+			/^\s+(SENTRY_[A-Z_]+): \$\{\{ secrets\./gm,
+		)
+		expect(suppliedByEnv).toEqual(
+			buildInputsFromWorkflow().filter((name) => name !== 'COMMIT_SHA'),
+		)
 	})
 })

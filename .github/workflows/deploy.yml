@@ -114,8 +114,13 @@ jobs:
         run: |
           flyctl deploy --remote-only \
             --build-arg COMMIT_SHA=${{ github.sha }} \
-            --build-secret SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} \
-            --build-secret SENTRY_ORG=${{ secrets.SENTRY_ORG }} \
-            --build-secret SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}
+            --build-secret "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" \
+            --build-secret "SENTRY_ORG=$SENTRY_ORG" \
+            --build-secret "SENTRY_PROJECT=$SENTRY_PROJECT"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          # Passed through the environment rather than interpolated into the
+          # script with ${{ }}, so the values are never part of the command text.
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
