@@ -53,6 +53,25 @@ const BUILD_ONLY = [
 
 const read = (path: string) => readFileSync(path, 'utf8')
 
+/**
+ * The client gets `SENTRY_RELEASE` injected into its bundle by the Sentry plugin;
+ * the server gets nothing. There is no global scope in Node for the plugin to
+ * write to, and @sentry/node has no SENTRY_RELEASE env fallback of its own, so
+ * the release name has to be handed to the server SDK explicitly.
+ *
+ * Mocked rather than asserted with a regex over monitoring.ts, because `init()`
+ * is callable and the thing worth protecting is the value that reaches the SDK —
+ * not the text of the line that sets it.
+ */
+const { sentry } = vi.hoisted(() => ({ sentry: { init: vi.fn() } }))
+
+vi.mock('@sentry/node', () => ({
+	init: (...args: unknown[]) => sentry.init(...args),
+	// Named in `integrations` by server/utils/monitoring.ts, so the mock has to
+	// satisfy it even though this file never inspects it.
+	httpIntegration: () => ({ name: 'Http' }),
+}))
+
 /** Every distinct capture of `pattern` in `source`, sorted. */
 function matchAll(source: string, pattern: RegExp) {
 	return [
@@ -229,6 +248,50 @@ describe('Sentry release management build inputs', () => {
 		)
 	})
 })
+
+describe('the release reaches the running server', () => {
+	it('redeclares COMMIT_SHA in the runtime stage, since ARG does not cross FROM', () => {
+		const stage = runtimeStage()
+		// Both lines: `ARG` alone makes it a build-time-only value, and `ENV` is
+		// what the running process actually reads.
+		expect(stage).toMatch(/^ARG COMMIT_SHA$/m)
+		expect(stage).toMatch(/^ENV COMMIT_SHA=\$COMMIT_SHA$/m)
+	})
+
+	it('tags the SDK with the release, so server events are attributable', async () => {
+		const commit = 'a'.repeat(40)
+		vi.stubEnv('COMMIT_SHA', commit)
+		vi.stubEnv('NODE_ENV', 'production')
+		vi.stubEnv('SENTRY_DSN', 'https://abc@o0.ingest.sentry.io/0')
+
+		const { init } = await import(
+			/* @vite-ignore */ '../server/utils/monitoring.ts'
+		)
+		init()
+
+		const [options] = sentry.init.mock.calls[0] as [Record<string, unknown>]
+		expect(options.release).toBe(commit)
+	})
+})
+
+/**
+ * The final stage of the Dockerfile — the image that actually runs in
+ * production, as opposed to the `as build` stage that only produces it.
+ *
+ * This is where `COMMIT_SHA` has to be *redeclared*. `ARG` does not cross a
+ * `FROM`, so the build stage's declaration says nothing about what ends up in the
+ * running container, which is why the server had no release for two years while
+ * the client bundle looked perfectly correct.
+ */
+function runtimeStage() {
+	const dockerfile = read(DOCKERFILE)
+	const start = dockerfile.indexOf('\nFROM base\n')
+	expect(
+		start,
+		`could not find the final stage in ${DOCKERFILE}`,
+	).toBeGreaterThan(-1)
+	return dockerfile.slice(start)
+}
 
 describe('Sentry credentials at the build/runtime boundary', () => {
 	// #16 removes the three build-only secrets from the Fly *runtime*
