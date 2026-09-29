@@ -23,3 +23,6 @@ node_modules
 # generated files
 /app/components/ui/icons
 .react-router/
+# Read by @sentry/vite-plugin at build time and merged into process.env.
+# Holds a Sentry auth token, so it must never be committed or baked into an image.
+.env.sentry-build-plugin

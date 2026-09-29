@@ -8,71 +8,95 @@ import { iconsSpritesheet } from 'vite-plugin-icons-spritesheet'
 const MODE = process.env.NODE_ENV
 
 /**
- * Every value `@sentry/vite-plugin` needs before it will create a release and
- * upload source maps. Each one has exactly one supplier, and they live in three
- * different files: the deploy workflow passes it as a `--build-secret` or
+ * Every environment variable `@sentry/vite-plugin` reads to create a release
+ * and upload source maps. Each one has exactly one supplier, and they live in
+ * three different files: the deploy workflow passes it as a `--build-secret` or
  * `--build-arg`, the build stage of `other/Dockerfile` mounts and exports it,
- * and the plugin below reads it. `tests/sentry-release.test.ts` fails if those
+ * and this function reads it. `tests/sentry-release.test.ts` fails if those
  * three drift apart.
+ *
+ * Read inside the function rather than cached at module scope so the guard
+ * below is a pure function of the environment at the moment it runs, which is
+ * what makes both of its branches testable.
  */
-const SENTRY_RELEASE_ENV = {
-	SENTRY_ORG: process.env.SENTRY_ORG,
-	SENTRY_PROJECT: process.env.SENTRY_PROJECT,
-	// The release is named after the commit. The server SDK also tags its events
-	// with it (see `server/utils/monitoring.ts`), so it is the one value that has
-	// to mean the same thing at build time and at runtime.
-	COMMIT_SHA: process.env.COMMIT_SHA,
-} as Record<string, string | undefined>
+function getSentryEnv() {
+	return {
+		SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
+		SENTRY_ORG: process.env.SENTRY_ORG,
+		SENTRY_PROJECT: process.env.SENTRY_PROJECT,
+		// The release is named after the commit. #15 makes the server SDK tag its
+		// events with the same value, so it is the one variable that has to mean
+		// the same thing at build time and at runtime.
+		COMMIT_SHA: process.env.COMMIT_SHA,
+	}
+}
 
 /**
  * Returns the Sentry plugin, or `null` when release management is off.
  *
- * A missing option is not an error as far as the plugin is concerned: it logs
+ * A missing option is not an error as far as the plugin is concerned. It calls
  * `logger.warn` and returns from `createRelease` and from `uploadSourcemaps`,
- * having already injected the debug IDs during the bundle phase. The result is
- * that a completely misconfigured build produces exactly the same artifacts as a
- * working one — debug IDs present, `SENTRY_RELEASE` set — while the release
- * never exists in Sentry and no source maps are ever uploaded. Every deploy up
- * to 2026-09-29 looked fine and was not, because the workflow passed
- * `SENTRY_AUTH_TOKEN` but not `SENTRY_ORG`.
+ * having already injected the debug IDs during the bundle phase. So a build with
+ * nothing configured and a build that worked perfectly produce indistinguishable
+ * artifacts: both have debug IDs in the bundle, and both build green. From
+ * 2024-04-16 until 2026-09-29 the workflow passed `SENTRY_AUTH_TOKEN` but not
+ * `SENTRY_ORG`, and every deploy was the first kind. See #16.
  *
- * The upload is the plugin's only shot: it runs at build time, and it is gone by
- * the time anything is deployed. There is no retry and no fallback, so when the
- * plugin is going to do work, refuse to build until the values are all there.
- * A red build is much cheaper than a release that silently does not exist.
+ * The upload is the plugin's only shot: it runs at build time and is gone by the
+ * time anything is deployed. So when the plugin is going to do work, refuse to
+ * build until every value it needs is present.
  */
-function getSentryPlugin() {
-	const authToken = process.env.SENTRY_AUTH_TOKEN
+export function getSentryPlugin() {
+	const env = getSentryEnv()
 
-	// A disabled plugin returns before it validates anything, so there is nothing
-	// worth asserting about a development build.
-	if (!authToken || MODE !== 'production') return null
+	// Unset token means release management is off, which is what every local
+	// build does. A non-production build never reaches the assertions below: a
+	// disabled plugin returns from the plugin manager before it validates
+	// anything, so there would be nothing for them to protect.
+	if (!env.SENTRY_AUTH_TOKEN || process.env.NODE_ENV !== 'production') {
+		return null
+	}
 
-	const missing = Object.keys(SENTRY_RELEASE_ENV).filter(
-		(name) => !SENTRY_RELEASE_ENV[name],
-	)
+	// Falsy, not merely undefined: an empty secret reaches the build as an empty
+	// file, exports as an empty string, and would otherwise pass a presence check
+	// and then be sent to Sentry as an empty org slug.
+	const missing = Object.entries(env)
+		.filter(([, value]) => !value)
+		.map(([name]) => name)
 	if (missing.length > 0) {
 		const listed = missing.join(', ')
-		const pronoun = missing.length === 1 ? 'is' : 'are'
-		const object = missing.length === 1 ? 'it' : 'them'
+		const many = missing.length > 1
 		throw new Error(
-			`Sentry release management is enabled (SENTRY_AUTH_TOKEN is set) but ${listed} ${pronoun} missing from the build environment, so @sentry/vite-plugin would log a warning and skip creating the release and uploading source maps. Set ${object} in the build: the deploy workflow passes ${object} to "flyctl deploy" and other/Dockerfile mounts ${object} into the build stage. To build without release management, unset SENTRY_AUTH_TOKEN.`,
+			`Sentry release management is enabled (SENTRY_AUTH_TOKEN is set) but ${listed} ${many ? 'are' : 'is'} missing or empty in the build environment, so @sentry/vite-plugin would warn and skip creating the release and uploading source maps. Set ${many ? 'them' : 'it'} in the build: the deploy workflow passes ${many ? 'them' : 'it'} to "flyctl deploy" and other/Dockerfile mounts ${many ? 'them' : 'it'} into the build stage. To build without release management, unset SENTRY_AUTH_TOKEN.`,
 		)
 	}
 
-	// Narrowed by the check above; the cast keeps that fact across the boundary
-	// without a non-null assertion on each lookup.
-	const releaseEnv = SENTRY_RELEASE_ENV as Record<string, string>
-
 	return sentryVitePlugin({
-		authToken,
-		org: releaseEnv.SENTRY_ORG,
-		project: releaseEnv.SENTRY_PROJECT,
+		authToken: env.SENTRY_AUTH_TOKEN,
+		org: env.SENTRY_ORG,
+		project: env.SENTRY_PROJECT,
+		// The plugin's documented default is to throw from here and stop the
+		// build. The shipped 11.0.0 implementation does not: it logs and
+		// continues. Restoring the documented behaviour is what makes the stance
+		// above true, and it matters more than it looks — `filesToDeleteAfterUpload`
+		// below is honoured in the `finally` of the plugin's writeBundle hook
+		// whether or not the upload succeeded, so a swallowed failure would
+		// delete every source map from the image and still exit zero.
+		errorHandler: (error) => {
+			throw error
+		},
 		release: {
-			name: releaseEnv.COMMIT_SHA,
-			setCommits: {
-				auto: true,
-			},
+			name: env.COMMIT_SHA,
+			// `setCommits` is deliberately omitted. The plugin's own default
+			// (`{ auto: true, shouldNotThrowOnFailure: true, ... }`) is what makes
+			// a commit-association failure non-fatal; naming `auto` explicitly
+			// opts out of `shouldNotThrowOnFailure`, and the resulting throw skips
+			// `finalizeRelease`, leaving the release stuck in `new` forever. Note
+			// that `auto` cannot actually succeed in the build stage regardless:
+			// the base image has no `git`, so there is nothing for it to read a
+			// repository from. Commit association needs either a Sentry GitHub
+			// integration or a `sentry-cli releases set-commits` run from the
+			// deploy job, which has a checkout.
 		},
 		sourcemaps: {
 			filesToDeleteAfterUpload: ['./build/**/*.map'],

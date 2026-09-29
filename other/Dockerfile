@@ -37,19 +37,22 @@ COPY --from=deps /myapp/node_modules /myapp/node_modules
 
 ADD . .
 
-# Mount the secrets and set them as environment variables and run the build.
-# Each one needs its own --mount *and* its own export, and every line has to
-# carry the continuation: without it the mounts and the exports collapse into a
-# single RUN and the shell reads `export` as an argument to the last mount.
+# Mount the secrets and run the build.
 #
-# The exports are chained with &&, so a secret that was not passed short-circuits
-# and fails the build here. That is the point — @sentry/vite-plugin reacts to a
-# missing SENTRY_ORG by logging a warning, skipping release creation and skipping
-# the source map upload, and then deleting the maps anyway in the `finally` of
-# its writeBundle hook. A red build is the cheap outcome. See #16.
-RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
-    --mount=type=secret,id=SENTRY_ORG \
-    --mount=type=secret,id=SENTRY_PROJECT \
+# `required=true` is what makes a missing secret fail the build. It looks like the
+# `&&` chain below would do it instead, but it would not: `export X="$(cat
+# /run/secrets/X)"` exits 0 even when the `cat` fails, because a failed command
+# substitution does not propagate through `export`. Without `required=true` an
+# absent secret silently becomes an empty string, and an empty string is exactly
+# what `getSentryPlugin()` in vite.config.ts treats as missing — so the build
+# would still fail, several layers later and with a less obvious message.
+#
+# The `cat`s are needed because a secret mount sets no environment variable on
+# its own; only the `env=` mount form does, and that needs a Dockerfile syntax
+# pin this file does not currently carry.
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,required=true \
+    --mount=type=secret,id=SENTRY_ORG,required=true \
+    --mount=type=secret,id=SENTRY_PROJECT,required=true \
     export SENTRY_AUTH_TOKEN="$(cat /run/secrets/SENTRY_AUTH_TOKEN)" && \
     export SENTRY_ORG="$(cat /run/secrets/SENTRY_ORG)" && \
     export SENTRY_PROJECT="$(cat /run/secrets/SENTRY_PROJECT)" && \

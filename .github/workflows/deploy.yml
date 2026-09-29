@@ -112,6 +112,17 @@ jobs:
       - name: 🚀 Deploy Production
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
+          # An unset secret is the empty string, not an unset variable, so a
+          # deleted SENTRY_AUTH_TOKEN would arrive as "" and turn
+          # `getSentryPlugin()`'s "off" branch on — a green deploy with no
+          # release, no debug IDs and no evidence anything was skipped. Check
+          # here, where the name of the missing secret is still obvious.
+          for name in SENTRY_AUTH_TOKEN SENTRY_ORG SENTRY_PROJECT; do
+            if [ -z "${!name}" ]; then
+              echo "::error::$name is unset or empty in this repository's secrets"
+              exit 1
+            fi
+          done
           flyctl deploy --remote-only \
             --build-arg COMMIT_SHA=${{ github.sha }} \
             --build-secret "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" \

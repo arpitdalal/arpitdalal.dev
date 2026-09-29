@@ -7,3 +7,6 @@
 /.cache
 /public/build
 /build
+
+# Read by @sentry/vite-plugin at build time. Holds a Sentry auth token.
+.env.sentry-build-plugin
