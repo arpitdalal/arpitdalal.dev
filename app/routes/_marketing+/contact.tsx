@@ -18,6 +18,7 @@ import { LineGlow } from '#app/components/line-glow'
 import { SubmitButton } from '#app/components/submit-button'
 import { TextareaField } from '#app/components/textarea-field'
 import { sendEmail } from '#app/utils/email'
+import { readFormData } from '#app/utils/form-data.server'
 import { checkHoneypot } from '#app/utils/honeypot.server'
 import { ContactSchema } from '#app/utils/schemas'
 import { type Route } from './+types/contact'
@@ -29,7 +30,7 @@ export const meta: Route.MetaFunction = () => [
 ]
 
 export const action = async ({ request }: Route.ActionArgs) => {
-	const formData = await request.formData()
+	const formData = await readFormData(request)
 	await checkHoneypot(formData)
 	const submission = parseWithZod(formData, { schema: ContactSchema })
 

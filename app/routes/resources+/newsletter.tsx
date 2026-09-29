@@ -1,11 +1,12 @@
 import { parseWithZod } from '@conform-to/zod/v4'
 import { ADD_SUBSCRIBER } from '#app/graphql/queries'
+import { readFormData } from '#app/utils/form-data.server'
 import { checkHoneypot } from '#app/utils/honeypot.server'
 import { NewsletterSchema, SubscribeResponseSchema } from '#app/utils/schemas'
 import { type Route } from './+types/newsletter'
 
 export async function action({ request }: Route.ActionArgs) {
-	const formData = await request.formData()
+	const formData = await readFormData(request)
 	await checkHoneypot(formData)
 	const submission = parseWithZod(formData, { schema: NewsletterSchema })
 

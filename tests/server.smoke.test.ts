@@ -416,6 +416,153 @@ describe('production server', () => {
 		).toBeNull()
 	})
 
+	// A `Content-Type` `formData()` cannot read used to throw a `TypeError`
+	// out of the action, which is a 500 and an unhandled exception in Sentry.
+	// Scanners reach a public form URL on their own, and a body-less `POST` —
+	// no `Content-Type` at all — is the cheapest request they send, so this is
+	// traffic that arrives rather than a shape to imagine. Both routes are
+	// covered because both actions read a form body.
+	//
+	// The status alone cannot separate the two 400s these routes have: the
+	// honeypot's own rejection is also a 400 (see above). The guard's body text
+	// is what tells them apart, so both are asserted on it.
+	//
+	// The label is carried in the fixture so the assertion can name the case
+	// that failed — `vitest/valid-expect` rejects a second argument that is not
+	// a literal, and a hoisted variable would not qualify. The results are
+	// compared as one array so a single `toEqual` diff names the bad case.
+	const UNREADABLE_POSTS: Array<{
+		label: string
+		path: string
+		init: { body?: string; headers?: Record<string, string> }
+	}> = [
+		{ label: '/contact, no content-type', path: '/contact', init: {} },
+		{
+			label: '/contact, application/json',
+			path: '/contact',
+			init: {
+				body: JSON.stringify({ name: 'bot' }),
+				headers: { 'content-type': 'application/json' },
+			},
+		},
+		{
+			label: '/resources/newsletter, no content-type',
+			path: '/resources/newsletter',
+			init: {},
+		},
+		{
+			label: '/resources/newsletter, application/json',
+			path: '/resources/newsletter',
+			init: { body: '{}', headers: { 'content-type': 'application/json' } },
+		},
+	]
+
+	/**
+	 * A real `from__confirm`, read out of the rendered `/contact` page.
+	 *
+	 * Since the honeypot fields became required, no hand-built `FormData` can
+	 * stand in for a browser submission: one without them is now a 400, which
+	 * is correct but makes a test that expects the form to be *accepted* prove
+	 * nothing. The token is encrypted with `HONEYPOT_SECRET` and minted per
+	 * render, so the only way to get a valid one is to read it off the page
+	 * exactly as a browser would.
+	 */
+	async function scrapeHoneypotFields() {
+		const html = await (await fetch(`${base}/contact`)).text()
+		const encryptedValidFrom = /name="from__confirm"[^>]*value="([^"]*)"/.exec(
+			html,
+		)?.[1]
+		if (!encryptedValidFrom) {
+			throw new Error(
+				`no from__confirm in the rendered /contact page${serverOutput ? `\n${serverOutput}` : ''}`,
+			)
+		}
+		return { encryptedValidFrom }
+	}
+
+	it('answers an unreadable form body with 400, not 500', async () => {
+		const results: Array<{ label: string; status: number; guarded: boolean }> =
+			[]
+		for (const { label, path, init } of UNREADABLE_POSTS) {
+			const response = await fetch(`${base}${path}`, {
+				method: 'POST',
+				redirect: 'manual',
+				...init,
+			})
+			results.push({
+				label,
+				status: response.status,
+				guarded: (await response.text()).includes(
+					'Content-Type was not one of',
+				),
+			})
+		}
+
+		expect(results).toEqual(
+			UNREADABLE_POSTS.map(({ label }) => ({
+				label,
+				status: 400,
+				guarded: true,
+			})),
+		)
+
+		await new Promise((resolve) => setTimeout(resolve, 500))
+		expect(
+			server?.exitCode,
+			`server should still be running${serverOutput ? `\n${serverOutput}` : ''}`,
+		).toBeNull()
+	})
+
+	// The honeypot fields are now required, so a submission that omits them is
+	// answered 400 even though its body is perfectly readable. That is the
+	// intended behaviour — a form that skipped the fields was not produced by
+	// our page — and it is the other half of what the fix was for. Without this
+	// case the requirement is only pinned at the unit boundary, where a test can
+	// hand `checkHoneypot` a `FormData` no browser would ever build.
+	it('answers a submission that omits the honeypot fields with 400', async () => {
+		const response = await fetch(`${base}/contact`, {
+			method: 'POST',
+			redirect: 'manual',
+			body: new URLSearchParams({
+				name: 'a',
+				email: 'a@example.com',
+				message: 'hi',
+			}),
+			headers: { 'content-type': 'application/x-www-form-urlencoded' },
+		})
+		expect(response.status).toBe(400)
+		expect(await response.text()).toContain('Form not submitted properly')
+	})
+
+	// A `charset` on the media type must not be mistaken for an unreadable
+	// body: a browser form is entitled to send one, and rejecting it would
+	// break the contact form for every real user whose browser does.
+	//
+	// The proof that the body was read is that the request gets all the way to
+	// Zod, which answers 200 with a validation reply. The email is deliberately
+	// invalid, and the honeypot fields are real ones scraped from the rendered
+	// page — with the fields required, a body without them is rejected before
+	// Zod is ever reached and this test would pass for the wrong reason.
+	it('reads a form body that declares a charset', async () => {
+		const { encryptedValidFrom } = await scrapeHoneypotFields()
+		const response = await fetch(`${base}/contact`, {
+			method: 'POST',
+			redirect: 'manual',
+			body: new URLSearchParams({
+				name: 'a',
+				email: 'bad',
+				message: 'hi',
+				name__confirm: '',
+				from__confirm: encryptedValidFrom,
+			}),
+			headers: {
+				'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+			},
+		})
+		expect(response.status).toBe(200)
+		expect(await response.text()).not.toContain('Content-Type was not one of')
+	})
+
 	// The morgan `url` token decodes the whole request URL, query string
 	// included. morgan evaluates its tokens from the response's `finished`
 	// event with no try/catch, so a URIError there escapes as an uncaught

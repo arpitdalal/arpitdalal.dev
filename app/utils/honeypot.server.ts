@@ -1,8 +1,26 @@
 import { createHash } from 'node:crypto'
 import { Honeypot, SpamError } from 'remix-utils/honeypot/server'
 
+/**
+ * The field names, named here rather than left to `remix-utils`' defaults so
+ * that `checkHoneypot` can require them and stay in step with the config below.
+ * `Honeypot` exposes both as `protected`, so there is no supported way to read
+ * back what it was configured with.
+ */
+const NAME_FIELD_NAME = 'name__confirm'
+
+/**
+ * `null` disables the `from__confirm` half of the check, which is what the test
+ * suite wants: it makes `check` return before it ever decrypts, so a case that
+ * accidentally depends on the crypto fails loudly instead of passing for the
+ * wrong reason. The consequence is that the input is not rendered either, so
+ * the field cannot be required — see `missingHoneypotFields`.
+ */
+const VALID_FROM_FIELD_NAME = process.env.TESTING ? null : 'from__confirm'
+
 export const honeypot = new Honeypot({
-	validFromFieldName: process.env.TESTING ? null : undefined,
+	nameFieldName: NAME_FIELD_NAME,
+	validFromFieldName: VALID_FROM_FIELD_NAME,
 	encryptionSeed: process.env.HONEYPOT_SECRET,
 })
 
@@ -59,13 +77,52 @@ export function isMalformedHoneypotFieldError(error: unknown) {
 	)
 }
 
+/**
+ * The honeypot fields this submission is missing, if any.
+ *
+ * `remix-utils` treats a form carrying *neither* honeypot field as one it has
+ * no opinion about: `shouldCheckHoneypot` returns false and `check` returns
+ * without throwing. That is a deliberate accommodation for forms that are not
+ * protected by a honeypot at all — but on these routes every form is, and the
+ * fields are rendered unconditionally by `HoneypotInputs`, so their absence
+ * means the submission was not produced by our page. A bot that simply omits
+ * them walks straight past the check that exists to catch it.
+ *
+ * Requiring `name__confirm` is what closes that. It is the field the check is
+ * built around: a human cannot see it and leaves it blank, and a bot filling
+ * every input it finds trips it. A submission without it has skipped the
+ * question rather than answered it.
+ *
+ * `from__confirm` is required when it is configured, and skipped when it is
+ * `null` — with the timestamp half disabled the input is not rendered, so
+ * demanding it would reject every real submission in the environments that
+ * disable it. Read through the module's own constant rather than
+ * `honeypot.validFromFieldName`, which is `protected`.
+ */
+function missingHoneypotFields(formData: FormData): string[] {
+	const missing: string[] = []
+	if (!formData.has(NAME_FIELD_NAME)) missing.push(NAME_FIELD_NAME)
+	if (VALID_FROM_FIELD_NAME && !formData.has(VALID_FROM_FIELD_NAME)) {
+		missing.push(VALID_FROM_FIELD_NAME)
+	}
+	return missing
+}
+
 export async function checkHoneypot(formData: FormData) {
+	// Checked before `honeypot.check` so a submission that skipped the fields
+	// is answered without paying for the decrypt, and so the rejection is ours
+	// rather than dependent on `check`'s no-op behaviour above.
+	const missing = missingHoneypotFields(formData)
+	if (missing.length > 0) {
+		throw new Response('Form not submitted properly', { status: 400 })
+	}
+
 	try {
 		await honeypot.check(formData)
 	} catch (error) {
 		// A `SpamError` is the expected rejection. A malformed field is the same
-		// answer reached the long way round — see the note on the predicate for
-		// the one case that is not really spam. Everything else is a real fault
+		// answer reached the long way round — see the note on the predicate for the
+		// one case that is not really spam. Everything else is a real fault
 		// and stays a 500.
 		if (error instanceof SpamError || isMalformedHoneypotFieldError(error)) {
 			throw new Response('Form not submitted properly', { status: 400 })
