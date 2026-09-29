@@ -61,6 +61,11 @@ let serverOutput = ''
  * Every POST this file makes to a rate-limited "strong" path. Kept as a running
  * count so `afterAll` can prove the suite is inside the budget rather than
  * leaving the next person to discover it as a 429 in an unrelated test.
+ *
+ * POSTs only, and that is the limiter's own distinction: `server/index.ts`
+ * routes GET and HEAD to a separate, far larger `generalRateLimit`, so the page
+ * loads this file makes — including the one `scrapeHoneypotFields` does — are
+ * not drawing on this budget.
  */
 let STRONG_PATH_POSTS = 0
 
@@ -552,9 +557,7 @@ describe('production server', () => {
 	// Zod is ever reached and this test would pass for the wrong reason.
 	it('reads a form body that declares a charset', async () => {
 		const { encryptedValidFrom } = await scrapeHoneypotFields()
-		const response = await fetch(`${base}/contact`, {
-			method: 'POST',
-			redirect: 'manual',
+		const response = await postStrongPath('/contact', {
 			body: new URLSearchParams({
 				name: 'a',
 				email: 'bad',
