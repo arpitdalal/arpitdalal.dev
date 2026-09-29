@@ -16,6 +16,13 @@ import { describe, expect, it, vi } from 'vitest'
  */
 
 const { readFormData } = await import('#app/utils/form-data.server')
+// Imported here rather than at the top of the file because
+// `honeypot.server.ts` builds its `Honeypot` from `process.env` at import time,
+// so the env has to be pinned first — the same reason `tests/honeypot.test.ts`
+// does this. Only the seed matters here, and only for determinism: the token is
+// minted by this same instance and verified by this same instance.
+vi.stubEnv('HONEYPOT_SECRET', 'form-data-test-secret')
+const { checkHoneypot, honeypot } = await import('#app/utils/honeypot.server')
 
 /** The 400 every rejection answers with, deliberately uniform. */
 const UNREADABLE_BODY = 'Form not submitted properly'
@@ -146,6 +153,63 @@ describe('readFormData with a body it can read', () => {
 	})
 })
 
+describe('readFormData and checkHoneypot composed', () => {
+	// The two guards are the whole risk surface of these routes and both are
+	// one edit away from breaking the form for every human, so they are
+	// exercised here *together* on a body shaped the way a browser sends one.
+	// Individually they are covered elsewhere; what this pins is that a
+	// genuine submission passes both, which no single-file test can show —
+	// the unit suites hand each guard a hand-built `FormData` and stop.
+	//
+	// No network and no rate-limit budget, unlike an end-to-end accept case:
+	// a valid submission would reach `sendEmail` and open an SMTP connection
+	// to a host that does not exist.
+	it('accepts a browser-shaped submission through both guards', async () => {
+		// Exactly what `HoneypotInputs` renders: the name field blank because
+		// nobody can see it, and the timestamp token from the root loader.
+		const { encryptedValidFrom, nameFieldName, validFromFieldName } =
+			await honeypot.getInputProps()
+		const body = new URLSearchParams({
+			name: 'Arpit',
+			email: 'someone@example.com',
+			message: 'hello',
+			[nameFieldName]: '',
+			[validFromFieldName as string]: encryptedValidFrom,
+		})
+
+		const request = new Request('http://localhost/contact', {
+			method: 'POST',
+			body,
+			headers: { 'content-type': 'application/x-www-form-urlencoded' },
+		})
+
+		const formData = await readFormData(request)
+		await expect(checkHoneypot(formData)).resolves.toBeUndefined()
+	})
+
+	it('still rejects that same submission when the honeypot fields are dropped', async () => {
+		// The negative half, and the reason the positive one above is worth
+		// having: it proves the accept path is the guards agreeing, not the
+		// guards being absent.
+		const { nameFieldName } = await honeypot.getInputProps()
+		const body = new URLSearchParams({
+			name: 'Arpit',
+			email: 'someone@example.com',
+			message: 'hello',
+			[nameFieldName]: '',
+		})
+
+		const request = new Request('http://localhost/contact', {
+			method: 'POST',
+			body,
+			headers: { 'content-type': 'application/x-www-form-urlencoded' },
+		})
+
+		const formData = await readFormData(request)
+		expect(await captureStatus(checkHoneypot(formData))).toBe(400)
+	})
+})
+
 describe('readFormData and errors that are not about the body', () => {
 	// The narrowing that keeps this a fix rather than a blanket catch.
 	// `formData()` signals an unreadable body with a `TypeError`, so that is the
@@ -173,5 +237,24 @@ describe('readFormData and errors that are not about the body', () => {
 		)
 
 		expect(await captureStatus(readFormData(original))).toBe(400)
+	})
+
+	it('rethrows the body-already-used TypeError rather than answering 400', async () => {
+		// The case that made the narrowing wrong. A disturbed or locked body
+		// rejects with a `TypeError` too — the spec's `consume body` step 1 says
+		// so, and it is what a double `formData()` produces — but it is *our*
+		// bug rather than the client's, and converting it would file a server
+		// fault as a rejected submission and hide it permanently.
+		//
+		// Reproduced for real rather than mocked, so the premise is pinned: this
+		// is genuinely the error a second read produces.
+		const original = request('application/x-www-form-urlencoded', 'name=Arpit')
+		await original.formData()
+		expect(original.bodyUsed).toBe(true)
+		await expect(original.formData()).rejects.toThrow(TypeError)
+
+		await expect(readFormData(original)).rejects.toThrow(
+			/already consumed before the action read it/,
+		)
 	})
 })

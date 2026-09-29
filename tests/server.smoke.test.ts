@@ -57,6 +57,23 @@ const TEST_ENV = {
 let server: ChildProcess | undefined
 let serverOutput = ''
 
+/**
+ * Every POST this file makes to a rate-limited "strong" path. Kept as a running
+ * count so `afterAll` can prove the suite is inside the budget rather than
+ * leaving the next person to discover it as a 429 in an unrelated test.
+ */
+let STRONG_PATH_POSTS = 0
+
+/** A `POST` to a strong path, counted against the budget above. */
+function postStrongPath(path: string, init: RequestInit = {}) {
+	STRONG_PATH_POSTS++
+	return fetch(`${base}${path}`, {
+		method: 'POST',
+		redirect: 'manual',
+		...init,
+	})
+}
+
 async function waitForServer(url: string, child: ChildProcess) {
 	// The healthcheck route is the cheapest thing that proves both that the
 	// server is listening and that the React Router handler is mounted.
@@ -111,6 +128,12 @@ beforeAll(async () => {
 	// ALLOW_INDEXING. A developer who exports it would otherwise make the
 	// "sends no X-Robots-Tag by default" test below fail on their machine only.
 	delete env.ALLOW_INDEXING
+	// `TESTING` for the same reason and worse: `honeypot.server.ts` reads it to
+	// decide whether the `from__confirm` input exists at all, so a truthy value
+	// in a developer's shell would leave `scrapeHoneypotFields` below with
+	// nothing to scrape and fail a test about a charset. Not a key of `env`'s
+	// inferred type, so it goes through the index signature.
+	delete (env as Record<string, string | undefined>).TESTING
 
 	const child = spawn(process.execPath, ['index.ts'], {
 		env,
@@ -129,6 +152,15 @@ beforeAll(async () => {
 }, 60_000)
 
 afterAll(() => {
+	// The shared rate-limit budget is a real coupling in this file and nothing
+	// else enforces it, so a case added later would otherwise surface as an
+	// unrelated 429 inside whichever test ran next. Asserting it here turns that
+	// into a message about the budget.
+	if (STRONG_PATH_POSTS > 10) {
+		throw new Error(
+			`${STRONG_PATH_POSTS} POSTs to /contact or /resources/newsletter; they share one 10/min rate limit (server/index.ts strongPaths), so this suite is over budget`,
+		)
+	}
 	server?.kill('SIGKILL')
 })
 
@@ -372,11 +404,12 @@ describe('production server', () => {
 	// without touching the crypto path. No other field is needed: both actions
 	// run the honeypot check before validating.
 	//
-	// Four requests here plus the page load above stay inside the rate limit:
-	// `/contact` and `/resources/newsletter` share one `express-rate-limit`
-	// instance keyed by IP, so the budget is 10 per minute across both rather
-	// than 10 each. Adding a case to this file can therefore break a test
-	// elsewhere in it with a 429 — see `UNREADABLE_POSTS` below.
+	// The requests below, plus the page load above, spend 8 of the shared
+	// 10/min budget. `/contact` and `/resources/newsletter` are guarded by one
+	// `express-rate-limit` instance keyed by IP (`strongPaths` in
+	// `server/index.ts`), so the budget is not per-path. Two to spare is enough
+	// for now and not enforced by anything — see `STRONG_PATH_POSTS` in
+	// `afterAll`, which fails loudly if a future case pushes past it.
 	const HONEYPOT_POSTS: Array<[path: string, validFrom: string]> = [
 		['/contact', '!!!not base64!!!'],
 		['/contact', 'a'],
@@ -398,11 +431,9 @@ describe('production server', () => {
 				name__confirm: '',
 				from__confirm: validFrom,
 			})
-			const response = await fetch(`${base}${path}`, {
-				method: 'POST',
+			const response = await postStrongPath(path, {
 				body,
 				headers: { 'content-type': 'application/x-www-form-urlencoded' },
-				redirect: 'manual',
 			})
 			expect(response.status, `${path} with from__confirm=${validFrom}`).toBe(
 				400,
@@ -475,11 +506,7 @@ describe('production server', () => {
 		// not accept this submission", whatever the reason.
 		const results: Array<{ label: string; status: number }> = []
 		for (const { label, path, init } of UNREADABLE_POSTS) {
-			const response = await fetch(`${base}${path}`, {
-				method: 'POST',
-				redirect: 'manual',
-				...init,
-			})
+			const response = await postStrongPath(path, init)
 			results.push({ label, status: response.status })
 			await response.text()
 		}
@@ -502,9 +529,7 @@ describe('production server', () => {
 	// case the requirement is only pinned at the unit boundary, where a test can
 	// hand `checkHoneypot` a `FormData` no browser would ever build.
 	it('answers a submission that omits the honeypot fields with 400', async () => {
-		const response = await fetch(`${base}/contact`, {
-			method: 'POST',
-			redirect: 'manual',
+		const response = await postStrongPath('/contact', {
 			body: new URLSearchParams({
 				name: 'a',
 				email: 'a@example.com',
