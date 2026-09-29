@@ -28,6 +28,21 @@ RUN npm prune --omit=dev
 # Build the app
 FROM base as build
 
+# The Sentry bundler plugin shells out to a native `sentry-cli` binary, and that
+# binary — unlike Node — verifies TLS against the system trust store. The slim
+# base image has no CA bundle at all:
+#
+#   $ docker run --rm node:22.23.3-bookworm-slim ls /etc/ssl/certs/ca-certificates.crt
+#   ls: cannot access '/etc/ssl/certs/ca-certificates.crt': No such file or directory
+#
+# So `npm install` succeeds (Node bundles its own roots) and then every release
+# and source-map upload fails with "SSL certificate problem: unable to get local
+# issuer certificate". This only ever surfaces once #16 makes the plugin reach
+# the API at all; before that the `org` guard returned before any network call.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
 ARG COMMIT_SHA
 ENV COMMIT_SHA=$COMMIT_SHA
 
