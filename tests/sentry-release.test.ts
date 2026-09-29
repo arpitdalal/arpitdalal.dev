@@ -103,6 +103,25 @@ function buildStage() {
 }
 
 /**
+ * The final stage of the Dockerfile — the image that actually runs in
+ * production, as opposed to the `as build` stage that only produces it.
+ *
+ * This is where `COMMIT_SHA` has to be *redeclared*. `ARG` does not cross a
+ * `FROM`, so the build stage's declaration says nothing about what ends up in the
+ * running container, which is why the server had no release for two years while
+ * the client bundle looked perfectly correct.
+ */
+function runtimeStage() {
+	const dockerfile = read(DOCKERFILE)
+	const start = dockerfile.indexOf('\nFROM base\n')
+	expect(
+		start,
+		`could not find the final stage in ${DOCKERFILE}`,
+	).toBeGreaterThan(-1)
+	return dockerfile.slice(start)
+}
+
+/**
  * Every build input `getSentryPlugin()` reads, as named in `vite.config.ts`.
  *
  * Matched as a pattern rather than listed literally, so adding a value to
@@ -273,25 +292,6 @@ describe('the release reaches the running server', () => {
 		expect(options.release).toBe(commit)
 	})
 })
-
-/**
- * The final stage of the Dockerfile — the image that actually runs in
- * production, as opposed to the `as build` stage that only produces it.
- *
- * This is where `COMMIT_SHA` has to be *redeclared*. `ARG` does not cross a
- * `FROM`, so the build stage's declaration says nothing about what ends up in the
- * running container, which is why the server had no release for two years while
- * the client bundle looked perfectly correct.
- */
-function runtimeStage() {
-	const dockerfile = read(DOCKERFILE)
-	const start = dockerfile.indexOf('\nFROM base\n')
-	expect(
-		start,
-		`could not find the final stage in ${DOCKERFILE}`,
-	).toBeGreaterThan(-1)
-	return dockerfile.slice(start)
-}
 
 describe('Sentry credentials at the build/runtime boundary', () => {
 	// #16 removes the three build-only secrets from the Fly *runtime*
