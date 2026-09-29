@@ -193,6 +193,16 @@ describe('Sentry release management build inputs', () => {
 		expect(dockerfile).toMatch(/^ENV COMMIT_SHA=\$COMMIT_SHA$/m)
 	})
 
+	it('installs a CA bundle, or the Sentry CLI cannot verify TLS', () => {
+		// `@sentry/vite-plugin` shells out to a native `sentry-cli`, which checks
+		// TLS against the system trust store rather than Node's bundled roots.
+		// `node:22.23.3-bookworm-slim` ships no CA bundle, so without this the
+		// first real upload fails with "unable to get local issuer certificate" —
+		// which is only reachable now that the plugin gets far enough to make a
+		// request. See #16.
+		expect(buildStage()).toMatch(/apt-get install[^\n]*ca-certificates/)
+	})
+
 	it('backs each build secret with a value in the step env', () => {
 		// The deploy step passes each secret as `--build-secret "NAME=$NAME"`, so
 		// the value is a shell expansion. If the `env:` entry behind it were
