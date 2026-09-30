@@ -43,9 +43,9 @@ afterAll(() => {
  * runs — so without this every case below would be a green 400 for the wrong
  * reason.
  */
-function formDataWith(validFrom: string) {
+function formDataWith(validFrom: string, name = '') {
 	const formData = new FormData()
-	formData.set('name__confirm', '')
+	formData.set('name__confirm', name)
 	formData.set('from__confirm', validFrom)
 	return formData
 }
@@ -153,6 +153,83 @@ describe('checkHoneypot with a real submission', () => {
 	})
 })
 
+describe('checkHoneypot with the honeypot fields omitted', () => {
+	// `remix-utils` has no opinion about a form carrying neither honeypot
+	// field: `shouldCheckHoneypot` returns false and `check` returns without
+	// throwing. That is the right call for routes with no honeypot, and the
+	// wrong one here, where every form renders the fields — so a bot could skip
+	// the check entirely by not sending them. These pin the requirement that
+	// closes it.
+	//
+	// This is the bypass in its most obvious form, and it needs no crypto, no
+	// forged token, and no knowledge of what the fields are called.
+
+	it('rejects a submission carrying none of the honeypot fields', async () => {
+		// A well-formed contact submission with the honeypot simply left out —
+		// exactly what a bot that posts straight from a JSON payload sends.
+		const formData = new FormData()
+		formData.set('name', 'a')
+		formData.set('email', 'a@example.com')
+		formData.set('message', 'hi')
+
+		const response = await captureResponse(checkHoneypot(formData))
+		expect(response.status).toBe(400)
+	})
+
+	it('rejects a submission carrying only from__confirm', async () => {
+		// One field present is enough for `shouldCheckHoneypot` to say yes, and
+		// `check` then rejects it as a missing honeypot input — a 400, but by
+		// the slow path through the field check rather than the requirement
+		// this file is about. Pinned so the two cannot be confused.
+		const { encryptedValidFrom } = await honeypot.getInputProps()
+		const formData = new FormData()
+		formData.set('from__confirm', encryptedValidFrom)
+
+		const response = await captureResponse(checkHoneypot(formData))
+		expect(response.status).toBe(400)
+	})
+
+	it('rejects a submission carrying only name__confirm', async () => {
+		// The mirror image, and the one the requirement has to cover: with
+		// `name__confirm` present and blank, `check` gets all the way to the
+		// `from__confirm` lookup and throws "Missing honeypot valid from input".
+		// That is a rejection too, but it is incidental — it exists only
+		// because the timestamp is configured. Without this case, a
+		// `from__confirm`-only bypass would look covered by the happy path.
+		const formData = new FormData()
+		formData.set('name__confirm', '')
+
+		const response = await captureResponse(checkHoneypot(formData))
+		expect(response.status).toBe(400)
+	})
+
+	it('answers with the same 400 as a filled honeypot', async () => {
+		// Omission and filling are the same answer, so a bot cannot tell from
+		// the response which mistake it made, and neither reaches Sentry.
+		const { encryptedValidFrom } = await honeypot.getInputProps()
+		const omitted = await captureResponse(checkHoneypot(new FormData()))
+		const filled = await captureResponse(
+			checkHoneypot(formDataWith(encryptedValidFrom, 'I am a bot')),
+		)
+
+		expect(omitted.status).toBe(filled.status)
+		expect(await omitted.text()).toBe(await filled.text())
+	})
+
+	it('does not reject a form that has the fields, however they arrived', async () => {
+		// The regression this could cause: the requirement has to key on
+		// presence, not on anything about the values, or a real browser
+		// submission stops working. A filled `name__confirm` is still spam and
+		// a valid `from__confirm` is still fine — both are covered above and
+		// in the happy-path describe; what matters here is that requiring the
+		// fields did not turn into rejecting them.
+		const { encryptedValidFrom } = await honeypot.getInputProps()
+		await expect(
+			checkHoneypot(formDataWith(encryptedValidFrom)),
+		).resolves.toBeUndefined()
+	})
+})
+
 describe('checkHoneypot with an error that is not spam', () => {
 	it('rethrows an unrecognised DOMException instead of dressing it up as spam', async () => {
 		// The narrowed check is only worth having if the default is still to
@@ -171,8 +248,15 @@ describe('checkHoneypot with an error that is not spam', () => {
 	it('rethrows a non-DOMException unchanged', async () => {
 		const boom = new Error('something else broke')
 		vi.spyOn(honeypot, 'check').mockRejectedValueOnce(boom)
+		// Both honeypot fields have to be present, or the check for missing
+		// fields rejects first and the mock is never reached. This case is
+		// about what happens *after* a well-formed submission is handed to
+		// `check`, so the form has to be well-formed.
+		const { encryptedValidFrom } = await honeypot.getInputProps()
 
-		await expect(checkHoneypot(new FormData())).rejects.toBe(boom)
+		await expect(checkHoneypot(formDataWith(encryptedValidFrom))).rejects.toBe(
+			boom,
+		)
 	})
 })
 

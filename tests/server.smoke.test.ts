@@ -57,6 +57,28 @@ const TEST_ENV = {
 let server: ChildProcess | undefined
 let serverOutput = ''
 
+/**
+ * Every POST this file makes to a rate-limited "strong" path. Kept as a running
+ * count so `afterAll` can prove the suite is inside the budget rather than
+ * leaving the next person to discover it as a 429 in an unrelated test.
+ *
+ * POSTs only, and that is the limiter's own distinction: `server/index.ts`
+ * routes GET and HEAD to a separate, far larger `generalRateLimit`, so the page
+ * loads this file makes — including the one `scrapeHoneypotFields` does — are
+ * not drawing on this budget.
+ */
+let STRONG_PATH_POSTS = 0
+
+/** A `POST` to a strong path, counted against the budget above. */
+function postStrongPath(path: string, init: RequestInit = {}) {
+	STRONG_PATH_POSTS++
+	return fetch(`${base}${path}`, {
+		method: 'POST',
+		redirect: 'manual',
+		...init,
+	})
+}
+
 async function waitForServer(url: string, child: ChildProcess) {
 	// The healthcheck route is the cheapest thing that proves both that the
 	// server is listening and that the React Router handler is mounted.
@@ -111,6 +133,12 @@ beforeAll(async () => {
 	// ALLOW_INDEXING. A developer who exports it would otherwise make the
 	// "sends no X-Robots-Tag by default" test below fail on their machine only.
 	delete env.ALLOW_INDEXING
+	// `TESTING` for the same reason and worse: `honeypot.server.ts` reads it to
+	// decide whether the `from__confirm` input exists at all, so a truthy value
+	// in a developer's shell would leave `scrapeHoneypotFields` below with
+	// nothing to scrape and fail a test about a charset. Not a key of `env`'s
+	// inferred type, so it goes through the index signature.
+	delete (env as Record<string, string | undefined>).TESTING
 
 	const child = spawn(process.execPath, ['index.ts'], {
 		env,
@@ -129,6 +157,15 @@ beforeAll(async () => {
 }, 60_000)
 
 afterAll(() => {
+	// The shared rate-limit budget is a real coupling in this file and nothing
+	// else enforces it, so a case added later would otherwise surface as an
+	// unrelated 429 inside whichever test ran next. Asserting it here turns that
+	// into a message about the budget.
+	if (STRONG_PATH_POSTS > 10) {
+		throw new Error(
+			`${STRONG_PATH_POSTS} POSTs to /contact or /resources/newsletter; they share one 10/min rate limit (server/index.ts strongPaths), so this suite is over budget`,
+		)
+	}
 	server?.kill('SIGKILL')
 })
 
@@ -372,8 +409,12 @@ describe('production server', () => {
 	// without touching the crypto path. No other field is needed: both actions
 	// run the honeypot check before validating.
 	//
-	// Four requests here plus the page load above stay well inside the 10/min
-	// limit on /contact and the 100/min one on /resources/newsletter.
+	// The requests below, plus the page load above, spend 8 of the shared
+	// 10/min budget. `/contact` and `/resources/newsletter` are guarded by one
+	// `express-rate-limit` instance keyed by IP (`strongPaths` in
+	// `server/index.ts`), so the budget is not per-path. Two to spare is enough
+	// for now and not enforced by anything — see `STRONG_PATH_POSTS` in
+	// `afterAll`, which fails loudly if a future case pushes past it.
 	const HONEYPOT_POSTS: Array<[path: string, validFrom: string]> = [
 		['/contact', '!!!not base64!!!'],
 		['/contact', 'a'],
@@ -395,11 +436,9 @@ describe('production server', () => {
 				name__confirm: '',
 				from__confirm: validFrom,
 			})
-			const response = await fetch(`${base}${path}`, {
-				method: 'POST',
+			const response = await postStrongPath(path, {
 				body,
 				headers: { 'content-type': 'application/x-www-form-urlencoded' },
-				redirect: 'manual',
 			})
 			expect(response.status, `${path} with from__confirm=${validFrom}`).toBe(
 				400,
@@ -414,6 +453,127 @@ describe('production server', () => {
 			server?.exitCode,
 			`server should still be running${serverOutput ? `\n${serverOutput}` : ''}`,
 		).toBeNull()
+	})
+
+	// A body `formData()` cannot read used to throw a `TypeError` out of the
+	// action, which is a 500 and an unhandled exception in Sentry. Scanners reach
+	// a public form URL on their own, and a body-less `POST` — no `Content-Type`
+	// at all — is the cheapest request they send, so this is traffic that
+	// arrives rather than a shape to imagine.
+	//
+	// One case per route, deliberately. `/contact` and `/resources/newsletter`
+	// are guarded by a *single* `express-rate-limit` instance keyed by IP (see
+	// `strongPaths` in `server/index.ts`), so every POST to either draws on one
+	// shared budget of 10 per minute — not 10 each. The full matrix of
+	// unreadable bodies lives in `tests/form-data.test.ts`, where it costs no
+	// budget at all; what is worth an end-to-end request here is only that each
+	// action is wired to the helper at all.
+	const UNREADABLE_POSTS: Array<{
+		label: string
+		path: string
+		init: { body?: string; headers?: Record<string, string> }
+	}> = [
+		{ label: '/contact, no content-type', path: '/contact', init: {} },
+		{
+			label: '/resources/newsletter, no content-type',
+			path: '/resources/newsletter',
+			init: {},
+		},
+	]
+
+	/**
+	 * A real `from__confirm`, read out of the rendered `/contact` page.
+	 *
+	 * Since the honeypot fields became required, no hand-built `FormData` can
+	 * stand in for a browser submission: one without them is now a 400, which
+	 * is correct but makes a test that expects the form to be *accepted* prove
+	 * nothing. The token is encrypted with `HONEYPOT_SECRET` and minted per
+	 * render, so the only way to get a valid one is to read it off the page
+	 * exactly as a browser would.
+	 */
+	async function scrapeHoneypotFields() {
+		const html = await (await fetch(`${base}/contact`)).text()
+		const encryptedValidFrom = /name="from__confirm"[^>]*value="([^"]*)"/.exec(
+			html,
+		)?.[1]
+		if (!encryptedValidFrom) {
+			throw new Error(
+				`no from__confirm in the rendered /contact page${serverOutput ? `\n${serverOutput}` : ''}`,
+			)
+		}
+		return { encryptedValidFrom }
+	}
+
+	it('answers an unreadable form body with 400, not 500', async () => {
+		// Status only, deliberately. The body text is the same for every
+		// rejection on these routes, so it cannot tell a refused body from a
+		// honeypot rejection — and that is the intent: one answer for "we did
+		// not accept this submission", whatever the reason.
+		const results: Array<{ label: string; status: number }> = []
+		for (const { label, path, init } of UNREADABLE_POSTS) {
+			const response = await postStrongPath(path, init)
+			results.push({ label, status: response.status })
+			await response.text()
+		}
+
+		expect(results).toEqual(
+			UNREADABLE_POSTS.map(({ label }) => ({ label, status: 400 })),
+		)
+
+		await new Promise((resolve) => setTimeout(resolve, 500))
+		expect(
+			server?.exitCode,
+			`server should still be running${serverOutput ? `\n${serverOutput}` : ''}`,
+		).toBeNull()
+	})
+
+	// The honeypot fields are now required, so a submission that omits them is
+	// answered 400 even though its body is perfectly readable. That is the
+	// intended behaviour — a form that skipped the fields was not produced by
+	// our page — and it is the other half of what the fix was for. Without this
+	// case the requirement is only pinned at the unit boundary, where a test can
+	// hand `checkHoneypot` a `FormData` no browser would ever build.
+	it('answers a submission that omits the honeypot fields with 400', async () => {
+		const response = await postStrongPath('/contact', {
+			body: new URLSearchParams({
+				name: 'a',
+				email: 'a@example.com',
+				message: 'hi',
+			}),
+			headers: { 'content-type': 'application/x-www-form-urlencoded' },
+		})
+		expect(response.status).toBe(400)
+		expect(await response.text()).toContain('Form not submitted properly')
+	})
+
+	// A `charset` on the media type must not be mistaken for an unreadable
+	// body: a browser form is entitled to send one, and rejecting it would
+	// break the contact form for every real user whose browser does.
+	//
+	// The proof that the body was read is that the request gets all the way to
+	// Zod, which answers 200 with a validation reply. The email is deliberately
+	// invalid, and the honeypot fields are real ones scraped from the rendered
+	// page — with the fields required, a body without them is rejected before
+	// Zod is ever reached and this test would pass for the wrong reason.
+	it('reads a form body that declares a charset', async () => {
+		const { encryptedValidFrom } = await scrapeHoneypotFields()
+		const response = await postStrongPath('/contact', {
+			body: new URLSearchParams({
+				name: 'a',
+				email: 'bad',
+				message: 'hi',
+				name__confirm: '',
+				from__confirm: encryptedValidFrom,
+			}),
+			headers: {
+				'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+			},
+		})
+		expect(response.status).toBe(200)
+		// A 200 here already proves the body was read — a refused body is a 400
+		// on the way in — so this only rules out the charset itself being
+		// mistaken for something unreadable, which would have produced that 400.
+		expect(await response.text()).not.toContain('Form not submitted properly')
 	})
 
 	// The morgan `url` token decodes the whole request URL, query string

@@ -13,6 +13,7 @@ import {
 	href,
 } from 'react-router'
 import { getErrorMessage } from '#app/utils/misc'
+import { REJECTED_SUBMISSION } from '#app/utils/rejected-submission'
 import { Button } from './ui/button'
 import { Icon } from './ui/icon'
 
@@ -21,6 +22,34 @@ type StatusHandler = (info: {
 	params: Record<string, string | undefined>
 }) => ReactElement | null
 
+/**
+ * Whether `error` is one this app threw on purpose to answer a request it
+ * refuses, rather than a fault.
+ *
+ * A route can throw a `Response` as a considered answer — `checkHoneypot` and
+ * `readFormData` both answer 400 for a submission the site will not accept —
+ * and React Router turns that into an `ErrorResponse` at the nearest boundary,
+ * exactly as it does for a crash. Without this distinction every such rejection
+ * was reported to Sentry from the browser, which is the opposite of the intent:
+ * the rejection exists so that junk traffic is cheap and silent, and the
+ * newsletter form is in the footer of every page, so one stray POST was enough
+ * to file an issue and attach a session replay to an innocent visitor.
+ *
+ * Narrowed on the status *and* the shared body. The body alone is not enough:
+ * anything else in the app that ever answers 500 with this same text would be
+ * silenced, and a real fault is exactly what this must not swallow. The status
+ * alone is not enough either, because 400 is also what React Router uses for
+ * "no matching loader" — a scanner probing for routes, which
+ * `sentry-event-filters.ts` already drops server-side, and reporting it here
+ * would undo that work. Both together identify the guards' own answer.
+ */
+export function isRejectedSubmission(error: unknown): boolean {
+	return (
+		isRouteErrorResponse(error) &&
+		error.status === 400 &&
+		error.data === REJECTED_SUBMISSION
+	)
+}
 export function GeneralErrorBoundary({
 	defaultStatusHandler = ({ error }) => (
 		<p>
@@ -38,11 +67,17 @@ export function GeneralErrorBoundary({
 	const params = useParams()
 
 	useEffect(() => {
+		// A considered rejection is an answer, not a fault — see
+		// `isRejectedSubmission`. Everything else, including every `ErrorResponse`
+		// the router raises itself, is still reported.
+		if (isRejectedSubmission(error)) return
 		captureException(error)
 	}, [error])
 
 	if (typeof document !== 'undefined') {
-		console.error(error)
+		// Same reasoning, for the console: a rejected submission is expected
+		// traffic and logging it would fill the deploy logs with it.
+		if (!isRejectedSubmission(error)) console.error(error)
 	}
 
 	return (
